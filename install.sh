@@ -48,6 +48,7 @@ cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_
 echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
+echo "Moving G1-Configs to printer_data/config"
 cp -r ./G1-Configs/Configs/* ./printer_data/config/
 echo
 #-------------------------------------------------------------------------------
@@ -79,7 +80,7 @@ RemainAfterExit=yes
 ExecStart=/usr/bin/pmount --umask 000 --noatime -r --sync %I .
 ExecStop=/usr/bin/pumount /dev/%I
 "
-echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE"
+sudo echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE"
 sudo systemctl daemon-reload
 echo "Il file di servizio è stato creato e i daemon di systemd sono stati ricaricati"
 echo
@@ -93,8 +94,14 @@ echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
 cd ~/
-echo "disable_splash=1" >> /boot/config.txt
-sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' /boot/cmdline.txt
+
+if ! grep -q "disable_splash=1" /boot/config.txt; then
+    sudo echo "disable_splash=1" >> /boot/config.txt
+fi
+if ! grep -q "logo.nologo consoleblank=0 loglevel=1 quiet" /boot/cmdline.txt; then
+    sudo sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' /boot/cmdline.txt
+fi
+
 echo "Modifiche ai file di configurazione effettuate con successo."
 
 SERVICE_FILE="/etc/systemd/system/splashscreen.service"
@@ -110,11 +117,16 @@ StandardOutput=tty
 
 [Install]
 WantedBy=sysinit.target"
-echo "$SERVICE_CONTENT" > "$SERVICE_FILE"
-chmod 644 "$SERVICE_FILE"
-systemctl daemon-reload
-systemctl enable splashscreen.service
-echo "Il servizio splashscreen è stato creato e abilitato con successo."
+
+if [ ! -f "$SERVICE_FILE" ]; then
+    sudo echo "$SERVICE_CONTENT" > "$SERVICE_FILE"
+    sudo chmod 644 "$SERVICE_FILE"
+    sudo systemctl daemon-reload
+    sudo systemctl enable splashscreen.service
+    echo "Il servizio splashscreen è stato creato e abilitato con successo."
+else
+    echo "Il file $SERVICE_FILE esiste già. Nessuna modifica effettuata."
+fi
 
 sudo apt-get update
 sudo systemctl enable splashscreen
@@ -127,4 +139,5 @@ git clone https://github.com/KlipperScreen/KlipperScreen.git
 echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> REBOOT <<<<<<"
+echo "bye bye!"
 sudo reboot

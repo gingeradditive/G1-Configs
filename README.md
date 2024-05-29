@@ -7,4 +7,4 @@
 6) clone the G1-Configs project 
     1. cd ~ 
     2. git clone https://github.com/gingeradditive/G1-Configs.git
-    3. sudo sh ./G1-Configs/install.sh 2>&1 | tee output.txt
+    3. sh ./G1-Configs/install.sh 2>&1 | tee output.txt
