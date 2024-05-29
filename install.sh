@@ -47,11 +47,6 @@ ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
 cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_data/config/KAMP_Settings.cfg
 echo
 #-------------------------------------------------------------------------------
-echo; echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
-echo "Moving G1-Configs to printer_data/config"
-cp -r ./G1-Configs/Configs/* ./printer_data/config/
-echo
-#-------------------------------------------------------------------------------
 echo; echo ">>>>>> ENABLE USB <<<<<<"
 ln -s /usb /home/pi/printer_data/gcodes/
 RULES_FILE="/etc/udev/rules.d/usbstick.rules"
@@ -136,6 +131,11 @@ echo; echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
 cd ~/
 git clone https://github.com/KlipperScreen/KlipperScreen.git
 ./KlipperScreen/scripts/KlipperScreen-install.sh
+echo
+#-------------------------------------------------------------------------------
+echo; echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
+echo "Moving G1-Configs to printer_data/config"
+cp -r ./G1-Configs/Configs/* ./printer_data/config/
 echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> REBOOT <<<<<<"
