@@ -68,8 +68,38 @@ echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
 cd ~/
+sudo apt-get install pmount -y
 git clone https://github.com/Howchoo/pi-power-button.git
 ./pi-power-button/script/install
+echo
+#-------------------------------------------------------------------------------
+echo; echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
+cd ~/
+echo "disable_splash=1" >> /boot/config.txt
+sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' /boot/cmdline.txt
+echo "Modifiche ai file di configurazione effettuate con successo."
+
+SERVICE_FILE="/etc/systemd/system/splashscreen.service"
+SERVICE_CONTENT="[Unit]
+Description=Splash screen
+DefaultDependencies=no
+After=local-fs.target
+
+[Service]
+ExecStart=/usr/bin/fbi -d /dev/fb0 --noverbose -a /home/pi/printer_data/config/splash.png
+StandardInput=tty
+StandardOutput=tty
+
+[Install]
+WantedBy=sysinit.target"
+echo "$SERVICE_CONTENT" > "$SERVICE_FILE"
+chmod 644 "$SERVICE_FILE"
+systemctl daemon-reload
+systemctl enable splashscreen.service
+echo "Il servizio splashscreen è stato creato e abilitato con successo."
+
+sudo apt-get update
+sudo systemctl enable splashscreen
 echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
