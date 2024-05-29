@@ -1,44 +1,39 @@
 #!/bin/bash
-
-echo ">>>>>> UPGRADE SYSTEM <<<<<<"
+echo; echo ">>>>>> UPGRADE SYSTEM <<<<<<"
 sudo apt update
 sudo apt full-upgrade -y
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> INSTALLING KIAUH <<<<<<"
+echo; echo ">>>>>> INSTALLING KIAUH <<<<<<"
 sudo apt-get update 
 sudo apt-get install git -y
 cd ~ 
 git clone https://github.com/dw-0/kiauh.git
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> INSTALLING MOONRAKER-OBICO <<<<<<"
+echo; echo ">>>>>> INSTALLING MOONRAKER-OBICO <<<<<<"
 cd ~
 git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
 cd moonraker-obico
 ./install.sh
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> INSTALLING KLIPPAIN SHAKETUNE <<<<<<"
+echo; echo ">>>>>> INSTALLING KLIPPAIN SHAKETUNE <<<<<<"
 wget -O - https://raw.githubusercontent.com/Frix-x/klippain-shaketune/main/install.sh | bash
-
-echo ">>>>>> INSTALLING KAMP <<<<<<"
+echo
+#-------------------------------------------------------------------------------
+echo; echo ">>>>>> INSTALLING KAMP <<<<<<"
 cd ~
 git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
 ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
 cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_data/config/KAMP_Settings.cfg
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
-echo cp -r ./G1-Configs/Configs/* ./printer_data/config/
-
+echo; echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
+cp -r ./G1-Configs/Configs/* ./printer_data/config/
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> ENABLE USB <<<<<<"
+echo; echo ">>>>>> ENABLE USB <<<<<<"
 ln -s /usb /home/pi/printer_data/gcodes/
 RULES_FILE="/etc/udev/rules.d/usbstick.rules"
 RULE='ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"'
@@ -69,17 +64,19 @@ ExecStop=/usr/bin/pumount /dev/%I
 echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE"
 sudo systemctl daemon-reload
 echo "Il file di servizio è stato creato e i daemon di systemd sono stati ricaricati"
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
+echo; echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
 cd ~/
 git clone https://github.com/Howchoo/pi-power-button.git
 ./pi-power-button/script/install
-
+echo
 #-------------------------------------------------------------------------------
-
-echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
+echo; echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
 cd ~/
 git clone https://github.com/KlipperScreen/KlipperScreen.git
 ./KlipperScreen/scripts/KlipperScreen-install.sh
+echo
+#-------------------------------------------------------------------------------
+echo; echo ">>>>>> REBOOT <<<<<<"
+sudo reboot
