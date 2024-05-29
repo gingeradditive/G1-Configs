@@ -34,7 +34,7 @@ cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_
 #-------------------------------------------------------------------------------
 
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
-echo "TODO"
+echo cp -r ./G1-Configs/Configs/* ./printer_data/config/
 
 #-------------------------------------------------------------------------------
 
