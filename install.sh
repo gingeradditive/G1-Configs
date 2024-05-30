@@ -89,7 +89,7 @@ echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
 cd ~/
-sudo atp install fbi -y
+sudo apt install fbi -y
 
 if ! grep -q "disable_splash=1" /boot/config.txt; then
     echo "disable_splash=1" | sudo tee -a /boot/config.txt > /dev/null
