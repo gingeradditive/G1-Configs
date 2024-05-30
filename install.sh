@@ -210,7 +210,7 @@ else
     echo "Ginger Configs already present in $MOONRAKER_CONF"
 fi
 
-sudo ln -s "$HOME/G1-Configs" "$SYMBOLIC_LINK_DESTINATION"
+sudo ln -s "$HOME/G1-Configs/Configs/gingerConfigs" "$SYMBOLIC_LINK_DESTINATION"
 echo "Symbolic link recreated for Ginger Configs"
 echo
 
