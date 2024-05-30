@@ -48,7 +48,7 @@ cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_
 echo
 #-------------------------------------------------------------------------------
 echo; echo ">>>>>> ENABLE USB <<<<<<"
-ln -s /usb /home/pi/printer_data/gcodes/
+ln -s /media /home/pi/printer_data/gcodes/
 RULES_FILE="/etc/udev/rules.d/usbstick.rules"
 RULE='ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"'
 
@@ -92,8 +92,9 @@ cd ~/
 sudo atp install fbi -y
 
 if ! grep -q "disable_splash=1" /boot/config.txt; then
-    sudo echo "disable_splash=1" >> /boot/config.txt
+    echo "disable_splash=1" | sudo tee -a /boot/config.txt > /dev/null
 fi
+
 if ! grep -q "logo.nologo consoleblank=0 loglevel=1 quiet" /boot/cmdline.txt; then
     sudo sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' /boot/cmdline.txt
 fi
@@ -115,7 +116,7 @@ StandardOutput=tty
 WantedBy=sysinit.target"
 
 if [ ! -f "$SERVICE_FILE" ]; then
-    sudo echo "$SERVICE_CONTENT" > "$SERVICE_FILE"
+    echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
     sudo chmod 644 "$SERVICE_FILE"
     sudo systemctl daemon-reload
     sudo systemctl enable splashscreen.service
