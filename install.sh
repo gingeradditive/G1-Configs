@@ -178,14 +178,39 @@ else
 fi
 echo
 
-# MOVE GINGER CONFIGS
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
-echo "Moving G1-Configs to printer_data/config"
-if [ -d "./G1-Configs/Configs" ]; then
-    cp -r ./G1-Configs/Configs/* ./printer_data/config/
+SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs" 
+if [ -L "$SYMBOLIC_LINK_DESTINATION" ]; then
+    sudo rm "$SYMBOLIC_LINK_DESTINATION"
+    echo "Symbolic link removed"
+fi
+
+echo "Copying G1-Configs to printer_data/config"
+G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
+if [ -d "$G1_CONFIGS_DIR" ]; then
+    cp -r "$G1_CONFIGS_DIR"/* "$HOME/printer_data/config/"
 else
     echo "G1-Configs directory does not exist."
 fi
+
+MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
+MOONRAKER_CONF_CONTENT="
+## Ginger Configs
+[update_manager GingerConfigs]
+type: git_repo
+origin: https://github.com/gingeradditive/G1-Configs.git
+path: $HOME/G1-Configs
+primary_branch: main
+managed_services: klipper"
+if ! sudo grep -q "Ginger Configs" "$MOONRAKER_CONF"; then
+    echo "$MOONRAKER_CONF_CONTENT" | sudo tee -a "$MOONRAKER_CONF" > /dev/null
+    echo "Ginger Configs added to $MOONRAKER_CONF"
+else
+    echo "Ginger Configs already present in $MOONRAKER_CONF"
+fi
+
+sudo ln -s "$HOME/G1-Configs" "$SYMBOLIC_LINK_DESTINATION"
+echo "Symbolic link recreated for Ginger Configs"
 echo
 
 # User interaction for final action
