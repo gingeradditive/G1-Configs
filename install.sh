@@ -1,67 +1,91 @@
 #!/bin/bash
+
+# Banner
 echo "                                                        
-          .-.                                           
-  .--.   ( __)  ___ .-.     .--.     .--.    ___ .-.    
- /    \  (''') (   )   \   /    \   /    \  (   )   \   
-;  ,-. '  | |   |  .-. .  ;  ,-. ' |  .-. ;  | ' .-. ;  
-| |  | |  | |   | |  | |  | |  | | |  | | |  |  / (___) 
-| |  | |  | |   | |  | |  | |  | | |  |/  |  | |        
-| |  | |  | |   | |  | |  | |  | | |  ' _.'  | |        
-| '  | |  | |   | |  | |  | '  | | |  .'.-.  | |        
-'  '-' |  | |   | |  | |  '  '-' | '  '-' /  | |        
- '.__. | (___) (___)(___)  '.__. |  '.__.'  (___)       
- ( '-' ;                   ( '-' ;                      
-  '.__.                     '.__.'                       "
-
-echo "Script for fast G1 installation"
-echo "Version 0.0.1 - By: Giacomo Guaresi"
-#-------------------------------------------------------------------------------
-
-echo; echo ">>>>>> UPGRADE SYSTEM <<<<<<"
-sudo apt update
-sudo apt full-upgrade -y
+                 5@?                                                            
+    :~!7!~:  :^. ~!^ .^^  ^!77!:        .^!77!^  :^:     :~!77!^.    ^^..!7~.   
+ .?B&#GPPG#BJB@7 P@J 7@#JBBPPPB&G!    !G&#GPPGB#YP@5   7B&BGPPB##5^  #@B#BGY    
+~#@5^     .!B@@7 P@J 7@@#!.    !@@~ :G@G~.    .~P@@5 :B@5:     .!#@? #@@!       
+&@J         .#@7 P@J 7@&:       P@Y 5@P          P@5 G@&YJYYYYYJJP@@~B@Y        
+@@!          B@7 P@J 7@#        5@5 P@Y          5@5 #@P7????????777^B@7        
+7@&7       :P@@7 P@J 7@#        5@5 ^&@J.      .J@@5 ?@#:        !5~ #@7     :: 
+ ^5&#PYJY5G#P#@7 G@J ?@#.       5@5  .J##G5JJ5G#GB@5  7#@P7~^^!JB@P^ #@?    G@@G
+^~:.~7JJJ?~.:&@^ ?P! ~PY        7P7 :~^.^7JJJ?!. B@7    !YGGBBGP?^   YP~    ?GG?
+~B@P!:. ..^J&&7                     :P@G7:.  .^7B@Y                             
+  !P#######GJ:                        ~5B######BY^                              "
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALLING KIAUH <<<<<<"
-sudo apt-get update 
-sudo apt-get install git -y
+echo "G1-Config"
+echo "Version 0.0.2 - By: Giacomo Guaresi"
+echo; echo
+
+# Function to install a package if not already installed
+install_if_missing() {
+    if ! dpkg -l | grep -q "^ii  $1 "; then
+        echo "Installing $1..."
+        sudo apt-get install -y "$1"
+    else
+        echo "$1 is already installed."
+    fi
+}
+
+# UPGRADE SYSTEM
+echo ">>>>>> UPGRADE SYSTEM <<<<<<"
+sudo apt update && sudo apt full-upgrade -y
+echo
+
+# INSTALLING KIAUH
+echo ">>>>>> INSTALLING KIAUH <<<<<<"
+install_if_missing git
 cd ~ 
-git clone https://github.com/dw-0/kiauh.git
+if [ ! -d "kiauh" ]; then
+    git clone https://github.com/dw-0/kiauh.git
+else
+    echo "KIAUH is already cloned."
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALLING MOONRAKER-OBICO <<<<<<"
+
+# INSTALLING MOONRAKER-OBICO
+echo ">>>>>> INSTALLING MOONRAKER-OBICO <<<<<<"
 cd ~
-git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
-cd moonraker-obico
-./install.sh
+if [ ! -d "moonraker-obico" ]; then
+    git clone https://github.com/TheSpaghettiDetective/moonraker-obico.git
+    cd moonraker-obico
+    ./install.sh
+else
+    echo "Moonraker-Obico is already cloned."
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALLING KLIPPAIN SHAKETUNE <<<<<<"
+
+# INSTALLING KLIPPAIN SHAKETUNE
+echo ">>>>>> INSTALLING KLIPPAIN SHAKETUNE <<<<<<"
 wget -O - https://raw.githubusercontent.com/Frix-x/klippain-shaketune/main/install.sh | bash
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALLING KAMP <<<<<<"
+
+# INSTALLING KAMP
+echo ">>>>>> INSTALLING KAMP <<<<<<"
 cd ~
-git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
-ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
-cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_data/config/KAMP_Settings.cfg
+if [ ! -d "Klipper-Adaptive-Meshing-Purging" ]; then
+    git clone https://github.com/kyleisah/Klipper-Adaptive-Meshing-Purging.git
+    ln -s ~/Klipper-Adaptive-Meshing-Purging/Configuration printer_data/config/KAMP
+    cp ~/Klipper-Adaptive-Meshing-Purging/Configuration/KAMP_Settings.cfg ~/printer_data/config/KAMP_Settings.cfg
+else
+    echo "KAMP is already cloned."
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> ENABLE USB <<<<<<"
+
+# ENABLE USB
+echo ">>>>>> ENABLE USB <<<<<<"
 ln -s /media /home/pi/printer_data/gcodes/
 RULES_FILE="/etc/udev/rules.d/usbstick.rules"
 RULE='ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"'
-
-if grep -Fxq "$RULE" "$RULES_FILE"; then
-    echo "La regola esiste già nel file $RULES_FILE"
-else
-    # Aggiungi la regola al file
+if ! grep -Fxq "$RULE" "$RULES_FILE"; then
     echo "$RULE" | sudo tee -a "$RULES_FILE"
-    echo "La regola è stata aggiunta al file $RULES_FILE"
+    echo "USB rule added to $RULES_FILE"
+else
+    echo "USB rule already exists in $RULES_FILE"
 fi
-sudo udevadm control --reload-rules
-sudo udevadm trigger
-echo "Regole udev ricaricate"
+sudo udevadm control --reload-rules && sudo udevadm trigger
+echo "udev rules reloaded"
 
 SERVICE_FILE="/lib/systemd/system/usbstick-handler@.service"
 SERVICE_CONTENT="[Unit]
@@ -75,34 +99,45 @@ RemainAfterExit=yes
 ExecStart=/usr/bin/pmount --umask 000 --noatime -r --sync %I .
 ExecStop=/usr/bin/pumount /dev/%I
 "
-sudo echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE"
-sudo systemctl daemon-reload
-echo "Il file di servizio è stato creato e i daemon di systemd sono stati ricaricati"
+if [ ! -f "$SERVICE_FILE" ]; then
+    echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
+    sudo chmod 644 "$SERVICE_FILE"
+    sudo systemctl daemon-reload
+    echo "USB handler service created and systemd daemons reloaded"
+else
+    echo "USB handler service already exists"
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
-cd ~/
-sudo apt-get install pmount -y
-git clone https://github.com/Howchoo/pi-power-button.git
-./pi-power-button/script/install
-echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
-cd ~/
-sudo apt install fbi -y
 
-if ! grep -q "disable_splash=1" /boot/config.txt; then
-    echo "disable_splash=1" | sudo tee -a /boot/config.txt > /dev/null
+# INSTALL POWERBUTTON
+echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
+cd ~/
+install_if_missing pmount
+if [ ! -d "pi-power-button" ]; then
+    git clone https://github.com/Howchoo/pi-power-button.git
+    ./pi-power-button/script/install
+else
+    echo "Power button is already cloned."
+fi
+echo
+
+# INSTALL SPLASHSCREEN
+echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
+install_if_missing fbi
+
+BOOT_CONFIG="/boot/config.txt"
+CMDLINE_CONFIG="/boot/cmdline.txt"
+if ! grep -q "disable_splash=1" "$BOOT_CONFIG"; then
+    echo "disable_splash=1" | sudo tee -a "$BOOT_CONFIG"
 fi
 
-if ! grep -q "logo.nologo consoleblank=0 loglevel=1 quiet" /boot/cmdline.txt; then
-    sudo sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' /boot/cmdline.txt
+if ! grep -q "logo.nologo consoleblank=0 loglevel=1 quiet" "$CMDLINE_CONFIG"; then
+    sudo sed -i '1s/$/ logo.nologo consoleblank=0 loglevel=1 quiet/' "$CMDLINE_CONFIG"
 fi
+echo "Boot configuration files modified successfully."
 
-echo "Modifiche ai file di configurazione effettuate con successo."
-
-SERVICE_FILE="/etc/systemd/system/splashscreen.service"
-SERVICE_CONTENT="[Unit]
+SPLASH_SERVICE_FILE="/etc/systemd/system/splashscreen.service"
+SPLASH_SERVICE_CONTENT="[Unit]
 Description=Splash screen
 DefaultDependencies=no
 After=local-fs.target
@@ -114,32 +149,63 @@ StandardOutput=tty
 
 [Install]
 WantedBy=sysinit.target"
-
-if [ ! -f "$SERVICE_FILE" ]; then
-    echo "$SERVICE_CONTENT" | sudo tee "$SERVICE_FILE" > /dev/null
-    sudo chmod 644 "$SERVICE_FILE"
+if [ ! -f "$SPLASH_SERVICE_FILE" ]; then
+    echo "$SPLASH_SERVICE_CONTENT" | sudo tee "$SPLASH_SERVICE_FILE" > /dev/null
+    sudo chmod 644 "$SPLASH_SERVICE_FILE"
     sudo systemctl daemon-reload
     sudo systemctl enable splashscreen.service
-    echo "Il servizio splashscreen è stato creato e abilitato con successo."
+    echo "Splashscreen service created and enabled"
 else
-    echo "Il file $SERVICE_FILE esiste già. Nessuna modifica effettuata."
+    echo "Splashscreen service already exists"
 fi
-
-sudo apt-get update
 sudo systemctl enable splashscreen
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
+
+# INSTALLING KLIPPERSCREEN
+echo ">>>>>> INSTALLING KLIPPERSCREEN <<<<<<"
 cd ~/
-git clone https://github.com/KlipperScreen/KlipperScreen.git
-./KlipperScreen/scripts/KlipperScreen-install.sh
+if [ ! -d "KlipperScreen" ]; then
+    git clone https://github.com/KlipperScreen/KlipperScreen.git
+    ./KlipperScreen/scripts/KlipperScreen-install.sh
+else
+    echo "KlipperScreen is already cloned."
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
+
+# MOVE GINGER CONFIGS
+echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
 echo "Moving G1-Configs to printer_data/config"
-cp -r ./G1-Configs/Configs/* ./printer_data/config/
+if [ -d "./G1-Configs/Configs" ]; then
+    cp -r ./G1-Configs/Configs/* ./printer_data/config/
+else
+    echo "G1-Configs directory does not exist."
+fi
 echo
-#-------------------------------------------------------------------------------
-echo; echo ">>>>>> REBOOT <<<<<<"
-echo "bye bye!"
-sudo reboot
+
+# User interaction for final action
+echo ">>>>>> FINAL ACTION <<<<<<"
+echo "Choose an action:"
+echo "R - Reboot"
+echo "S - Shutdown"
+echo "X - Exit"
+
+read -rp "Enter your choice (R/S/X): " choice
+
+case "$choice" in
+    [Rr]* )
+        echo "Rebooting..."
+        sudo reboot
+        ;;
+    [Ss]* )
+        echo "Shutting down..."
+        sudo shutdown now
+        ;;
+    [Xx]* )
+        echo "Exiting installation."
+        exit 0
+        ;;
+    * )
+        echo "Invalid choice. Exiting installation."
+        exit 1
+        ;;
+esac
