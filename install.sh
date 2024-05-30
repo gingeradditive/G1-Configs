@@ -181,7 +181,7 @@ echo
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs" 
 if [ -L "$SYMBOLIC_LINK_DESTINATION" ]; then
-    sudo rm "$SYMBOLIC_LINK_DESTINATION"
+    sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
     echo "Symbolic link removed"
 fi
 
