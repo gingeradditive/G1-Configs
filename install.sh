@@ -189,6 +189,7 @@ echo "Copying G1-Configs to printer_data/config"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
 if [ -d "$G1_CONFIGS_DIR" ]; then
     cp -r "$G1_CONFIGS_DIR"/* "$HOME/printer_data/config/"
+    sudo rm "$SYMBOLIC_LINK_DESTINATION"
 else
     echo "G1-Configs directory does not exist."
 fi
