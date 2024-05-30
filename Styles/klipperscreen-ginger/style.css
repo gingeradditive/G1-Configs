@@ -5,12 +5,14 @@
 @define-color color2 #991b1b;
 @define-color color3 #991b1b;
 @define-color color4 #991b1b;
+@define-color buttontext #ffffff;
 @define-color border #cdcfd2;
 @define-color active #FFAB91;
 @define-color warning #FFE082;
 @define-color error #EF9A9A;
 @define-color echo #a1ef9a;
 @define-color textview #212121;
+
 
 * {
     color: @text ;
@@ -40,42 +42,42 @@ button:active {
     border-width: .25em;
     background-color: @bg;
     box-shadow: .1em .1em @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 button.color1 label,
 button.color2 label,
 button.color3 label,
 button.color4 label {
-    color: @text;
+    color: @buttontext;
 }
 
 button.color1 {
     background-color: @color1;
     border-color: @color1;
     box-shadow: .1em .1em @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 button.color2 {
     background-color: @color2;
     border-color: @color2;
     box-shadow: .1em .1em @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 button.color3 {
     background-color: @color3;
     border-color: @color3;
     box-shadow: .1em .1em @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 button.color4 {
     background-color: @color4;
     border-color: @color4;
     box-shadow: .1em .1em @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 button.color1:active,
@@ -151,7 +153,7 @@ menuitem {
 trough {
     background-color: transparent;
     color: @border;
-    border-radius: 1em;
+    border-radius: 0.5em;
 }
 
 trough highlight,
