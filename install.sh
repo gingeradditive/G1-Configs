@@ -35,9 +35,9 @@ install_if_missing() {
 }
 
 # UPGRADE SYSTEM
-echo ">>>>>> UPGRADE SYSTEM <<<<<<"
-sudo apt update && sudo apt full-upgrade -y
-echo
+#echo ">>>>>> UPGRADE SYSTEM <<<<<<"
+#sudo apt update && sudo apt full-upgrade -y
+#echo
 
 # INSTALLING KIAUH
 echo ">>>>>> INSTALLING KIAUH <<<<<<"
