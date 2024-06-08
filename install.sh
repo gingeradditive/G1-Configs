@@ -64,6 +64,9 @@ sh "$HOME/G1-Configs/scripts/klipperscreen.sh"
 # INSTALLING GINGER CONFIGS
 sh "$HOME/G1-Configs/scripts/gingerconfig.sh"
 
+# INSTALLING GINGER STYLES
+sh "$HOME/G1-Configs/scripts/gingerstyles.sh"
+
 # User interaction for final action
 echo ">>>>>> FINAL ACTION <<<<<<"
 echo "Choose an action:"
