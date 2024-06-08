@@ -35,9 +35,9 @@ install_if_missing() {
 }
 
 # UPGRADE SYSTEM
-#echo ">>>>>> UPGRADE SYSTEM <<<<<<"
-#sudo apt update && sudo apt full-upgrade -y
-#echo
+echo ">>>>>> UPGRADE SYSTEM <<<<<<"
+sudo apt update && sudo apt full-upgrade -y
+echo
 
 # INSTALLING KIAUH
 echo ">>>>>> INSTALLING KIAUH <<<<<<"
@@ -116,16 +116,16 @@ fi
 echo
 
 # INSTALL POWERBUTTON
-echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
-cd ~/
-install_if_missing pmount
-if [ ! -d "pi-power-button" ]; then
-    git clone https://github.com/Howchoo/pi-power-button.git
-    ./pi-power-button/script/install
-else
-    echo "Power button is already cloned."
-fi
-echo
+# echo ">>>>>> INSTALL POWERBUTTON <<<<<<"
+# cd ~/
+# install_if_missing pmount
+# if [ ! -d "pi-power-button" ]; then
+#     git clone https://github.com/Howchoo/pi-power-button.git
+#     ./pi-power-button/script/install
+# else
+#     echo "Power button is already cloned."
+# fi
+# echo
 
 # INSTALL SPLASHSCREEN
 echo ">>>>>> INSTALL SPLASHSCREEN <<<<<<"
@@ -178,6 +178,7 @@ else
 fi
 echo
 
+# INSTALLING GINGER CONFIGS
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs" 
 if [ -L "$SYMBOLIC_LINK_DESTINATION" ]; then
