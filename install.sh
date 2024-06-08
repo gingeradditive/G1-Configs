@@ -19,11 +19,11 @@ echo "Version 0.0.2 - By: Giacomo Guaresi"
 echo; echo
 
 # Check if the script is run as root and exit if true
-echo "EUID is $EUID"
-if [ "$EUID" -eq 0 ]; then
-  echo "Please do NOT run this script as root or with sudo."
-  exit 1
-fi
+# echo "EUID is $EUID"
+# if [ "$EUID" -eq 0 ]; then
+#   echo "Please do NOT run this script as root or with sudo."
+#   exit 1
+# fi
 
 # Function to install a package if not already installed
 install_if_missing() {
