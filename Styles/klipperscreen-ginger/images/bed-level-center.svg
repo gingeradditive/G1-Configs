@@ -23,7 +23,7 @@
      inkscape:pagecheckerboard="1"
      showgrid="false"
      inkscape:zoom="26"
-     inkscape:cx="11.942308"
+     inkscape:cx="11.980769"
      inkscape:cy="12.019231"
      inkscape:window-width="1600"
      inkscape:window-height="855"
@@ -36,6 +36,6 @@
   <path
      d="m 12,5 c 3.87,0 7,3.13 7,7 0,3.87 -3.13,7 -7,7 C 8.13,19 5,15.87 5,12 5,8.13 8.13,5 12,5"
      id="path1150"
-     style="fill:#000000;font-variation-settings:normal;opacity:1;vector-effect:none;fill-opacity:1;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;-inkscape-stroke:none;stop-color:#000000;stop-opacity:1"
+     style="fill:#e2e2e2"
      sodipodi:nodetypes="csssc" />
 </svg>

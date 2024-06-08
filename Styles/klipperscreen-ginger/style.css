@@ -1,12 +1,13 @@
 /* Material-light theme created by Alfredo Monclus 2021 */
-@define-color bg #ffffff;
-@define-color text #000000;
-@define-color color1 #991b1b;
-@define-color color2 #991b1b;
-@define-color color3 #991b1b;
-@define-color color4 #991b1b;
+@define-color bg #000000;
+@define-color text #ffffff;
+@define-color color1 #ff0f11;
+@define-color color2 #ff0f11;
+@define-color color3 #ff0f11;
+@define-color color4 #ff0f11;
+@define-color buttonBorder #ffffff;
 @define-color buttontext #ffffff;
-@define-color border #cdcfd2;
+@define-color border #ffffff;
 @define-color active #FFAB91;
 @define-color warning #FFE082;
 @define-color error #EF9A9A;
@@ -28,7 +29,7 @@ button {
     background-color: @bg;
 }
 
-button label{
+button label {
     color: @text;
 }
 
@@ -41,8 +42,7 @@ button:active {
     border-style: solid;
     border-width: .25em;
     background-color: @bg;
-    box-shadow: .1em .1em @border;
-    border-radius: 0.5em;
+    border-radius: 1.0em;
 }
 
 button.color1 label,
@@ -54,30 +54,26 @@ button.color4 label {
 
 button.color1 {
     background-color: @color1;
-    border-color: @color1;
-    box-shadow: .1em .1em @border;
-    border-radius: 0.5em;
+    border: 0.1em solid @buttonBorder;
+    border-radius: 1.0em;
 }
 
 button.color2 {
     background-color: @color2;
-    border-color: @color2;
-    box-shadow: .1em .1em @border;
-    border-radius: 0.5em;
+    border: 0.1em solid @buttonBorder;
+    border-radius: 1.0em;
 }
 
 button.color3 {
     background-color: @color3;
-    border-color: @color3;
-    box-shadow: .1em .1em @border;
-    border-radius: 0.5em;
+    border: 0.1em solid @buttonBorder;
+    border-radius: 1.0em;
 }
 
 button.color4 {
     background-color: @color4;
-    border-color: @color4;
-    box-shadow: .1em .1em @border;
-    border-radius: 0.5em;
+    border: 0.1em solid @buttonBorder;
+    border-radius: 1.0em;
 }
 
 button.color1:active,
@@ -153,7 +149,7 @@ menuitem {
 trough {
     background-color: transparent;
     color: @border;
-    border-radius: 0.5em;
+    border-radius: 1.0em;
 }
 
 trough highlight,
@@ -193,7 +189,7 @@ textview .time {
     color: @border;
 }
 
-.horizontal_togglebuttons  {
+.horizontal_togglebuttons {
     border-color: @border;
     background-color: @bg;
 }
