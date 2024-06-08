@@ -182,7 +182,7 @@ echo
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
 
 # Chiedere all'utente se vuole creare un link simbolico o copiare i file
-read -p "Vuoi creare un link simbolico (L) o copiare i file (C)? [L/C]: " user_choice
+read -p "Do you want to create a symbolic link (L) or copy the files (C)? [L/C]: " user_choice
 
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
