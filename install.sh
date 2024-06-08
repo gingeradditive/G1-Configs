@@ -19,11 +19,10 @@ echo "Version 0.0.2 - By: Giacomo Guaresi"
 echo; echo
 
 # Check if the script is run as root and exit if true
-# echo "EUID is $EUID"
-# if [ "$EUID" -eq 0 ]; then
-#   echo "Please do NOT run this script as root or with sudo."
-#   exit 1
-# fi
+if [ "$EUID" -eq 0 ]; then
+  echo "Please do NOT run this script as root or with sudo."
+  exit 1
+fi
 
 # Function to install a package if not already installed
 install_if_missing() {
@@ -35,15 +34,35 @@ install_if_missing() {
     fi
 }
 
-# Check and execute scripts
-scripts=("upgrade.sh" "kiauh.sh" "moonraker-obico.sh" "shaketune.sh" "kamp.sh" "usb.sh" "powerbutton.sh" "splashscreen.sh" "klipperscreen.sh" "gingerconfig.sh")
-for script in "${scripts[@]}"; do
-    if [ ! -f "./scripts/$script" ]; then
-        echo "Error: ./scripts/$script not found."
-        exit 1
-    fi
-    ./scripts/$script
-done
+# UPGRADE SYSTEM
+sh "$HOME/G1-Configs/scripts/upgrade.sh"
+
+# INSTALLING KIAUH
+sh "$HOME/G1-Configs/scripts/kiauh.sh"
+
+# INSTALLING MOONRAKER-OBICO
+sh "$HOME/G1-Configs/scripts/moonraker-obico.sh"
+
+# INSTALLING KLIPPAIN SHAKETUNE
+sh "$HOME/G1-Configs/scripts/shaketune.sh"
+
+# INSTALLING KAMP
+sh "$HOME/G1-Configs/scripts/kamp.sh"
+
+# ENABLE USB
+sh "$HOME/G1-Configs/scripts/usb.sh"
+
+# INSTALL POWERBUTTON
+sh "$HOME/G1-Configs/scripts/powerbutton.sh"
+
+# INSTALL SPLASHSCREEN
+sh "$HOME/G1-Configs/scripts/splashscreen.sh"
+
+# INSTALLING KLIPPERSCREEN
+sh "$HOME/G1-Configs/scripts/klipperscreen.sh"
+
+# INSTALLING GINGER CONFIGS
+sh "$HOME/G1-Configs/scripts/gingerconfig.sh"
 
 # User interaction for final action
 echo ">>>>>> FINAL ACTION <<<<<<"
