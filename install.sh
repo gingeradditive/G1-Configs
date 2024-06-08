@@ -180,22 +180,14 @@ echo
 
 # INSTALLING GINGER CONFIGS
 echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
-SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs" 
-if [ -L "$SYMBOLIC_LINK_DESTINATION" ]; then
-    sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
-    echo "Symbolic link removed"
-fi
 
-echo "Copying G1-Configs to printer_data/config"
+# Chiedere all'utente se vuole creare un link simbolico o copiare i file
+read -p "Vuoi creare un link simbolico (L) o copiare i file (C)? [L/C]: " user_choice
+
+SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
-if [ -d "$G1_CONFIGS_DIR" ]; then
-    cp -r "$G1_CONFIGS_DIR"/* "$HOME/printer_data/config/"
-    sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
-else
-    echo "G1-Configs directory does not exist."
-fi
-
 MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
+
 MOONRAKER_CONF_CONTENT="
 ## Ginger Configs
 [update_manager GingerConfigs]
@@ -204,6 +196,38 @@ origin: https://github.com/gingeradditive/G1-Configs.git
 path: $HOME/G1-Configs
 primary_branch: main
 managed_services: klipper"
+
+# Rimuovere il link simbolico se esiste
+if [ -L "$SYMBOLIC_LINK_DESTINATION" ]; then
+    sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
+    echo "Symbolic link removed"
+fi
+
+case $user_choice in
+    [Ll]* )
+        # Creare il link simbolico
+        sudo ln -s "$HOME/G1-Configs/Configs/gingersConfigs" "$SYMBOLIC_LINK_DESTINATION"
+        chown -h pi:pi "$HOME/G1-Configs/Configs/gingersConfigs"
+        echo "Symbolic link created for Ginger Configs"
+        ;;
+    [Cc]* )
+        # Copiare i file
+        echo "Copying G1-Configs to printer_data/config"
+        if [ -d "$G1_CONFIGS_DIR" ]; then
+            cp -r "$G1_CONFIGS_DIR"/* "$HOME/printer_data/config/"
+            sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
+            echo "G1-Configs copied to printer_data/config"
+        else
+            echo "G1-Configs directory does not exist."
+        fi
+        ;;
+    * )
+        echo "Invalid choice. Please run the script again and choose either L or C."
+        exit 1
+        ;;
+esac
+
+# Aggiungere la configurazione a moonraker.conf se non già presente
 if ! sudo grep -q "Ginger Configs" "$MOONRAKER_CONF"; then
     echo "$MOONRAKER_CONF_CONTENT" | sudo tee -a "$MOONRAKER_CONF" > /dev/null
     echo "Ginger Configs added to $MOONRAKER_CONF"
@@ -211,8 +235,6 @@ else
     echo "Ginger Configs already present in $MOONRAKER_CONF"
 fi
 
-sudo ln -s "$HOME/G1-Configs/Configs/gingersConfigs" "$SYMBOLIC_LINK_DESTINATION"
-echo "Symbolic link recreated for Ginger Configs"
 echo
 
 # User interaction for final action
