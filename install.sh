@@ -19,6 +19,7 @@ echo "Version 0.0.2 - By: Giacomo Guaresi"
 echo; echo
 
 # Check if the script is run as root and exit if true
+echo "EUID is $EUID"
 if [ "$EUID" -eq 0 ]; then
   echo "Please do NOT run this script as root or with sudo."
   exit 1
@@ -34,35 +35,15 @@ install_if_missing() {
     fi
 }
 
-# UPGRADE SYSTEM
-./scripts/upgrade.sh
-
-# INSTALLING KIAUH
-./scripts/kiauh.sh
-
-# INSTALLING MOONRAKER-OBICO
-./scripts/moonraker-obico.sh
-
-# INSTALLING KLIPPAIN SHAKETUNE
-./scripts/shaketune.sh
-
-# INSTALLING KAMP
-./scripts/kamp.sh
-
-# ENABLE USB
-./scripts/usb.sh
-
-# INSTALL POWERBUTTON
-./scripts/powerbutton.sh
-
-# INSTALL SPLASHSCREEN
-./scripts/splashscreen.sh
-
-# INSTALLING KLIPPERSCREEN
-./scripts/klipperscreen.sh
-
-# INSTALLING GINGER CONFIGS
-./scripts/gingerconfig.sh
+# Check and execute scripts
+scripts=("upgrade.sh" "kiauh.sh" "moonraker-obico.sh" "shaketune.sh" "kamp.sh" "usb.sh" "powerbutton.sh" "splashscreen.sh" "klipperscreen.sh" "gingerconfig.sh")
+for script in "${scripts[@]}"; do
+    if [ ! -f "./scripts/$script" ]; then
+        echo "Error: ./scripts/$script not found."
+        exit 1
+    fi
+    ./scripts/$script
+done
 
 # User interaction for final action
 echo ">>>>>> FINAL ACTION <<<<<<"
