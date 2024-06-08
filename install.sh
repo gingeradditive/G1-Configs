@@ -35,34 +35,34 @@ install_if_missing() {
 }
 
 # UPGRADE SYSTEM
-./script/upgrade.sh
+./scripts/upgrade.sh
 
 # INSTALLING KIAUH
-./script/kiauh.sh
+./scripts/kiauh.sh
 
 # INSTALLING MOONRAKER-OBICO
-./script/moonraker-obico.sh
+./scripts/moonraker-obico.sh
 
 # INSTALLING KLIPPAIN SHAKETUNE
-./script/shaketune.sh
+./scripts/shaketune.sh
 
 # INSTALLING KAMP
-./script/kamp.sh
+./scripts/kamp.sh
 
 # ENABLE USB
-./script/usb.sh
+./scripts/usb.sh
 
 # INSTALL POWERBUTTON
-./script/powerbutton.sh
+./scripts/powerbutton.sh
 
 # INSTALL SPLASHSCREEN
-./script/splashscreen.sh
+./scripts/splashscreen.sh
 
 # INSTALLING KLIPPERSCREEN
-./script/klipperscreen.sh
+./scripts/klipperscreen.sh
 
 # INSTALLING GINGER CONFIGS
-./script/gingerconfig.sh
+./scripts/gingerconfig.sh
 
 # User interaction for final action
 echo ">>>>>> FINAL ACTION <<<<<<"
