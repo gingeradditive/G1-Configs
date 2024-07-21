@@ -34,38 +34,92 @@ install_if_missing() {
     fi
 }
 
-# UPGRADE SYSTEM
-sh "$HOME/G1-Configs/scripts/upgrade.sh"
+# Checkpoint file
+CHECKPOINT_FILE="$HOME/G1-Configs/scripts/checkpoint.txt"
 
-# INSTALLING KIAUH
-sh "$HOME/G1-Configs/scripts/kiauh.sh"
+# Function to set checkpoint
+set_checkpoint() {
+    echo "$1" > "$CHECKPOINT_FILE"
+}
 
-# INSTALLING MOONRAKER-OBICO
-sh "$HOME/G1-Configs/scripts/moonraker-obico.sh"
+# Function to get checkpoint
+get_checkpoint() {
+    if [ -f "$CHECKPOINT_FILE" ]; then
+        cat "$CHECKPOINT_FILE"
+    else
+        echo "0"
+    fi
+}
 
-# INSTALLING KLIPPAIN SHAKETUNE
-sh "$HOME/G1-Configs/scripts/shaketune.sh"
+# Get the current checkpoint
+checkpoint=$(get_checkpoint)
 
-# INSTALLING KAMP
-sh "$HOME/G1-Configs/scripts/kamp.sh"
+# Execute scripts based on checkpoint
+if [ "$checkpoint" -le 1 ]; then
+    # UPGRADE SYSTEM
+    sh "$HOME/G1-Configs/scripts/upgrade.sh"
+    set_checkpoint 2
+fi
 
-# ENABLE USB
-sh "$HOME/G1-Configs/scripts/usb.sh"
+if [ "$checkpoint" -le 2 ]; then
+    # INSTALLING KIAUH
+    sh "$HOME/G1-Configs/scripts/kiauh.sh"
+    set_checkpoint 3
+fi
 
-# INSTALL POWERBUTTON
-sh "$HOME/G1-Configs/scripts/powerbutton.sh"
+if [ "$checkpoint" -le 3 ]; then
+    # INSTALLING MOONRAKER-OBICO
+    sh "$HOME/G1-Configs/scripts/moonraker-obico.sh"
+    set_checkpoint 4
+fi
 
-# INSTALL SPLASHSCREEN
-sh "$HOME/G1-Configs/scripts/splashscreen.sh"
+if [ "$checkpoint" -le 4 ]; then
+    # INSTALLING KLIPPAIN SHAKETUNE
+    sh "$HOME/G1-Configs/scripts/shaketune.sh"
+    set_checkpoint 5
+fi
 
-# INSTALLING KLIPPERSCREEN
-sh "$HOME/G1-Configs/scripts/klipperscreen.sh"
+if [ "$checkpoint" -le 5 ]; then
+    # INSTALLING KAMP
+    sh "$HOME/G1-Configs/scripts/kamp.sh"
+    set_checkpoint 6
+fi
 
-# INSTALLING GINGER CONFIGS
-sh "$HOME/G1-Configs/scripts/gingerconfig.sh"
+if [ "$checkpoint" -le 6 ]; then
+    # ENABLE USB
+    sh "$HOME/G1-Configs/scripts/usb.sh"
+    set_checkpoint 7
+fi
 
-# INSTALLING GINGER STYLES
-sh "$HOME/G1-Configs/scripts/gingerstyles.sh"
+if [ "$checkpoint" -le 7 ]; then
+    # INSTALL POWERBUTTON
+    sh "$HOME/G1-Configs/scripts/powerbutton.sh"
+    set_checkpoint 8
+fi
+
+if [ "$checkpoint" -le 8 ]; then
+    # INSTALL SPLASHSCREEN
+    sh "$HOME/G1-Configs/scripts/splashscreen.sh"
+    set_checkpoint 9
+fi
+
+if [ "$checkpoint" -le 9 ]; then
+    # INSTALLING KLIPPERSCREEN
+    sh "$HOME/G1-Configs/scripts/klipperscreen.sh"
+    set_checkpoint 10
+fi
+
+if [ "$checkpoint" -le 10 ]; then
+    # INSTALLING GINGER CONFIGS
+    sh "$HOME/G1-Configs/scripts/gingerconfig.sh"
+    set_checkpoint 11
+fi
+
+if [ "$checkpoint" -le 11 ]; then
+    # INSTALLING GINGER STYLES
+    sh "$HOME/G1-Configs/scripts/gingerstyles.sh"
+    set_checkpoint 12
+fi
 
 # User interaction for final action
 echo ">>>>>> FINAL ACTION <<<<<<"
