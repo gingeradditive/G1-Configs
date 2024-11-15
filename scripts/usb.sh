@@ -1,5 +1,7 @@
 # ENABLE USB
 echo ">>>>>> ENABLE USB <<<<<<"
+sudo apt install pmount
+
 ln -s /media /home/pi/printer_data/gcodes/
 RULES_FILE="/etc/udev/rules.d/usbstick.rules"
 RULE='ACTION=="add", KERNEL=="sd[a-z][0-9]", TAG+="systemd", ENV{SYSTEMD_WANTS}="usbstick-handler@%k"'
