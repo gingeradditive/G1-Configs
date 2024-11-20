@@ -15,136 +15,64 @@ echo "
   !P#######GJ:                        ~5B######BY^                              "
 echo
 echo "G1-Config"
-echo "Version 0.0.2 - By: Giacomo Guaresi"
+echo "Version 0.0.1 - By: Giacomo Guaresi"
 echo; echo
 
-# Check if the script is run as root and exit if true
-if [ "$EUID" -eq 0 ]; then
-  echo "Please do NOT run this script as root or with sudo."
-  exit 1
+
+SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs"
+G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
+MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
+
+MOONRAKER_CONF_CONTENT="
+## Ginger Configs
+[update_manager GingerConfigs]
+type: git_repo
+origin: https://github.com/gingeradditive/G1-Configs.git
+path: $HOME/G1-Configs
+primary_branch: main
+managed_services: klipper"
+
+# Copy the files
+echo "Copying G1-Configs to printer_data/config"
+if [ -d "$G1_CONFIGS_DIR" ]; then
+    cp -r "$G1_CONFIGS_DIR"/* "$HOME/printer_data/config/"
+    echo "G1-Configs copied to printer_data/config"
+else
+    echo "G1-Configs directory does not exist."
+    exit 1
 fi
 
-# Function to install a package if not already installed
-install_if_missing() {
-    if ! dpkg -l | grep -q "^ii  $1 "; then
-        echo "Installing $1..."
-        sudo apt-get install -y "$1"
-    else
-        echo "$1 is already installed."
-    fi
-}
-
-# Checkpoint file
-CHECKPOINT_FILE="$HOME/G1-Configs/scripts/checkpoint.txt"
-
-# Function to set checkpoint
-set_checkpoint() {
-    echo "$1" > "$CHECKPOINT_FILE"
-}
-
-# Function to get checkpoint
-get_checkpoint() {
-    if [ -f "$CHECKPOINT_FILE" ]; then
-        cat "$CHECKPOINT_FILE"
-    else
-        echo "0"
-    fi
-}
-
-# Get the current checkpoint
-checkpoint=$(get_checkpoint)
-
-# Execute scripts based on checkpoint
-if [ "$checkpoint" -le 1 ]; then
-    # UPGRADE SYSTEM
-    sh "$HOME/G1-Configs/scripts/upgrade.sh"
-    set_checkpoint 2
+# Remove the existing gingersConfigs folder or link if it exists
+if [ -e "$SYMBOLIC_LINK_DESTINATION" ]; then
+    sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
+    echo "Existing gingersConfigs removed"
 fi
 
-if [ "$checkpoint" -le 2 ]; then
-    # INSTALLING KIAUH
-    sh "$HOME/G1-Configs/scripts/kiauh.sh"
-    set_checkpoint 3
+# Create the symbolic link
+sudo ln -s "$HOME/G1-Configs/Configs/gingersConfigs" "$SYMBOLIC_LINK_DESTINATION"
+sudo chown -h pi:pi "$SYMBOLIC_LINK_DESTINATION"
+echo "Symbolic link created for Ginger Configs"
+
+# Add the configuration to moonraker.conf if not already present
+if ! sudo grep -q "Ginger Configs" "$MOONRAKER_CONF"; then
+    echo "$MOONRAKER_CONF_CONTENT" | sudo tee -a "$MOONRAKER_CONF" > /dev/null
+    echo "Ginger Configs added to $MOONRAKER_CONF"
+else
+    echo "Ginger Configs already present in $MOONRAKER_CONF"
 fi
 
-if [ "$checkpoint" -le 3 ]; then
-    # INSTALLING MOONRAKER-OBICO
-    sh "$HOME/G1-Configs/scripts/moonraker-obico.sh"
-    set_checkpoint 4
+
+ORIGIN_DIR="$HOME/G1-Configs/Styles/klipperscreen-ginger/"
+DESTINATION_DIR="$HOME/KlipperScreen/styles/klipperscreen-ginger"
+
+if [ -L "$DESTINATION_DIR" ]; then
+    echo "Symbolic link already exists, removing it."
+    rm "$DESTINATION_DIR"
 fi
+ln -s "$ORIGIN_DIR" "$DESTINATION_DIR"
 
-if [ "$checkpoint" -le 4 ]; then
-    # INSTALLING KLIPPAIN SHAKETUNE
-    sh "$HOME/G1-Configs/scripts/shaketune.sh"
-    set_checkpoint 5
+if [ $? -eq 0 ]; then
+    echo "Symbolic link created successfully!"
+else
+    echo "Error creating symbolic link."
 fi
-
-if [ "$checkpoint" -le 5 ]; then
-    # INSTALLING KAMP
-    sh "$HOME/G1-Configs/scripts/kamp.sh"
-    set_checkpoint 6
-fi
-
-if [ "$checkpoint" -le 6 ]; then
-    # ENABLE USB
-    sh "$HOME/G1-Configs/scripts/usb.sh"
-    set_checkpoint 7
-fi
-
-if [ "$checkpoint" -le 7 ]; then
-    # INSTALL POWERBUTTON
-    sh "$HOME/G1-Configs/scripts/powerbutton.sh"
-    set_checkpoint 8
-fi
-
-if [ "$checkpoint" -le 8 ]; then
-    # INSTALL SPLASHSCREEN
-    sh "$HOME/G1-Configs/scripts/splashscreen.sh"
-    set_checkpoint 9
-fi
-
-if [ "$checkpoint" -le 9 ]; then
-    # INSTALLING KLIPPERSCREEN
-    sh "$HOME/G1-Configs/scripts/klipperscreen.sh"
-    set_checkpoint 10
-fi
-
-if [ "$checkpoint" -le 10 ]; then
-    # INSTALLING GINGER CONFIGS
-    sh "$HOME/G1-Configs/scripts/gingerconfig.sh"
-    set_checkpoint 11
-fi
-
-if [ "$checkpoint" -le 11 ]; then
-    # INSTALLING GINGER STYLES
-    sh "$HOME/G1-Configs/scripts/gingerstyles.sh"
-    set_checkpoint 12
-fi
-
-# User interaction for final action
-echo ">>>>>> FINAL ACTION <<<<<<"
-echo "Choose an action:"
-echo "R - Reboot"
-echo "S - Shutdown"
-echo "X - Exit"
-
-read -rp "Enter your choice (R/S/X): " choice
-
-case "$choice" in
-    [Rr]* )
-        echo "Rebooting..."
-        sudo reboot
-        ;;
-    [Ss]* )
-        echo "Shutting down..."
-        sudo shutdown now
-        ;;
-    [Xx]* )
-        echo "Exiting installation."
-        exit 0
-        ;;
-    * )
-        echo "Invalid choice. Exiting installation."
-        exit 1
-        ;;
-esac

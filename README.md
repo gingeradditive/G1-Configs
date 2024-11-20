@@ -30,7 +30,7 @@ G1-Config is a project by Ginger for configuring the G1 3D printer. This guide w
      ```sh
      cd ~
      git clone https://github.com/gingeradditive/G1-Configs.git
-     sh ./G1-Configs/install.sh 2>&1 | tee output.txt
+     sh ./G1-Configs/legacy-install.sh 2>&1 | tee output.txt
      ```
 
 ### Notes
