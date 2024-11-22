@@ -3,17 +3,17 @@ This is a dark-mode theme vyper for mainsail
 */
 
 :root {
-    --Primary:        #282a36;    /*Voron:Black*/
-    --Secondary:      #ff5555;    /*Voron:Red*/
-    --c_red:         #ff0f11;    /*cryd_blue*/
+    --Primary:        #d72e28;    /*Voron:Black*/
+    --Secondary:      #282a36;    /*Voron:Red*/
+    --c_red:         #d72e28;    /*cryd_blue*/
     --c_gray:         #2b2b2b;    /*cryd:grey*/
-    --Blue:           #ff0f11; 
-    --Red:            #ff5555;
-    --Warnings:       #ff0f11;
-    --Text:           #f8f8f2;
-    --DarkerText:     #f5f5f2;
-    --Background:     #44475a;
-    --DarkBackground: #282a36;
+    --Blue:           #d72e28; 
+    --Red:            #d72e28;
+    --Warnings:       #d72e28;
+    --Text:           #333333;
+    --DarkerText:     #000000;
+    --Background:     #f8f8f8;
+    --DarkBackground: #000;
     --Toolbars:       #44475a;
     --Sheets:         #282a36;   
 }
@@ -21,7 +21,7 @@ This is a dark-mode theme vyper for mainsail
 #nav-header .v-toolbar__title {
     font-size: 24px;
     vertical-align: middle;
-    color: #ff0f11;
+    color: #d72e28;
     font-family: monospace;
 }
 
