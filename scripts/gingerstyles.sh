@@ -24,6 +24,5 @@ echo "Install mainsail styles"
 mkdir /home/pi/printer_data/config/.theme
 ln -sf $HOME/G1-Configs/Styles/mainsail-ginger/*.* "/home/pi/printer_data/config/.theme/"
 
-echo "Activate light mode default"
-# sed  "defaultMode": "dark" to "defaultMode": "light",
-sed -i 's/"defaultMode": "dark"/"defaultMode": "light"/' /home/pi/mainsail/config.json
+# echo "Activate light mode default"
+# sed -i 's/"defaultMode": "dark"/"defaultMode": "light"/' /home/pi/mainsail/config.json
