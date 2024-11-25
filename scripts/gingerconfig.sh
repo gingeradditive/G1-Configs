@@ -6,7 +6,7 @@ echo ">>>>>> MOVE GINGER CONFIGS <<<<<<"
 # Ask the user if they want to create a symbolic link or copy the files
 read -p "Do you want to create a symbolic link (L) or copy the files (C)? [L/C]: " user_choice
 
-SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/gingersConfigs"
+SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/G1-Configs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
 MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
 
@@ -31,14 +31,14 @@ case $user_choice in
             exit 1
         fi
         
-        # Remove the existing gingersConfigs folder or link if it exists
+        # Remove the existing G1-Configs folder or link if it exists
         if [ -e "$SYMBOLIC_LINK_DESTINATION" ]; then
             sudo rm -rf "$SYMBOLIC_LINK_DESTINATION"
-            echo "Existing gingersConfigs removed"
+            echo "Existing G1-Configs removed"
         fi
         
         # Create the symbolic link
-        sudo ln -s "$HOME/G1-Configs/Configs/gingersConfigs" "$SYMBOLIC_LINK_DESTINATION"
+        sudo ln -s "$HOME/G1-Configs/Configs/G1-Configs" "$SYMBOLIC_LINK_DESTINATION"
         sudo chown -h pi:pi "$SYMBOLIC_LINK_DESTINATION"
         echo "Symbolic link created for Ginger Configs"
 

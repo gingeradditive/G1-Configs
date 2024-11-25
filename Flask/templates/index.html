@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bootstrap demo</title>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='bootstrap.min.css') }}">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static',filename='style.css') }}">
+</head>
+
+<body>
+  <nav class="navbar navbar-expand-lg bg-body-tertiary bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">G1 Tools</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Printer Configurator</a>
+          </li>
+          <!-- <li class="nav-item">
+            <a class="nav-link" href="#">Pricing</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link disabled" aria-disabled="true">Disabled</a>
+          </li> -->
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+
+  <div class="container mt-3">
+    <h1>G1 Printer Configurator</h1>
+    <p>
+      This wizard allows you to modify your 3D printer's settings, including installed optional components and active
+      services.
+    </p>
+    <div class="alert alert-warning" role="alert">
+      <p class="mb-0">
+        <strong>⚠️ Warning:</strong> Proceeding will overwrite the <code>printer.cfg</code> file. Any manual changes or
+        old configurations will be lost.
+        We strongly recommend making a backup of the file before continuing.
+      </p>
+    </div>
+
+    <form id="configuratorForm">
+      <h4>Services and Modules</h4>
+      <!-- Switch accelerometer mounted  -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Accelerometer mounted</label>
+      </div>
+
+      <!-- Switch enable Obico  -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Enable Obico Service</label>
+      </div>
+
+      <!-- Switch Heated bed -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Heated bed</label>
+      </div>
+
+      <!-- Switch Automatic feeding -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Automatic feeding</label>
+      </div>
+
+      <!-- Switch Enclosure -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Enclosure</label>
+      </div>
+
+      <!-- Switch Dryer -->
+      <div class="mb-3 form-check form-switch">
+        <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault">
+        <label class="form-check-label" for="flexSwitchCheckDefault">Dryer</label>
+      </div>
+      <hr>
+
+      <h4>Printer configurations</h4>
+
+      <div class="container mt-3">
+        <div class="row align-items-start">
+          <div class="col">
+            <div class="mb-3">
+              <label for="heater_bed/max_power" class="form-label">Bed Max power</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="heater_bed/max_power" placeholder="1" min="0" max="1"
+                  step="0.01">
+                <span class="input-group-text" id="basic-addon2">%</span>
+              </div>
+            </div>
+          </div>
+          <div class="col"></div>
+          <div class="col"></div>
+          <div class="col"></div>
+        </div>
+      </div>
+      <div class="container mt-3">
+        <div class="row align-items-start">
+          <div class="col">
+            <div class="mb-3">
+              <label for="run_current" class="form-label">Motor X Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="tmc5160 stepper_x/run_current" placeholder="2" min="1.5"
+                  max="2.5">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="mb-3">
+              <label for="run_current" class="form-label">Motor Y Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="tmc5160 stepper_y/run_current" placeholder="4" min="3"
+                  max="5">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="mb-3">
+              <label for="run_current" class="form-label">Motor Z Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="tmc5160 stepper_z/run_current" placeholder="7" min="6"
+                  max="8">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+            </div>
+          </div>
+          <div class="col">
+            <div class="mb-3">
+              <label for="run_current" class="form-label">Feeding Mixer Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="tmc2209 extruder_stepper mixing_stepper/run_current"
+                  placeholder="0.7" min="0.5" max="2">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <hr>
+      <button type="submit" class="btn btn-primary">Generate Printer.cfg</button>
+    </form>
+  </div>
+
+
+  <hr>
+  <footer class="container">
+    <p>&copy; 2024 G1 Tools made by Gingeradditive srls</p>
+  </footer>
+
+  <script src="{{ url_for('static',filename='bootstrap.bundle.min.js') }}"></script>
+  <script src="{{ url_for('static',filename='jquery.js') }}"></script>
+  <script src="{{ url_for('static',filename='configurator.js') }}"></script>
+</body>
+
+</html>
