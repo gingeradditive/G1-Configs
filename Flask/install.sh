@@ -10,28 +10,14 @@ pip3 install flask
 # Configura Nginx
 echo "Configuring Nginx..."
 NGINX_CONF="/etc/nginx/sites-available/mainsail"
-if [ ! -f "$NGINX_CONF" ]; then
-    sudo bash -c "cat > $NGINX_CONF" <<EOF
-server {
-    listen 80;
-    server_name localhost;
 
-    location /g1config {
-        proxy_pass http://127.0.0.1:5000/;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade \$http_upgrade;
-        proxy_set_header Connection "upgrade";
-        proxy_set_header Host \$host;
-        proxy_cache_bypass \$http_upgrade;
-    }
-}
-EOF
-    # Abilita la configurazione di Nginx
-    sudo ln -s /etc/nginx/sites-available/mainsail /etc/nginx/sites-enabled/
-    sudo systemctl reload nginx
-    echo "Nginx configured and reloaded."
+if grep -q "location /g1config" "$NGINX_CONF"; then
+    echo "The 'location /g1config' block already exists in $NGINX_CONF."
 else
-    echo "Nginx configuration already exists."
+    echo "Adding 'location /g1config' block to $NGINX_CONF..."
+    sudo sed -i '/^}$/i \ \ \ \ location /g1config {\n\ \ \ \ \ \ proxy_pass http://127.0.0.1:5000/;\n\ \ \ \ \ \ proxy_http_version 1.1;\n\ \ \ \ \ \ proxy_set_header Upgrade $http_upgrade;\n\ \ \ \ \ \ proxy_set_header Connection "upgrade";\n\ \ \ \ \ \ proxy_set_header Host $host;\n\ \ \ \ \ \ proxy_cache_bypass $http_upgrade;\n\ \ \ \ }' "$NGINX_CONF"
+    sudo systemctl reload nginx
+    echo "Nginx configuration updated and reloaded."
 fi
 
 # Crea un servizio systemd per avviare automaticamente Flask all'avvio
@@ -58,6 +44,3 @@ sudo systemctl enable g1-flask.service
 sudo systemctl start g1-flask.service
 
 echo "Flask service created and started successfully."
-
-# Verifica lo stato del servizio
-sudo systemctl status g1-flask.service
