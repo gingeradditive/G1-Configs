@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request
+from flask import Flask, jsonify, render_template, request, redirect, url_for
 import subprocess
 import os
 
@@ -75,7 +75,12 @@ def write_printer_cfg():
                     outfile.write(line)
                 outfile.write("\n\n") 
 
-    return jsonify({"success": True})
+    # execute klipper restart
+    try:
+        subprocess.run(["sudo", "systemctl", "restart", "klipper"], check=True)
+        return redirect("/")
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "error": e.stderr}), 500
 
 @app.route("/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
