@@ -77,7 +77,7 @@ def write_printer_cfg():
 
     # execute klipper restart
     try:
-        subprocess.run(["sudo", "systemctl", "restart", "klipper"], check=True)
+        subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
         return redirect("/")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
