@@ -96,3 +96,15 @@
     justify-content: space-between;
     padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
 }
+
+.sidebar{
+    background-color: #eee;
+}
+
+.sidebar a{
+    color: #000;
+}
+
+.navbar-brand{
+    color: #fff;
+}

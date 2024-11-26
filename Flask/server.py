@@ -1,10 +1,12 @@
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, request
 import subprocess
+import os
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-printerCfgPath = "C:\\Users\\guare\\source\\gingerRepos\\G1-Configs\\Configs\\printer.cfg"
+printerCfgPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs/printer.cfg"
+folder_path = "./static/printerCfg_Parts"
 
 @app.route("/", methods=["GET"])
 def index():
@@ -46,6 +48,30 @@ def read_printer_cfg():
     
     return jsonify(jsonOutput)
     
+@app.route("/backend/write-printer-cfg", methods=["POST"])
+def write_printer_cfg():
+    values = request.form
+    files = sorted(
+        [f for f in os.listdir(folder_path) if f.endswith(".cfg")],
+        key=lambda x: int(x.split('_')[0])
+    )
+
+    with open(printerCfgPath, "w") as outfile:
+        for file in files:
+            file_path = os.path.join(folder_path, file)
+            with open(file_path, "r") as infile:
+                for line in infile:
+                    if "{{" in line and "}}" in line:
+                        try:
+                            key = line.split("{{")[1].split("}}")[0]
+                            line = line.replace("{{" + key + "}}", str(values[key]))
+                        except:
+                            return jsonify({"success": False})
+                            
+                    outfile.write(line)
+                outfile.write("\n\n") 
+
+    return jsonify({"success": True})
 
 @app.route("/run/<script_name>", methods=["POST"])
 def run_script(script_name):
