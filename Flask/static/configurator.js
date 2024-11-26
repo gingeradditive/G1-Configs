@@ -1,5 +1,5 @@
 $.ajax({
-    url: './backend/read-printer-cfg',
+    url: '/g1config/backend/read-printer-cfg',
     method: 'GET',
     dataType: 'json',
     success: function(response) {
@@ -37,7 +37,7 @@ $.ajax({
 
 $("#updateMainboardSerial").click(function() {
     $.ajax({
-        url: './backend/update-mainboard-serial',
+        url: '/g1config/backend/update-mainboard-serial',
         method: 'GET',
         success: function(response) {
             if(response.success){
@@ -53,7 +53,7 @@ $("#updateMainboardSerial").click(function() {
 
 $("#updateExtruderBoardSerial").click(function() {
     $.ajax({
-        url: './backend/update-extruder-board-serial',
+        url: '/g1config/backend/update-extruder-board-serial',
         method: 'GET',
         success: function(response) {
             if(response.success){
