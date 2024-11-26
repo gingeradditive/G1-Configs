@@ -33,3 +33,36 @@ $.ajax({
         console.error("Errore nella richiesta AJAX:", error);
     }
 });
+
+
+$("#updateMainboardSerial").click(function() {
+    $.ajax({
+        url: './backend/update-mainboard-serial',
+        method: 'GET',
+        success: function(response) {
+            if(response.success){
+                $('#mainboardSerial').val(response.serial);
+                console.log("Serial mainboard aggiornato");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Errore nella richiesta AJAX:", error);
+        }
+    });
+});
+
+$("#updateExtruderBoardSerial").click(function() {
+    $.ajax({
+        url: './backend/update-extruder-board-serial',
+        method: 'GET',
+        success: function(response) {
+            if(response.success){
+                $('#extruderBoardSerial').val(response.serial);
+                console.log("Serial extruder board aggiornato");
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error("Errore nella richiesta AJAX:", error);
+        }
+    });
+}); 

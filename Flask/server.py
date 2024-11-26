@@ -73,6 +73,39 @@ def write_printer_cfg():
 
     return jsonify({"success": True})
 
+@app.route("/backend/update-mainboard-serial", methods=["GET"])
+def update_mainboard_serial():
+    if os.name == "nt":
+        serial = "/dev/serial/by-id/usb-Klipper_stm32h723xx_370009000251313433343333-if00"
+    else:  
+        try:
+            serials = os.listdir("/dev/serial/by-id/")
+            serial = next(
+                (s for s in serials if "stm32h723xx" in s), 
+                "Nessun dispositivo trovato"
+            )
+            serial = f"/dev/serial/by-id/{serial}" if "Nessun dispositivo trovato" not in serial else serial
+        except FileNotFoundError:
+            serial = "Directory /dev/serial/by-id/ non trovata"
+
+    return jsonify({"success": True, "serial": serial})
+    
+@app.route("/backend/update-extruder-board-serial", methods=["GET"])
+def update_extruder_board_serial():
+    if os.name == "nt":
+        serial = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+    else: 
+        try:
+            serials = os.listdir("/dev/serial/by-id/")  # Legge i seriali disponibili
+            serial = next(
+                (s for s in serials if "USB2.0-Ser" in s), 
+                "Nessun dispositivo trovato"
+            )
+            serial = f"/dev/serial/by-id/{serial}" if "Nessun dispositivo trovato" not in serial else serial
+        except FileNotFoundError:
+            serial = "Directory /dev/serial/by-id/ non trovata"
+    return jsonify({"success": True, "serial": serial})
+ 
 @app.route("/run/<script_name>", methods=["POST"])
 def run_script(script_name):
     script_path = f"/home/pi/G1-Configs/scripts/{script_name}.sh"
