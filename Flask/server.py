@@ -85,7 +85,7 @@ def update_mainboard_serial():
         try:
             serials = os.listdir("/dev/serial/by-id/")
             serial = next(
-                (s for s in serials if "stm32h723xx" in s), 
+                (s for s in serials if "usb-Klipper" in s), 
                 "Nessun dispositivo trovato"
             )
             serial = f"/dev/serial/by-id/{serial}" if "Nessun dispositivo trovato" not in serial else serial
@@ -102,7 +102,7 @@ def update_extruder_board_serial():
         try:
             serials = os.listdir("/dev/serial/by-id/")  # Legge i seriali disponibili
             serial = next(
-                (s for s in serials if "USB2.0-Ser" in s), 
+                (s for s in serials if "usb-1a86_USB" in s), 
                 "Nessun dispositivo trovato"
             )
             serial = f"/dev/serial/by-id/{serial}" if "Nessun dispositivo trovato" not in serial else serial
