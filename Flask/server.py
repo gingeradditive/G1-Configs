@@ -6,10 +6,10 @@ app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 if os.name == "nt":
-    printerCfgPath = "/home/pi/printer_data/config/printer.cfg"
+    printerCfgPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs/printer.cfg"
     folder_path = "./static/printerCfg_Parts"
 else:  
-    printerCfgPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs/printer.cfg"
+    printerCfgPath = "/home/pi/printer_data/config/printer.cfg"
     folder_path = "./static/printerCfg_Parts"
 
 @app.route("/", methods=["GET"])
