@@ -168,6 +168,24 @@
 
           <!-- Motor -->
           <h4>Motors configurations</h4>
+
+          <div class="container mt-3">
+            <div class="row align-items-start">
+              <div class="col">
+                <div class="mb-3">
+                  <label class="form-label">Extruder stepper model</label>
+                  <div class="input-group mb-3">
+                    <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select">
+                      <option selected value="tmc5160">tmc5160</option>
+                      <option value="tmc2209">tmc2209</option>
+                    </select>
+                  </div>
+                  <textarea name="extruder_stepper_model" cols="40" rows="5" id="extruder_stepper_model_value" hidden></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+          
           <div class="container mt-3">
             <div class="row align-items-start">
               <div class="col">
@@ -222,6 +240,8 @@
                   </div>
                 </div>
               </div>
+              <!-- 
+              TODO: found how to rimplement this parameters
               <div class="col">
                 <div class="mb-3">
                   <label class="form-label">Feeding Mixer Run current</label>
@@ -231,7 +251,7 @@
                     <span class="input-group-text" id="basic-addon2">A</span>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </div>
           <hr>
@@ -244,8 +264,8 @@
                 <div class="mb-3">
                   <label class="form-label">prove X offset</label>
                   <div class="input-group mb-3">
-                    <input type="number" class="form-control" name="probe/x_offset" id="probe_x_offset" placeholder="0" min="0" required
-                      max="100" step="0.01">
+                    <input type="number" class="form-control" name="probe/x_offset" id="probe_x_offset" placeholder="0"
+                      min="0" required max="100" step="0.01">
                     <span class="input-group-text" id="basic-addon2">mm</span>
                   </div>
                 </div>
@@ -254,8 +274,8 @@
                 <div class="mb-3">
                   <label class="form-label">prove Y offset</label>
                   <div class="input-group mb-3">
-                    <input type="number" class="form-control" name="probe/y_offset"  id="probe_y_offset" placeholder="0" min="0" required
-                      max="100" step="0.01">
+                    <input type="number" class="form-control" name="probe/y_offset" id="probe_y_offset" placeholder="0"
+                      min="0" required max="100" step="0.01">
                     <span class="input-group-text" id="basic-addon2">mm</span>
                   </div>
                 </div>
@@ -287,8 +307,10 @@
                 <div class="mb-3">
                   <label class="form-label">proble safe Z home X/Y Position</label>
                   <div class="input-group mb-3">
-                    <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1" id="safe_z_home_x_position">
-                    <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1" id="safe_z_home_y_position">
+                    <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
+                      id="safe_z_home_x_position">
+                    <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
+                      id="safe_z_home_y_position">
                     <span class="input-group-text" id="basic-addon2">mm</span>
                   </div>
                   <input type="hidden" name="safe_z_home/home_xy_position" value="0, 0" id="safe_z_home_xy_position">
@@ -322,8 +344,10 @@
                 <div class="mb-3">
                   <label class="form-label">probing bed mesh points</label>
                   <div class="input-group mb-3">
-                    <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1" id="bed_mesh_probe_x_points">
-                    <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1" id="bed_mesh_probe_y_points">
+                    <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
+                      id="bed_mesh_probe_x_points">
+                    <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
+                      id="bed_mesh_probe_y_points">
                   </div>
                   <input type="hidden" name="bed_mesh/probe_count" value="0, 0" id="bed_mesh_probe_xy_points">
                 </div>

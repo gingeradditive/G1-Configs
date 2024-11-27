@@ -77,7 +77,9 @@ def write_printer_cfg():
                     if "{{" in line and "}}" in line:
                         try:
                             key = line.split("{{")[1].split("}}")[0]
-                            line = line.replace("{{" + key + "}}", str(values[key]))
+                            newValue = str(values[key])
+                            newValue = newValue.replace("\n", "")
+                            line = line.replace("{{" + key + "}}", newValue)
                         except:
                             return jsonify({"success": False})
                             
