@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, render_template, request, redirect, url_for
+from flask import *
 import subprocess
 import os
 
@@ -12,10 +12,18 @@ else:
     printerCfgPath = "/home/pi/printer_data/config/printer.cfg"
     folder_path = "./static/printerCfg_Parts"
 
+@app.route('/tools/static/<path:path>')
+def send_report(path):
+    # Using request args for path will expose you to directory traversal attacks
+    return send_from_directory('static', path)
+
+@app.route("/tools/", methods=["GET"])
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
+
+@app.route("/tools/backend/read-printer-cfg", methods=["GET"])
 @app.route("/backend/read-printer-cfg", methods=["GET"])
 def read_printer_cfg():
     with open(printerCfgPath, "r") as file:
@@ -52,6 +60,7 @@ def read_printer_cfg():
     
     return jsonify(jsonOutput)
     
+@app.route("/tools/backend/write-printer-cfg", methods=["POST"])
 @app.route("/backend/write-printer-cfg", methods=["POST"])
 def write_printer_cfg():
     values = request.form
@@ -77,15 +86,17 @@ def write_printer_cfg():
 
     # execute klipper restart
     try:
-        subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
+        # TODO: restart klipper service, currently not working
+        # subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
         return redirect("/")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
+@app.route("/tools/backend/update-mainboard-serial", methods=["GET"])
 @app.route("/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
     if os.name == "nt":
-        serial = "/dev/serial/by-id/usb-Klipper_stm32h723xx_370009000251313433343333-if00"
+        serial = "/dev/serial/by-id/usb-Klipper_stm32h723xx_XXXXXXXXXXXXXXXXXXXXXXXX-XXXX"
     else:  
         try:
             serials = os.listdir("/dev/serial/by-id/")
@@ -99,10 +110,11 @@ def update_mainboard_serial():
 
     return jsonify({"success": True, "serial": serial})
     
+@app.route("/tools/backend/update-extruder-board-serial", methods=["GET"])
 @app.route("/backend/update-extruder-board-serial", methods=["GET"])
 def update_extruder_board_serial():
     if os.name == "nt":
-        serial = "/dev/serial/by-id/usb-1a86_USB2.0-Ser_-if00-port0"
+        serial = "/dev/serial/by-id/usb-1a86_USB2.0-XXXX-XXXX-XXXXX"
     else: 
         try:
             serials = os.listdir("/dev/serial/by-id/")  # Legge i seriali disponibili
@@ -115,6 +127,7 @@ def update_extruder_board_serial():
             serial = "Directory /dev/serial/by-id/ non trovata"
     return jsonify({"success": True, "serial": serial})
  
+@app.route("/tools/run/<script_name>", methods=["POST"])
 @app.route("/run/<script_name>", methods=["POST"])
 def run_script(script_name):
     script_path = f"/home/pi/G1-Configs/scripts/{script_name}.sh"

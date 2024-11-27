@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # Banner
-echo "                                                        
+RED='\033[0;31m'
+NC='\033[0m'
+echo "${RED}                                                        
                  5@?                                                            
     :~!7!~:  :^. ~!^ .^^  ^!77!:        .^!77!^  :^:     :~!77!^.    ^^..!7~.   
  .?B&#GPPG#BJB@7 P@J 7@#JBBPPPB&G!    !G&#GPPGB#YP@5   7B&BGPPB##5^  #@B#BGY    
@@ -12,7 +14,7 @@ echo "
  ^5&#PYJY5G#P#@7 G@J ?@#.       5@5  .J##G5JJ5G#GB@5  7#@P7~^^!JB@P^ #@?    G@@G
 ^~:.~7JJJ?~.:&@^ ?P! ~PY        7P7 :~^.^7JJJ?!. B@7    !YGGBBGP?^   YP~    ?GG?
 ~B@P!:. ..^J&&7                     :P@G7:.  .^7B@Y                             
-  !P#######GJ:                        ~5B######BY^                              "
+  !P#######GJ:                        ~5B######BY^                              ${NC}"
 echo
 echo "G1-Config"
 echo "Version 0.0.1 - By: Giacomo Guaresi"
@@ -82,3 +84,50 @@ ln -sf $HOME/G1-Configs/Styles/mainsail-ginger/*.* "/home/pi/printer_data/config
 
 # echo "Activate light mode default"
 # sed -i 's/"defaultMode": "dark"/"defaultMode": "light"/' /home/pi/mainsail/config.json
+
+#!/bin/bash
+
+echo "Installing Flask..."
+pip3 install flask
+
+# Avvia il server Flask
+# echo "Starting Flask server..."
+# python3 /home/pi/G1-Configs/Flask/server.py &
+
+# Configura Nginx
+echo "Configuring Nginx..."
+NGINX_CONF="/etc/nginx/sites-available/mainsail"
+
+if grep -q "location /tools" "$NGINX_CONF"; then
+    echo "The 'location /tools' block already exists in $NGINX_CONF."
+else
+    echo "Adding 'location /tools' block to $NGINX_CONF..."
+    sudo sed -i '/^}$/i \ \ \ \ location /tools {\n\ \ \ \ \ \ proxy_pass http://127.0.0.1:5000/;\n\ \ \ \ \ \ proxy_http_version 1.1;\n\ \ \ \ \ \ proxy_set_header Upgrade $http_upgrade;\n\ \ \ \ \ \ proxy_set_header Connection "upgrade";\n\ \ \ \ \ \ proxy_set_header Host $host;\n\ \ \ \ \ \ proxy_cache_bypass $http_upgrade;\n\ \ \ \ }' "$NGINX_CONF"
+    sudo systemctl reload nginx
+    echo "Nginx configuration updated and reloaded."
+fi
+
+# Crea un servizio systemd per avviare automaticamente Flask all'avvio
+echo "Creating systemd service for Flask..."
+SERVICE_FILE="/etc/systemd/system/g1-flask.service"
+sudo bash -c "cat > $SERVICE_FILE" <<EOF
+[Unit]
+Description=Flask server for G1-Configs
+After=network.target
+
+[Service]
+User=$USER
+WorkingDirectory=/home/pi/G1-Configs/Flask
+ExecStart=/usr/bin/python3 /home/pi/G1-Configs/Flask/server.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+# Abilita e avvia il servizio Flask
+sudo systemctl daemon-reload
+sudo systemctl enable g1-flask.service
+sudo systemctl start g1-flask.service
+
+echo "Flask service created and started successfully."
