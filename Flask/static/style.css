@@ -95,7 +95,6 @@
     align-items: center;
     justify-content: space-between;
     padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
-<<<<<<< HEAD
 }
 
 .sidebar{
@@ -108,6 +107,4 @@
 
 .navbar-brand{
     color: #fff;
-=======
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
 }

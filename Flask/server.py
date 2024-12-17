@@ -1,16 +1,10 @@
-<<<<<<< HEAD
 from flask import *
 import subprocess
 import os
-=======
-from flask import Flask, jsonify, render_template
-import subprocess
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
-<<<<<<< HEAD
 if os.name == "nt":
     printerCfgPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs/printer.cfg"
     folder_path = "./static/printerCfg_Parts"
@@ -24,19 +18,12 @@ def send_report(path):
     return send_from_directory('static', path)
 
 @app.route("/tools/", methods=["GET"])
-=======
-printerCfgPath = "C:\\Users\\guare\\source\\gingerRepos\\G1-Configs\\Configs\\printer.cfg"
-
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
 
-<<<<<<< HEAD
 
 @app.route("/tools/backend/read-printer-cfg", methods=["GET"])
-=======
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
 @app.route("/backend/read-printer-cfg", methods=["GET"])
 def read_printer_cfg():
     with open(printerCfgPath, "r") as file:
@@ -73,7 +60,6 @@ def read_printer_cfg():
     
     return jsonify(jsonOutput)
     
-<<<<<<< HEAD
 @app.route("/tools/backend/write-printer-cfg", methods=["POST"])
 @app.route("/backend/write-printer-cfg", methods=["POST"])
 def write_printer_cfg():
@@ -144,9 +130,6 @@ def update_extruder_board_serial():
     return jsonify({"success": True, "serial": serial})
  
 @app.route("/tools/run/<script_name>", methods=["POST"])
-=======
-
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
 @app.route("/run/<script_name>", methods=["POST"])
 def run_script(script_name):
     script_path = f"/home/pi/G1-Configs/scripts/{script_name}.sh"
