@@ -133,6 +133,7 @@ def run_script(script_name):
 @app.route("/tools/<path:subpath>", methods=["GET"])
 def get_page(subpath):
     return render_template("index.html", subpath=subpath)
+
 @app.route("/tools/")
 def get_index():
     return render_template("index.html", subpath="")
