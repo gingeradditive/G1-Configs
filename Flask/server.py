@@ -130,7 +130,6 @@ def run_script(script_name):
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
-
 @app.route("/tools/<path:subpath>", methods=["GET"])
 def get_page(subpath):
     return render_template("index.html", subpath=subpath)

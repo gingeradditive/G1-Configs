@@ -1,5 +1,4 @@
 $.ajax({
-<<<<<<< HEAD
     url: '/tools/backend/read-printer-cfg',
     method: 'GET',
     dataType: 'json',
@@ -10,18 +9,6 @@ $.ajax({
                 // Suddividi l'ID su base "/" per accedere ai dati nel JSON
                 const keys = inputName.split('/'); // ["heater_bed", "max_power"]
 
-=======
-    url: './backend/read-printer-cfg',
-    method: 'GET',
-    dataType: 'json',
-    success: function(response) {
-        $('#configuratorForm input').each(function() {
-            const id = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
-            if (id) {
-                // Suddividi l'ID su base "/" per accedere ai dati nel JSON
-                const keys = id.split('/'); // ["heater_bed", "max_power"]
-                
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
                 // Usa i keys per navigare nel JSON
                 let value = response;
                 keys.forEach(key => {
@@ -35,7 +22,6 @@ $.ajax({
                 // Imposta il valore dell'input
                 if (value !== null) {
                     $(this).val(value);
-<<<<<<< HEAD
                     console.log(`Valorizzato ${inputName} con: ${value}`);
                 } else {
                     console.warn(`Nessun valore trovato per: ${inputName}`);
@@ -162,16 +148,3 @@ interpolate: False`;
 
     $('#extruder_stepper_model_value').val(value);
 });
-=======
-                    console.log(`Valorizzato ${id} con: ${value}`);
-                } else {
-                    console.warn(`Nessun valore trovato per: ${id}`);
-                }
-            }
-        });
-    },
-    error: function(xhr, status, error) {
-        console.error("Errore nella richiesta AJAX:", error);
-    }
-});
->>>>>>> 46e2179 (refactor of cfg files and start configurator implementation)
