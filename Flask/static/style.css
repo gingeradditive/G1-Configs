@@ -108,3 +108,6 @@
 .navbar-brand{
     color: #fff;
 }
+.content-min-height{
+    min-height: calc(100vh - 150px);
+}

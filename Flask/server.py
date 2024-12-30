@@ -17,14 +17,7 @@ def send_report(path):
     # Using request args for path will expose you to directory traversal attacks
     return send_from_directory('static', path)
 
-@app.route("/tools/", methods=["GET"])
-@app.route("/", methods=["GET"])
-def index():
-    return render_template("index.html")
-
-
 @app.route("/tools/backend/read-printer-cfg", methods=["GET"])
-@app.route("/backend/read-printer-cfg", methods=["GET"])
 def read_printer_cfg():
     with open(printerCfgPath, "r") as file:
         section = ""
@@ -61,7 +54,6 @@ def read_printer_cfg():
     return jsonify(jsonOutput)
     
 @app.route("/tools/backend/write-printer-cfg", methods=["POST"])
-@app.route("/backend/write-printer-cfg", methods=["POST"])
 def write_printer_cfg():
     values = request.form
     files = sorted(
@@ -95,7 +87,6 @@ def write_printer_cfg():
         return jsonify({"success": False, "error": e.stderr}), 500
 
 @app.route("/tools/backend/update-mainboard-serial", methods=["GET"])
-@app.route("/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
     if os.name == "nt":
         serial = "/dev/serial/by-id/usb-Klipper_stm32h723xx_XXXXXXXXXXXXXXXXXXXXXXXX-XXXX"
@@ -113,7 +104,6 @@ def update_mainboard_serial():
     return jsonify({"success": True, "serial": serial})
     
 @app.route("/tools/backend/update-extruder-board-serial", methods=["GET"])
-@app.route("/backend/update-extruder-board-serial", methods=["GET"])
 def update_extruder_board_serial():
     if os.name == "nt":
         serial = "/dev/serial/by-id/usb-1a86_USB2.0-XXXX-XXXX-XXXXX"
@@ -130,7 +120,6 @@ def update_extruder_board_serial():
     return jsonify({"success": True, "serial": serial})
  
 @app.route("/tools/run/<script_name>", methods=["POST"])
-@app.route("/run/<script_name>", methods=["POST"])
 def run_script(script_name):
     script_path = f"/home/pi/G1-Configs/scripts/{script_name}.sh"
     try:
@@ -140,6 +129,13 @@ def run_script(script_name):
         return jsonify({"success": True, "output": result.stdout})
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
+
+@app.route("/tools/<path:subpath>", methods=["GET"])
+def get_page(subpath):
+    return render_template("index.html", subpath=subpath)
+@app.route("/tools/")
+def get_index():
+    return render_template("index.html", subpath="")
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
