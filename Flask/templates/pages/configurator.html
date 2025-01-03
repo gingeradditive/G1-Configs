@@ -61,10 +61,10 @@
         <div class="mb-3">
           <label class="form-label">Bed Max power</label>
           <div class="input-group mb-3">
-            <input type="number" class="form-control" name="heater_bed/max_power" placeholder="0.85" min="0"
-              max="1" required step="0.01">
+            <input type="number" class="form-control" id="heater_bed_max_power_percentage" placeholder="85" min="0" max="100" required step="1">
             <span class="input-group-text" id="basic-addon2">%</span>
           </div>
+          <input type="hidden" class="form-control" id="heater_bed_max_power" name="heater_bed/max_power" placeholder="0.85" min="0" max="1" required step="0.01">
         </div>
       </div>
       <div class="col">

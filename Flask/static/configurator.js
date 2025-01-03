@@ -39,6 +39,10 @@ $.ajax({
                     $('#bed_mesh_probe_x_points').val(x);
                     $('#bed_mesh_probe_y_points').val(y);
                 }
+                
+                if(inputName === 'heater_bed/max_power') {
+                    $('#heater_bed_max_power_percentage').val(value * 100).change();
+                }
 
                 // check if response has "tmc2209 extruder_stepper mixing_stepper" key
                 if(inputName === 'extruder_stepper_model') {
@@ -147,4 +151,14 @@ interpolate: False`;
     }
 
     $('#extruder_stepper_model_value').val(value);
+});
+
+$("#heater_bed_max_power_percentage").change(function () { 
+    const max_power_percentage = $('#heater_bed_max_power_percentage').val();
+    $('#heater_bed_max_power').val(max_power_percentage / 100);
+});
+
+$("#heater_bed_max_power").change(function () { 
+    const max_power = $('#heater_bed_max_power').val();
+    $('#heater_bed_max_power_percentage').val(max_power * 100);
 });
