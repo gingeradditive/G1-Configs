@@ -41,15 +41,15 @@ $.ajax({
                 }
                 
                 if(inputName === 'heater_bed/max_power') {
-                    $('#heater_bed_max_power_percentage').val(value * 100).change();
+                    $('#heater_bed_max_power_percentage').val(value * 100);
                 }
 
                 // check if response has "tmc2209 extruder_stepper mixing_stepper" key
                 if(inputName === 'extruder_stepper_model') {
                     if(response["tmc2209 extruder_stepper mixing_stepper"])
-                        $('#extruder_stepper_model_select').val('tmc2209').trigger('change');
+                        $('#extruder_stepper_model_select').val('tmc2209');
                     else if(response["tmc5160 extruder_stepper mixing_stepper"])
-                        $('#extruder_stepper_model_select').val('tmc5160').trigger('change');
+                        $('#extruder_stepper_model_select').val('tmc5160');
                 }   
             }
         });
@@ -60,9 +60,6 @@ $.ajax({
         $('#configuratorForm input, #configuratorForm textarea').each(function () {
             $(this).val($(this).attr('placeholder')).trigger('change');
         });
-
-        // trigger change event of selects to set default value
-        $('#extruder_stepper_model_select').trigger('change');
 
         // triggger updates buttons 
         $('#updateMainboardSerial').trigger('click');
@@ -122,35 +119,6 @@ $('#probe_x_offset, #probe_y_offset').change(function () {
     const x = $('#probe_x_offset').val();
     const y = $('#probe_y_offset').val();
     $('#probe_xy_offset').val(`${x}, ${y}`);
-});
-
-// extruder_stepper_model_select
-// extruder_stepper_model_value
-
-$('#extruder_stepper_model_select').change(function () {
-    const model = $('#extruder_stepper_model_select').val();
-    const tmc5160 = `[tmc5160 extruder_stepper mixing_stepper]
-cs_pin: PE4
-spi_software_miso_pin: PA6
-spi_software_mosi_pin: PA7
-spi_software_sclk_pin: PA5
-run_current: 1.5
-sense_resistor: 0.022
-#stealthchop_threshold: 999999
-interpolate: False`;
-    const tmc2209 = `[tmc2209 extruder_stepper mixing_stepper]
-uart_pin: PE4
-run_current: 0.7
-#stealthchop_threshold: 999999
-interpolate: False`;
-    let value = "";
-    if (model === 'tmc5160') {
-        value = tmc5160;
-    } else if (model === 'tmc2209') {
-        value = tmc2209;
-    }
-
-    $('#extruder_stepper_model_value').val(value);
 });
 
 $("#heater_bed_max_power_percentage").change(function () { 

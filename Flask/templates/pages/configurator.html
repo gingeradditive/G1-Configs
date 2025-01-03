@@ -136,13 +136,17 @@
         <div class="mb-3">
           <label class="form-label">Extruder stepper model</label>
           <div class="input-group mb-3">
-            <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select">
+            <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select" name="extruder_stepper_model_select">
               <option selected value="tmc5160">tmc5160</option>
               <option value="tmc2209">tmc2209</option>
             </select>
           </div>
-          <textarea name="extruder_stepper_model" cols="40" rows="5" id="extruder_stepper_model_value"
-            hidden></textarea>
+          <label class="form-label">Mixing stepper run current</label>
+          <div class="input-group mb-3">
+            <input type="number" class="form-control" name="mixing_stepper/run_current" placeholder="1.5"
+              min="0.1" required max="2.5" step="0.1">
+            <span class="input-group-text" id="basic-addon2">A</span>
+          </div>
         </div>
       </div>
     </div>
@@ -154,7 +158,7 @@
         <div class="mb-3">
           <label class="form-label">Motor X Run current</label>
           <div class="input-group mb-3">
-            <input type="number" class="form-control" name="tmc5160 stepper_x/run_current" placeholder="2"
+            <input type="number" class="form-control" name="stepper_x/run_current" placeholder="2"
               min="1.5" required max="2.5" step="0.1">
             <span class="input-group-text" id="basic-addon2">A</span>
           </div>
@@ -172,7 +176,7 @@
         <div class="mb-3">
           <label class="form-label">Motor Y Run current</label>
           <div class="input-group mb-3">
-            <input type="number" class="form-control" name="tmc5160 stepper_y/run_current" placeholder="4"
+            <input type="number" class="form-control" name="stepper_y/run_current" placeholder="4"
               min="3" required max="5" step="0.1">
             <span class="input-group-text" id="basic-addon2">A</span>
           </div>
@@ -188,7 +192,7 @@
         <div class="mb-3">
           <label class="form-label">Motor Z Run current</label>
           <div class="input-group mb-3">
-            <input type="number" class="form-control" name="tmc5160 stepper_z/run_current" placeholder="7"
+            <input type="number" class="form-control" name="stepper_z/run_current" placeholder="7"
               min="6" required max="8" step="0.1">
             <span class="input-group-text" id="basic-addon2">A</span>
           </div>

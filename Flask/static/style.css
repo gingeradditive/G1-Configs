@@ -9,7 +9,7 @@
 
 .sidebar{
     border-right: 1px solid #d8d8d8;
-    max-width: 250px;
+    width: 250px !important;
 }
 
 .sidebar a{
