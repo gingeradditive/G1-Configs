@@ -487,7 +487,8 @@ def write_printer_cfg():
     try:
         # TODO: restart klipper service, currently not working
         # subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
-        return redirect("/")
+        host = request.host.split(':')[0]  # Ottieni solo il nome host, senza la porta
+        return redirect(f"http://{host}:80/")  # Redirigi al servizio sulla porta 80
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 

@@ -9,6 +9,25 @@ $.ajax({
                 // Suddividi l'ID su base "/" per accedere ai dati nel JSON
                 const keys = inputName.split('/'); // ["heater_bed", "max_power"]
 
+                
+                // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
+                const keysToCheck = [
+                    "tmc5160 extruder_stepper mixing_stepper",
+                    "tmc2209 extruder_stepper mixing_stepper"
+                ];
+                if(!response["mixing_stepper"])
+                    response["mixing_stepper"] = {};
+                for (const key of keysToCheck) {
+                    if (response[key]?.run_current) {
+                        response["mixing_stepper"]["run_current"] = response[key].run_current;
+                        break; // Esci dal ciclo una volta trovato il primo valore valido
+                    }
+                }
+                response["stepper_x"]["run_current"] = response["tmc5160 stepper_x"]["run_current"];
+                response["stepper_y"]["run_current"] = response["tmc5160 stepper_y"]["run_current"];
+                response["stepper_z"]["run_current"] = response["tmc5160 stepper_z"]["run_current"];
+            
+
                 // Usa i keys per navigare nel JSON
                 let value = response;
                 keys.forEach(key => {
