@@ -3,7 +3,6 @@
     "include G1-Configs/kamp.cfg": {},
     "include G1-Configs/macro.cfg": {},
     "include G1-Configs/main.cfg": {},
-    "include G1-Configs/material.cfg": {},
     "heater_bed": {},
     "verify_heater heater_bed": {},
     "output_pin BUZZER_PIN": {},
