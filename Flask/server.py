@@ -69,7 +69,6 @@ def write_printer_cfg():
         outfile.write('[include kamp.cfg]\n')
         outfile.write('[include G1-Configs/macro.cfg]\n')
         outfile.write('[include G1-Configs/main.cfg]\n')
-        outfile.write('[include G1-Configs/material.cfg]\n')
         outfile.write('# [include G1-Configs/accelerometer.cfg]\n')
         outfile.write('# [include moonraker_obico_macros.cfg]\n')
         outfile.write('\n')
