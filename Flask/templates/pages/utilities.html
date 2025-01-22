@@ -1,0 +1,116 @@
+<h1>Utilities</h1>
+<p>Manage and restore your 3D printer configurations with ease. Use the tools below to restore individual settings or
+  perform a full factory reset.</p>
+
+<hr>
+
+<h2>Restore Configurations</h2>
+<p>Select a configuration to restore. This will overwrite the current settings with the default ones for the selected
+  file.</p>
+
+<form action="/tools/backend/restore-kamp-cfg" method="post">
+  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#kampModal">
+    Restore <strong>kamp.cfg</strong>
+  </button>
+  <p class="text-muted">Restores the main printer configuration.</p>
+  <!-- Modal -->
+  <div class="modal fade" id="kampModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Restore kamp.cfg</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to restore the kamp.cfg file? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="/tools/backend/restore-klipperscreen-conf" method="post">
+  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#KlipperScreenModal">
+    Restore <strong>KlipperScreen.conf</strong>
+  </button>
+  <p class="text-muted">Resets KlipperScreen settings for the display.</p>
+  <!-- Modal -->
+  <div class="modal fade" id="KlipperScreenModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Restore KlipperScreen.conf</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to restore the KlipperScreen.conf file? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="/tools/backend/restore-moonraker-conf" method="post">
+  <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#moonrakerModal">
+    Restore <strong>moonraker.conf</strong>
+  </button>
+  <p class="text-muted">Resets Moonraker configuration for API and monitoring tools.</p>
+  <!-- Modal -->
+  <div class="modal fade" id="moonrakerModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Restore moonraker.conf</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to restore the moonraker.conf file? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-success">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<hr>
+
+<h2>Factory Reset</h2>
+<p>
+  <span class="text-danger fw-bold">Warning:</span> Performing a factory reset will delete all G-code files, custom
+  configurations, and restore the printer to its original settings. Use this option only if necessary.
+</p>
+
+<form action="/tools/backend/factory-reset" method="post">
+  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#factoryResetModal">
+    Perform Factory Reset
+  </button>
+  <!-- Modal -->
+  <div class="modal fade" id="factoryResetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Perform Factory Reset</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to perform a factory reset? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
