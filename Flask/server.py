@@ -596,8 +596,8 @@ def restore_kamp_cfg():
 
 @app.route("/tools/backend/restore-klipperscreen-conf", methods=["POST"])
 def restore_klipperscreen_conf():
-    backupFilePath = backupConfigPath + "/klipperscreen.conf"
-    configFilePath = configPath + "/klipperscreen.conf"
+    backupFilePath = backupConfigPath + "/KlipperScreen.conf"
+    configFilePath = configPath + "/KlipperScreen.conf"
     try:
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
