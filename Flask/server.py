@@ -9,10 +9,11 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 if os.name == "nt":
     configPath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/config"
     backupConfigPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs"
+    backupStylesPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Styles"
 else:
     configPath = "/home/pi/printer_data/config"
     backupConfigPath = "/home/pi/G1-Configs/Configs"
-
+    backupStylesPath = "/home/pi/G1-Configs/Styles"
 
 @app.route('/tools/static/<path:path>')
 def send_report(path):
@@ -617,6 +618,33 @@ def restore_moonraker_conf():
         return redirect("/tools/utilities")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
+    
+
+@app.route("/tools/backend/restore-mainsail-theme", methods=["POST"])
+def restore_mainsail_theme():
+    backupFilePath = backupStylesPath + "/mainsail-ginger"
+    configFilePath = configPath + "/.theme"
+
+    if os.path.exists(configFilePath):
+        for item in os.listdir(configFilePath):
+            item_path = os.path.join(configFilePath, item)
+            if os.path.isfile(item_path) or os.path.islink(item_path):
+                os.unlink(item_path)
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)
+
+    if os.path.exists(backupFilePath):
+        for item in os.listdir(backupFilePath):
+            src_path = os.path.join(backupFilePath, item)
+            dest_path = os.path.join(configFilePath, item)
+            if os.path.isdir(src_path):
+                shutil.copytree(src_path, dest_path)
+            else:
+                shutil.copy2(src_path, dest_path)
+        return redirect("/tools/utilities")
+    else:
+        return jsonify({"success": False, "error": f"Backup directory '{backupFilePath}' does not exist!"}), 500
+
     
 
 @app.route("/tools/run/<script_name>", methods=["POST"])
