@@ -89,7 +89,7 @@ ln -sf $HOME/G1-Configs/Styles/mainsail-ginger/*.* "/home/pi/printer_data/config
 
 
 echo "Installing Flask..."
-pip3 install flask
+sudo pip3 install flask
 
 # Crea un servizio systemd per avviare automaticamente Flask all'avvio
 echo "Creating systemd service for Flask..."
