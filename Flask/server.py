@@ -537,13 +537,16 @@ def write_printer_cfg():
             '############################### Auto Setup #################################""")\n')
 
     # execute klipper restart
-    try:
-        subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
-        host = request.host.split(':')[0]
-        return redirect(f"http://{host}:80/")
-    except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "error": e.stderr}), 500
-
+    if os.name == "nt":
+        return redirect(f"/tools")
+    else:
+        try:
+            subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
+            host = request.host.split(':')[0]
+            return redirect(f"http://{host}:80/")
+        except subprocess.CalledProcessError as e:
+            return jsonify({"success": False, "error": e.stderr}), 500
+    
 
 @app.route("/tools/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
