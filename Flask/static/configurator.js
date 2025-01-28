@@ -3,7 +3,7 @@ $.ajax({
     method: 'GET',
     dataType: 'json',
     success: function (response) {
-        $('#configuratorForm input, #configuratorForm textarea').each(function () {
+        $('#configuratorForm input, #configuratorForm textarea, #configuratorForm select').each(function () {
             const inputName = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
             if (inputName) {
                 // Suddividi l'ID su base "/" per accedere ai dati nel JSON
@@ -64,7 +64,7 @@ $.ajax({
                 }
 
                 // check if response has "tmc2209 extruder_stepper mixing_stepper" key
-                if(inputName === 'extruder_stepper_model') {
+                if(inputName === 'extruder_stepper_model_select') {
                     if(response["tmc2209 extruder_stepper mixing_stepper"])
                         $('#extruder_stepper_model_select').val('tmc2209');
                     else if(response["tmc5160 extruder_stepper mixing_stepper"])
