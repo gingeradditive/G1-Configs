@@ -36,3 +36,19 @@
     vertical-align: bottom;
     color: #858585;
 }
+
+.NotificationsArea{
+    border: 1px solid lightgray;
+    border-radius: 4px;
+    height: 250px;
+    overflow-y: auto;
+    padding: 10px;
+}
+
+#NoNotification{
+    color: gray;
+    font-weight: 200;
+    font-style: italic;
+    text-align: center;
+    margin: auto;
+}

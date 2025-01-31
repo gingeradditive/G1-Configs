@@ -702,6 +702,9 @@ def check_files():
         print("")
         result[file_key] = hash1 == hash2 if hash1 and hash2 else None
 
+    # check printer.cfg exist 
+    result["printer.cfg"] = os.path.isfile(configPath + "/printer.cfg")
+    
     return jsonify(result) 
     
 
