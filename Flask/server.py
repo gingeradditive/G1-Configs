@@ -648,7 +648,10 @@ def restore_mainsail_theme():
     else:
         return jsonify({"success": False, "error": f"Backup directory '{backupFilePath}' does not exist!"}), 500
 
-    
+@app.route("/tools/exit")
+def back_to_mainsail():
+    host = request.host.split(':')[0]
+    return redirect(f"http://{host}:80/")
 
 @app.route("/tools/run/<script_name>", methods=["POST"])
 def run_script(script_name):
