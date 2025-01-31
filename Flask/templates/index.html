@@ -70,7 +70,11 @@
   <script src="/tools{{ url_for('static',filename='jquery.js') }}"></script>
 
   {% if 'configurator' == subpath %}
-  <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
+    <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
+  {% elif 'utilities' == subpath %}
+    <!-- No Scripts -->
+  {% else %}
+    <script src="/tools{{ url_for('static',filename='dashboard.js') }}"></script>
   {% endif %}
   
 </body>

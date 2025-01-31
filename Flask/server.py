@@ -2,6 +2,7 @@ from flask import *
 import subprocess
 import shutil
 import os
+import hashlib
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -19,6 +20,9 @@ else:
 def send_report(path):
     # Using request args for path will expose you to directory traversal attacks
     return send_from_directory('static', path)
+
+
+# -------------------------------------------------------------------------------------
 
 
 @app.route("/tools/backend/read-printer-cfg", methods=["GET"])
@@ -625,8 +629,10 @@ def restore_moonraker_conf():
 
 @app.route("/tools/backend/restore-mainsail-theme", methods=["POST"])
 def restore_mainsail_theme():
-    backupFilePath = backupStylesPath + "/mainsail-ginger"
-    configFilePath = configPath + "/.theme"
+    backupFilePath = os.path.join(backupStylesPath, "mainsail-ginger")
+    configFilePath = os.path.join(configPath, ".theme")
+    if not os.path.exists(configFilePath):
+        os.makedirs(configFilePath)
 
     if os.path.exists(configFilePath):
         for item in os.listdir(configFilePath):
@@ -647,6 +653,60 @@ def restore_mainsail_theme():
         return redirect("/tools/utilities")
     else:
         return jsonify({"success": False, "error": f"Backup directory '{backupFilePath}' does not exist!"}), 500
+
+
+@app.route("/tools/backend/check-files", methods=["GET"])
+def check_files():
+    files = {
+        "kamp.cfg": [
+            os.path.join(backupConfigPath, "kamp.cfg"),
+            os.path.join(configPath, "kamp.cfg")
+        ],
+        "KlipperScreen.conf": [
+            os.path.join(backupConfigPath, "KlipperScreen.conf"),
+            os.path.join(configPath, "KlipperScreen.conf")
+        ],
+        "moonraker.conf": [
+            os.path.join(backupConfigPath, "moonraker.conf"),
+            os.path.join(configPath, "moonraker.conf")
+        ],
+        "splash.png": [
+            os.path.join(backupConfigPath, "splash.png"),
+            os.path.join(configPath, "splash.png")
+        ],
+        "theme/custom.css": [
+            os.path.join(backupStylesPath, "mainsail-ginger", "custom.css"),
+            os.path.join(configPath, ".theme/custom.css")
+        ],
+        "theme/navi.json": [
+            os.path.join(backupStylesPath, "mainsail-ginger", "navi.json"),
+            os.path.join(configPath, ".theme/navi.json")
+        ]
+    }
+
+    def compute_sha256(file_path):
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                sha256_hash = hashlib.sha256()
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+                return sha256_hash.hexdigest()
+        return None
+
+    result = {}
+    for file_key, paths in files.items():
+        hash1 = compute_sha256(paths[0])
+        hash2 = compute_sha256(paths[1])
+        print(paths[0] + ">>>")
+        print(paths[1] + ">>>")
+        print("")
+        result[file_key] = hash1 == hash2 if hash1 and hash2 else None
+
+    return jsonify(result) 
+    
+
+# -------------------------------------------------------------------------------------
+
 
 @app.route("/tools/exit")
 def back_to_mainsail():
