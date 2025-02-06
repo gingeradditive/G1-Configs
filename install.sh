@@ -23,8 +23,9 @@ echo; echo
 
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/G1-Configs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
-MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
+G1_DATABASE_DIR="$HOME/G1-Configs/Database"
 
+MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
 MOONRAKER_CONF_CONTENT="
 ## Ginger Configs
 [update_manager GingerConfigs]
@@ -117,3 +118,6 @@ sudo systemctl enable g1-flask.service
 sudo systemctl start g1-flask.service
 
 echo "Flask service created and started successfully."
+
+echo "Restoring Moonraker DB..."
+cp -f "$G1_DATABASE_DIR"/moonraker-sql.db "$HOME/printer_data/database/"
