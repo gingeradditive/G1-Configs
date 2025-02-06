@@ -111,15 +111,16 @@
 <hr>
 
 <h2>Factory Reset</h2>
-<p>
-  <span class="text-danger fw-bold">Warning:</span> Performing a factory reset will delete all G-code files, custom
-  configurations, and restore the printer to its original settings. Use this option only if necessary.
-</p>
+
 
 <form action="/tools/backend/factory-reset" method="post">
   <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#factoryResetModal">
     Perform Factory Reset
   </button>
+  <p>
+    <span class="text-danger fw-bold">Warning:</span> Performing a factory reset will delete all G-code files, custom
+    configurations, and restore the printer to its original settings. Use this option only if necessary.
+  </p>
   <!-- Modal -->
   <div class="modal fade" id="factoryResetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog">
@@ -130,6 +131,33 @@
         </div>
         <div class="modal-body">
           Are you sure you want to perform a factory reset? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-danger">Continue</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<form action="/tools/backend/moonraker-db-reset" method="post">
+  <button type="button" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#moonrakerDbResetModal">
+    Perform Mainsail Factory Reset
+  </button>
+  <p>
+    <span class="text-danger fw-bold">Warning:</span> Performing a Mainsail factory reset will delete all the mainsail users costumization. Use this option only if necessary.
+  </p>
+  <!-- Modal -->
+  <div class="modal fade" id="moonrakerDbResetModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5">Perform Mainsail Factory Reset</h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to perform a mainsail factory reset? This action cannot be undone.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>

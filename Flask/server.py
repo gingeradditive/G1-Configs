@@ -9,12 +9,18 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 if os.name == "nt":
     configPath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/config"
+    databasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/database"
+
     backupConfigPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs"
     backupStylesPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Styles"
+    backupDatabasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/Database"
 else:
     configPath = "/home/pi/printer_data/config"
+    databasePath = "/home/pi/printer_data/database"
+    
     backupConfigPath = "/home/pi/G1-Configs/Configs"
     backupStylesPath = "/home/pi/G1-Configs/Styles"
+    backupDatabasePath = "/home/pi/G1-Configs/Database"
 
 @app.route('/tools/static/<path:path>')
 def send_report(path):
@@ -708,6 +714,18 @@ def check_files():
     return jsonify(result) 
     
 
+@app.route("/tools/backend/moonraker-db-reset", methods=["POST"])
+def moonraker_db_reset():
+    backupFilePath = backupDatabasePath + "/moonraker-sql.db"
+    databaseFilePath = databasePath + "/moonraker-sql.db"
+    try:
+        if os.path.exists(databaseFilePath):
+            os.remove(databaseFilePath)
+        shutil.copy2(backupFilePath, databaseFilePath)
+        return redirect("/tools/utilities")
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "error": e.stderr}), 500
+    
 # -------------------------------------------------------------------------------------
 
 
