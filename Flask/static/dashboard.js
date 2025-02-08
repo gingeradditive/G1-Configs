@@ -1,5 +1,5 @@
 function appenNotification(message, level){
-    $(".NotificationsArea").append('<div class="alert alert-'+level+' alert-dismissible fade show" role="alert">'+message+'<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
+    $(".NotificationsContainer").append('<div class="alert alert-'+level+' alert-dismissible fade show" role="alert">'+message+'<button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button></div>');
     $("#NoNotification").remove()
 }
 
