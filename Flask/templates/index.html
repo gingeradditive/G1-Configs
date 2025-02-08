@@ -21,29 +21,29 @@
   <div class="container-fluid">
     <div class="row flex-nowrap">
       <div class="col-auto col-md-3 col-xl-2 px-sm-2 px-0 sidebar">
-        <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-2 text-white">
+        <div class="d-flex flex-column align-items-center align-items-sm-start px-3 pt-0 text-white">
           <ul class="nav nav-pills flex-column mb-sm-auto mb-0 align-items-center align-items-sm-start" id="menu">
-            <li class="nav-item">
+            <li class="nav-item {% if subpath == '' %}nav-link-active{% endif %}">
               <a href="/tools/" class="nav-link align-middle px-0">
                 <i class="bi bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Dashboard</span>
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {% if subpath == 'configurator' %}nav-link-active{% endif %}">
               <a href="configurator" class="nav-link align-middle px-0">
-                <i class="bi bi-wrench"></i> <span class="ms-1 d-none d-sm-inline">Printer Configurator</span>
+                <i class="bi bi-wrench"></i> <span class="ms-1 d-none d-sm-inline">Configurator</span>
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {% if subpath == 'utilities' %}nav-link-active{% endif %}">
               <a href="utilities" class="nav-link align-middle px-0">
-                <i class="bi bi-house-gear"></i> <span class="ms-1 d-none d-sm-inline">utilities</span>
+                <i class="bi bi-house-gear"></i> <span class="ms-1 d-none d-sm-inline">Utilities</span>
               </a>
             </li>
             <li class="nav-item">
-              <a href="/" class="nav-link align-middle px-0">
+              <a href="exit" class="nav-link align-middle px-0">
                 <i class="bi bi-door-open"></i> <span class="ms-1 d-none d-sm-inline">Return to Mainsail</span>
               </a>
             </li>
-          </ul>
+          </ul>          
         </div>
       </div>
       <div class="col py-3">
@@ -70,7 +70,11 @@
   <script src="/tools{{ url_for('static',filename='jquery.js') }}"></script>
 
   {% if 'configurator' == subpath %}
-  <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
+    <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
+  {% elif 'utilities' == subpath %}
+    <!-- No Scripts -->
+  {% else %}
+    <script src="/tools{{ url_for('static',filename='dashboard.js') }}"></script>
   {% endif %}
   
 </body>

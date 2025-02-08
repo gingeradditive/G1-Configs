@@ -2,22 +2,33 @@ from flask import *
 import subprocess
 import shutil
 import os
+import hashlib
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 if os.name == "nt":
     configPath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/config"
+    databasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/database"
+
     backupConfigPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs"
+    backupStylesPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Styles"
+    backupDatabasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/Database"
 else:
     configPath = "/home/pi/printer_data/config"
+    databasePath = "/home/pi/printer_data/database"
+    
     backupConfigPath = "/home/pi/G1-Configs/Configs"
-
+    backupStylesPath = "/home/pi/G1-Configs/Styles"
+    backupDatabasePath = "/home/pi/G1-Configs/Database"
 
 @app.route('/tools/static/<path:path>')
 def send_report(path):
     # Using request args for path will expose you to directory traversal attacks
     return send_from_directory('static', path)
+
+
+# -------------------------------------------------------------------------------------
 
 
 @app.route("/tools/backend/read-printer-cfg", methods=["GET"])
@@ -536,16 +547,16 @@ def write_printer_cfg():
             '############################### Auto Setup #################################""")\n')
 
     # execute klipper restart
-    try:
-        # TODO: restart klipper service, currently not working
-        # subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
-        # Ottieni solo il nome host, senza la porta
-        host = request.host.split(':')[0]
-        # Redirigi al servizio sulla porta 80
-        return redirect(f"http://{host}:80/")
-    except subprocess.CalledProcessError as e:
-        return jsonify({"success": False, "error": e.stderr}), 500
-
+    if os.name == "nt":
+        return redirect(f"/tools")
+    else:
+        try:
+            subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
+            host = request.host.split(':')[0]
+            return redirect(f"http://{host}:80/")
+        except subprocess.CalledProcessError as e:
+            return jsonify({"success": False, "error": e.stderr}), 500
+    
 
 @app.route("/tools/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
@@ -598,8 +609,8 @@ def restore_kamp_cfg():
 
 @app.route("/tools/backend/restore-klipperscreen-conf", methods=["POST"])
 def restore_klipperscreen_conf():
-    backupFilePath = backupConfigPath + "/klipperscreen.conf"
-    configFilePath = configPath + "/klipperscreen.conf"
+    backupFilePath = backupConfigPath + "/KlipperScreen.conf"
+    configFilePath = configPath + "/KlipperScreen.conf"
     try:
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
@@ -621,6 +632,107 @@ def restore_moonraker_conf():
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
     
+
+@app.route("/tools/backend/restore-mainsail-theme", methods=["POST"])
+def restore_mainsail_theme():
+    backupFilePath = os.path.join(backupStylesPath, "mainsail-ginger")
+    configFilePath = os.path.join(configPath, ".theme")
+    if not os.path.exists(configFilePath):
+        os.makedirs(configFilePath)
+
+    if os.path.exists(configFilePath):
+        for item in os.listdir(configFilePath):
+            item_path = os.path.join(configFilePath, item)
+            if os.path.isfile(item_path) or os.path.islink(item_path):
+                os.unlink(item_path)
+            elif os.path.isdir(item_path):
+                shutil.rmtree(item_path)
+
+    if os.path.exists(backupFilePath):
+        for item in os.listdir(backupFilePath):
+            src_path = os.path.join(backupFilePath, item)
+            dest_path = os.path.join(configFilePath, item)
+            if os.path.isdir(src_path):
+                shutil.copytree(src_path, dest_path)
+            else:
+                shutil.copy2(src_path, dest_path)
+        return redirect("/tools/utilities")
+    else:
+        return jsonify({"success": False, "error": f"Backup directory '{backupFilePath}' does not exist!"}), 500
+
+
+@app.route("/tools/backend/check-files", methods=["GET"])
+def check_files():
+    files = {
+        "kamp.cfg": [
+            os.path.join(backupConfigPath, "kamp.cfg"),
+            os.path.join(configPath, "kamp.cfg")
+        ],
+        "KlipperScreen.conf": [
+            os.path.join(backupConfigPath, "KlipperScreen.conf"),
+            os.path.join(configPath, "KlipperScreen.conf")
+        ],
+        "moonraker.conf": [
+            os.path.join(backupConfigPath, "moonraker.conf"),
+            os.path.join(configPath, "moonraker.conf")
+        ],
+        "splash.png": [
+            os.path.join(backupConfigPath, "splash.png"),
+            os.path.join(configPath, "splash.png")
+        ],
+        "theme/custom.css": [
+            os.path.join(backupStylesPath, "mainsail-ginger", "custom.css"),
+            os.path.join(configPath, ".theme/custom.css")
+        ],
+        "theme/navi.json": [
+            os.path.join(backupStylesPath, "mainsail-ginger", "navi.json"),
+            os.path.join(configPath, ".theme/navi.json")
+        ]
+    }
+
+    def compute_sha256(file_path):
+        if os.path.exists(file_path):
+            with open(file_path, "rb") as f:
+                sha256_hash = hashlib.sha256()
+                for byte_block in iter(lambda: f.read(4096), b""):
+                    sha256_hash.update(byte_block)
+                return sha256_hash.hexdigest()
+        return None
+
+    result = {}
+    for file_key, paths in files.items():
+        hash1 = compute_sha256(paths[0])
+        hash2 = compute_sha256(paths[1])
+        print(paths[0] + ">>>")
+        print(paths[1] + ">>>")
+        print("")
+        result[file_key] = hash1 == hash2 if hash1 and hash2 else None
+
+    # check printer.cfg exist 
+    result["printer.cfg"] = os.path.isfile(configPath + "/printer.cfg")
+    
+    return jsonify(result) 
+    
+
+@app.route("/tools/backend/moonraker-db-reset", methods=["POST"])
+def moonraker_db_reset():
+    backupFilePath = backupDatabasePath + "/moonraker-sql.db"
+    databaseFilePath = databasePath + "/moonraker-sql.db"
+    try:
+        if os.path.exists(databaseFilePath):
+            os.remove(databaseFilePath)
+        shutil.copy2(backupFilePath, databaseFilePath)
+        return redirect("/tools/utilities")
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "error": e.stderr}), 500
+    
+# -------------------------------------------------------------------------------------
+
+
+@app.route("/tools/exit")
+def back_to_mainsail():
+    host = request.host.split(':')[0]
+    return redirect(f"http://{host}:80/")
 
 @app.route("/tools/run/<script_name>", methods=["POST"])
 def run_script(script_name):

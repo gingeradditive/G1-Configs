@@ -1,15 +1,21 @@
+body{
+    background: #f5f5f5;
+}
+
 .navbar{
-    background-color: #f5f5f5 !important;    
+    background-color: #ffffff !important;    
     height: 48px;
+    border-bottom: 1px solid #e0e0e0;
 }
 
 .navbar-brand{
-    color: #6b6b6b !important;
+    color: #000 !important;
 }
 
 .sidebar{
     border-right: 1px solid #d8d8d8;
     width: 250px !important;
+    background: #fff;
 }
 
 .sidebar a{
@@ -36,3 +42,50 @@
     vertical-align: bottom;
     color: #858585;
 }
+
+.card{
+    box-shadow: 0 3px 1px -2px #0003, 0 2px 2px #00000024, 0 1px 5px #0000001f;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    border: none !important;
+}
+
+.card-header{
+    background: none;
+    margin: -10px -10px 10px -10px;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.card-header .bi{
+    color: #757575;
+}
+
+.NotificationsContainer{
+    overflow-y: scroll;
+    height: 250px;
+    padding: 0 10px 0 0; 
+}
+
+#NoNotification{
+    color: gray;
+    font-weight: 200;
+    font-style: italic;
+    text-align: center;
+    margin: auto;
+}
+
+.nav-link-active{
+    background-color: #e4e4e4 !important;
+    width: 250px !important;
+    margin: 0 -24px;
+    padding: 0 24px;
+    border-right: 4px solid #d72e28;
+}
+
+.nav-link-active .bi{
+    color: #3b3b3b !important;

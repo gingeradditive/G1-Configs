@@ -23,8 +23,9 @@ echo; echo
 
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/G1-Configs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
-MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
+G1_DATABASE_DIR="$HOME/G1-Configs/Database"
 
+MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
 MOONRAKER_CONF_CONTENT="
 ## Ginger Configs
 [update_manager GingerConfigs]
@@ -33,6 +34,7 @@ origin: https://github.com/gingeradditive/G1-Configs.git
 path: $HOME/G1-Configs
 primary_branch: main
 managed_services: klipper"
+
 
 # Copy the files
 echo "Copying G1-Configs to printer_data/config"
@@ -63,6 +65,7 @@ else
     echo "Ginger Configs already present in $MOONRAKER_CONF"
 fi
 
+
 echo "Installing klipperscreen style"
 ORIGIN_DIR="$HOME/G1-Configs/Styles/klipperscreen-ginger/"
 DESTINATION_DIR="$HOME/KlipperScreen/styles/klipperscreen-ginger"
@@ -85,27 +88,9 @@ ln -sf $HOME/G1-Configs/Styles/mainsail-ginger/*.* "/home/pi/printer_data/config
 # echo "Activate light mode default"
 # sed -i 's/"defaultMode": "dark"/"defaultMode": "light"/' /home/pi/mainsail/config.json
 
-#!/bin/bash
 
 echo "Installing Flask..."
-pip3 install flask
-
-# Avvia il server Flask
-# echo "Starting Flask server..."
-# python3 /home/pi/G1-Configs/Flask/server.py &
-
-# Configura Nginx
-echo "Configuring Nginx..."
-NGINX_CONF="/etc/nginx/sites-available/mainsail"
-
-if grep -q "location /tools" "$NGINX_CONF"; then
-    echo "The 'location /tools' block already exists in $NGINX_CONF."
-else
-    echo "Adding 'location /tools' block to $NGINX_CONF..."
-    sudo sed -i '/^}$/i \ \ \ \ location /tools {\n\ \ \ \ \ \ proxy_pass http://127.0.0.1:5000/;\n\ \ \ \ \ \ proxy_http_version 1.1;\n\ \ \ \ \ \ proxy_set_header Upgrade $http_upgrade;\n\ \ \ \ \ \ proxy_set_header Connection "upgrade";\n\ \ \ \ \ \ proxy_set_header Host $host;\n\ \ \ \ \ \ proxy_cache_bypass $http_upgrade;\n\ \ \ \ }' "$NGINX_CONF"
-    sudo systemctl reload nginx
-    echo "Nginx configuration updated and reloaded."
-fi
+sudo pip3 install flask
 
 # Crea un servizio systemd per avviare automaticamente Flask all'avvio
 echo "Creating systemd service for Flask..."
@@ -116,10 +101,12 @@ Description=Flask server for G1-Configs
 After=network.target
 
 [Service]
-User=$USER
+User=root
+Group=root
 WorkingDirectory=/home/pi/G1-Configs/Flask
 ExecStart=/usr/bin/python3 /home/pi/G1-Configs/Flask/server.py
 Restart=always
+Environment="PYTHONUNBUFFERED=1"
 
 [Install]
 WantedBy=multi-user.target
@@ -131,3 +118,6 @@ sudo systemctl enable g1-flask.service
 sudo systemctl start g1-flask.service
 
 echo "Flask service created and started successfully."
+
+echo "Restoring Moonraker DB..."
+cp -f "$G1_DATABASE_DIR"/moonraker-sql.db "$HOME/printer_data/database/"
