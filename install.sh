@@ -120,4 +120,5 @@ sudo systemctl start g1-flask.service
 echo "Flask service created and started successfully."
 
 echo "Restoring Moonraker DB..."
+mkdir "$HOME/printer_data/database/"
 cp -f "$G1_DATABASE_DIR"/moonraker-sql.db "$HOME/printer_data/database/"
