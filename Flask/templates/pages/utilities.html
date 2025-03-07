@@ -177,5 +177,29 @@
         </div>
       </form>
     </div>
+    <div class="card mb-3">
+      <div class="card-header">
+        <i class="bi bi-pencil-square"></i> Change Printer Name
+      </div>
+      <p class="p-3">
+        The printer name (hostname) must follow these rules:
+        <ul>
+          <li>Can contain only letters (a-z, A-Z), numbers (0-9), and hyphens (-).</li>
+          <li>Must start and end with a letter or number (cannot begin or end with a hyphen).</li>
+          <li>Must be between 1 and 63 characters long.</li>
+          <li>Cannot contain spaces or special characters (e.g., dots, underscores, or symbols).</li>
+        </ul>
+      </p>
+        <form action="/tools/backend/set-printer-hostname" method="post" class="p-3">
+          <label for="printerName" class="form-label">Printer Name</label>
+          <div class="input-group">
+            <input type="text" class="form-control" id="printerName" name="printerName" placeholder="Enter new printer name" required>
+            <button type="submit" class="btn btn-primary">Save</button>
+          </div>
+          <div class="text-danger d-none" id="hostname-ErrorMessage">
+            Please provide a valid city.
+          </div>
+        </form>
+    </div>
   </div>
 </div>

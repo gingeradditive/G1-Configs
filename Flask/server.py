@@ -3,6 +3,7 @@ import subprocess
 import shutil
 import os
 import hashlib
+import socket
 
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
@@ -684,10 +685,6 @@ def check_files():
         "theme/custom.css": [
             os.path.join(backupStylesPath, "mainsail-ginger", "custom.css"),
             os.path.join(configPath, ".theme/custom.css")
-        ],
-        "theme/navi.json": [
-            os.path.join(backupStylesPath, "mainsail-ginger", "navi.json"),
-            os.path.join(configPath, ".theme/navi.json")
         ]
     }
 
@@ -727,6 +724,42 @@ def moonraker_db_reset():
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
     
+
+@app.route("/tools/backend/read-printer-hostname", methods=["GET"])
+def read_printer_hostname():
+    hostname = socket.gethostname()
+    return jsonify({"hostname": hostname})
+
+@app.route("/tools/backend/set-printer-hostname", methods=["POST"])
+def set_printer_hostname():
+    values = request.form
+
+    new_hostname = values["printerName"]
+    try:
+        themeFolderPath = os.path.join(configPath, ".theme")
+
+        if os.path.exists(themeFolderPath + "/navi.json"):
+            with open(themeFolderPath + "/navi.json", "r") as json_file:
+                config = json.load(json_file)
+            
+            for item in config:
+                if "href" in item:
+                    item["href"] = f"http://{new_hostname}.local:5000/tools"
+            
+            with open(themeFolderPath + "/navi.json", "w") as json_file:
+                json.dump(config, json_file, indent=2)
+
+        if os.name == "nt":
+            print("Set new hostname to " + new_hostname)
+        else: 
+            with open("/etc/hostname", "w") as hostname_file:
+                hostname_file.write(new_hostname + "\n")
+            os.system("sudo reboot")
+
+        return redirect("http://"+new_hostname+".local:5000/tools/utilities")
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
 # -------------------------------------------------------------------------------------
 
 
