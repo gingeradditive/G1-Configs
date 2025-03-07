@@ -119,7 +119,7 @@ def write_printer_cfg():
         outfile.write(
             '################################### Buzzer #################################\n')
         outfile.write('\n')
-        outfile.write('[output_pin BUZZER_PIN]\n')
+        outfile.write('[output_pin _BUZZER_PIN]\n')
         outfile.write('pin: extruder_board: PB0 #D2\n')
         outfile.write('\n')
         outfile.write(
@@ -287,7 +287,7 @@ def write_printer_cfg():
         outfile.write(
             '################################# Feeder ###################################\n')
         outfile.write('\n')
-        outfile.write('[output_pin FEEDER_STATUS]\n')
+        outfile.write('[output_pin _FEEDER_STATUS]\n')
         outfile.write('pin: extruder_board: PB1 #D9\n')
         outfile.write('\n')
         outfile.write('[filament_switch_sensor FEEDER]\n')
@@ -302,9 +302,9 @@ def write_printer_cfg():
         outfile.write('gcode:\n')
         outfile.write(
             '  {% if printer["filament_switch_sensor FEEDER"].enabled %}\n')
-        outfile.write('    SET_PIN PIN=FEEDER_STATUS VALUE=1\n')
+        outfile.write('    SET_PIN PIN=_FEEDER_STATUS VALUE=1\n')
         outfile.write('  {% else %}\n')
-        outfile.write('    SET_PIN PIN=FEEDER_STATUS VALUE=0\n')
+        outfile.write('    SET_PIN PIN=_FEEDER_STATUS VALUE=0\n')
         outfile.write('  {% endif %}\n')
         outfile.write(
             '  UPDATE_DELAYED_GCODE ID=FEEDER_CHECK_STATUS DURATION=1.0\n')
