@@ -8,19 +8,20 @@ app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 if os.name == "nt":
-    configPath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/config"
-    databasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/out/database"
+    basePath = os.getcwd()
+    configPath = os.path.normpath(os.path.join(basePath, "..", "out", "config"))
+    databasePath = os.path.normpath(os.path.join(basePath, "..", "out", "database"))
 
-    backupConfigPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Configs"
-    backupStylesPath = "C:/Users/guare/source/gingerRepos/G1-Configs/Styles"
-    backupDatabasePath = "C:/Users/guare/source/gingerRepos/G1-Configs/Database"
+    backupConfigPath = os.path.normpath(os.path.join(basePath, "..", "Configs"))
+    backupStylesPath = os.path.normpath(os.path.join(basePath, "..", "Styles"))
+    backupDatabasePath = os.path.normpath(os.path.join(basePath, "..", "Database"))
 else:
-    configPath = "/home/pi/printer_data/config"
-    databasePath = "/home/pi/printer_data/database"
-    
-    backupConfigPath = "/home/pi/G1-Configs/Configs"
-    backupStylesPath = "/home/pi/G1-Configs/Styles"
-    backupDatabasePath = "/home/pi/G1-Configs/Database"
+    configPath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "config"))
+    databasePath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "database"))
+
+    backupConfigPath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Configs"))
+    backupStylesPath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Styles"))
+    backupDatabasePath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Database"))
 
 @app.route('/tools/static/<path:path>')
 def send_report(path):
@@ -33,7 +34,7 @@ def send_report(path):
 
 @app.route("/tools/backend/read-printer-cfg", methods=["GET"])
 def read_printer_cfg():
-    with open(configPath + "/printer.cfg", "r") as file:
+    with open(os.path.join(configPath, "printer.cfg"), "r") as file:
         section = ""
         key = ""
         value = ""
@@ -73,7 +74,7 @@ def write_printer_cfg():
     values = request.form
     print(values)
 
-    with open(configPath + "/printer.cfg", "w") as outfile:
+    with open(os.path.join(configPath, "printer.cfg"), "w") as outfile:
         # values[key]
         outfile.write(
             '############################ G1 Configuration #############################\n')
@@ -596,8 +597,8 @@ def update_extruder_board_serial():
 
 @app.route("/tools/backend/restore-kamp-cfg", methods=["POST"])
 def restore_kamp_cfg():
-    backupFilePath = backupConfigPath + "/kamp.cfg"
-    configFilePath = configPath + "/kamp.cfg"
+    backupFilePath = os.path.join(backupConfigPath, "kamp.cfg")
+    configFilePath = os.path.join(configPath, "kamp.cfg")
     try:
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
@@ -609,8 +610,8 @@ def restore_kamp_cfg():
 
 @app.route("/tools/backend/restore-klipperscreen-conf", methods=["POST"])
 def restore_klipperscreen_conf():
-    backupFilePath = backupConfigPath + "/KlipperScreen.conf"
-    configFilePath = configPath + "/KlipperScreen.conf"
+    backupFilePath = os.path.join(backupConfigPath, "KlipperScreen.conf")
+    configFilePath = os.path.join(configPath, "KlipperScreen.conf")
     try:
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
@@ -622,8 +623,8 @@ def restore_klipperscreen_conf():
 
 @app.route("/tools/backend/restore-moonraker-conf", methods=["POST"])
 def restore_moonraker_conf():
-    backupFilePath = backupConfigPath + "/moonraker.conf"
-    configFilePath = configPath + "/moonraker.conf"
+    backupFilePath = os.path.join(backupConfigPath, "moonraker.conf")
+    configFilePath = os.path.join(configPath, "moonraker.conf")
     try:
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
@@ -709,15 +710,15 @@ def check_files():
         result[file_key] = hash1 == hash2 if hash1 and hash2 else None
 
     # check printer.cfg exist 
-    result["printer.cfg"] = os.path.isfile(configPath + "/printer.cfg")
+    result["printer.cfg"] = os.path.isfile(os.path.join(configPath, "printer.cfg"))
     
     return jsonify(result) 
     
 
 @app.route("/tools/backend/moonraker-db-reset", methods=["POST"])
 def moonraker_db_reset():
-    backupFilePath = backupDatabasePath + "/moonraker-sql.db"
-    databaseFilePath = databasePath + "/moonraker-sql.db"
+    backupFilePath = os.path.join(backupDatabasePath, "moonraker-sql.db")
+    databaseFilePath = os.path.join(databasePath, "moonraker-sql.db")
     try:
         if os.path.exists(databaseFilePath):
             os.remove(databaseFilePath)
