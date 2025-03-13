@@ -9,13 +9,13 @@ $.ajax({
                 // Suddividi l'ID su base "/" per accedere ai dati nel JSON
                 const keys = inputName.split('/'); // ["heater_bed", "max_power"]
 
-                
+
                 // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
                 const keysToCheck = [
                     "tmc5160 extruder_stepper mixing_stepper",
                     "tmc2209 extruder_stepper mixing_stepper"
                 ];
-                if(!response["mixing_stepper"])
+                if (!response["mixing_stepper"])
                     response["mixing_stepper"] = {};
                 for (const key of keysToCheck) {
                     if (response[key]?.run_current) {
@@ -26,7 +26,7 @@ $.ajax({
                 response["stepper_x"]["run_current"] = response["tmc5160 stepper_x"]["run_current"];
                 response["stepper_y"]["run_current"] = response["tmc5160 stepper_y"]["run_current"];
                 response["stepper_z"]["run_current"] = response["tmc5160 stepper_z"]["run_current"];
-            
+
 
                 // Usa i keys per navigare nel JSON
                 let value = response;
@@ -58,18 +58,18 @@ $.ajax({
                     $('#bed_mesh_probe_x_points').val(x);
                     $('#bed_mesh_probe_y_points').val(y);
                 }
-                
-                if(inputName === 'heater_bed/max_power') {
+
+                if (inputName === 'heater_bed/max_power') {
                     $('#heater_bed_max_power_percentage').val(value * 100);
                 }
 
                 // check if response has "tmc2209 extruder_stepper mixing_stepper" key
-                if(inputName === 'extruder_stepper_model_select') {
-                    if(response["tmc2209 extruder_stepper mixing_stepper"])
+                if (inputName === 'extruder_stepper_model_select') {
+                    if (response["tmc2209 extruder_stepper mixing_stepper"])
                         $('#extruder_stepper_model_select').val('tmc2209');
-                    else if(response["tmc5160 extruder_stepper mixing_stepper"])
+                    else if (response["tmc5160 extruder_stepper mixing_stepper"])
                         $('#extruder_stepper_model_select').val('tmc5160');
-                }   
+                }
             }
         });
     },
@@ -140,12 +140,26 @@ $('#probe_x_offset, #probe_y_offset').change(function () {
     $('#probe_xy_offset').val(`${x}, ${y}`);
 });
 
-$("#heater_bed_max_power_percentage").change(function () { 
+$("#heater_bed_max_power_percentage").change(function () {
     const max_power_percentage = $('#heater_bed_max_power_percentage').val();
     $('#heater_bed_max_power').val(max_power_percentage / 100);
 });
 
-$("#heater_bed_max_power").change(function () { 
+$("#heater_bed_max_power").change(function () {
     const max_power = $('#heater_bed_max_power').val();
     $('#heater_bed_max_power_percentage').val(max_power * 100);
+});
+
+$(document).ready(function () {
+    $('.collapse').on('shown.bs.collapse', function () {
+        $('.btn-configurator').removeClass('active-button');
+
+        var collapseId = $(this).attr('id');
+        $('[data-bs-target="#' + collapseId + '"]').addClass('active-button');
+    });
+
+    $('.collapse').on('hidden.bs.collapse', function () {
+        var collapseId = $(this).attr('id');
+        $('[data-bs-target="#' + collapseId + '"]').removeClass('active-button');
+    });
 });

@@ -14,434 +14,339 @@
 </div>
 
 <form id="configuratorForm" action="/tools/backend/write-printer-cfg" method="post">
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-1-circle-fill"></i> Services and Modules
-    </div>
-    <!-- Switch accelerometer mounted  -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Accelerometer mounted</label>
-    </div>
 
-    <!-- Switch enable Obico  -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Enable Obico Service</label>
-    </div>
-
-    <!-- Switch Heated bed -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Heated bed</label>
-    </div>
-
-    <!-- Switch Automatic feeding -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Automatic feeding</label>
-    </div>
-
-    <!-- Switch Enclosure -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Enclosure</label>
-    </div>
-
-    <!-- Switch Dryer -->
-    <div class="mb-3 form-check form-switch">
-      <input class="form-check-input" type="checkbox" role="switch" name="flexSwitchCheckDefault" disabled>
-      <label class="form-check-label">[WIP] Dryer</label>
-    </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-2-circle-fill"></i> Heated bed configurations
-    </div>
-    <!-- Bed -->
-    <h4></h4>
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Bed Max power</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" id="heater_bed_max_power_percentage" placeholder="85" min="0"
-                max="100" required step="1">
-              <span class="input-group-text" id="basic-addon2">%</span>
-            </div>
-            <input type="hidden" class="form-control" id="heater_bed_max_power" name="heater_bed/max_power"
-              placeholder="0.85" min="0" max="1" required step="0.01">
-          </div>
+  <div class="configuratorBackground"
+    style="background-image: url('/tools{{ url_for('static', filename='printerRender.png') }}');" id="configGroup">
+    <!-- ----- Heated bed configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigBed" aria-expanded="false"
+      aria-controls="collapseConfigBed" style="bottom: 13%;left: 50%;"></a>
+    <div class="card-configurator collapse" data-bs-parent="#configGroup" id="collapseConfigBed"
+      style="top: 57%;left: 35%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Heated bed configurations
         </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Bed Max temperature</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="heater_bed/max_temp" placeholder="110" min="90" max="120"
-                required step="1">
-              <span class="input-group-text" id="basic-addon2">&deg;C</span>
-            </div>
-          </div>
+        <label class="form-label">Bed Max power</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" id="heater_bed_max_power_percentage" placeholder="85" min="0"
+            max="100" required step="1">
+          <span class="input-group-text" id="basic-addon2">%</span>
+        </div>
+        <input type="hidden" class="form-control" id="heater_bed_max_power" name="heater_bed/max_power"
+          placeholder="0.85" min="0" max="1" required step="0.01">
+        <label class="form-label">Bed Max temperature</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="heater_bed/max_temp" placeholder="110" min="90" max="120"
+            required step="1">
+          <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
       </div>
     </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-3-circle-fill"></i> Extruder configurations
-    </div>
-    <!-- Extruder -->
-    <h4></h4>
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Upper band max temperature</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="extruder/max_temp" placeholder="280" min="200" required
-                max="300" step="1">
-              <span class="input-group-text" id="basic-addon2">&deg;C</span>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Upper band min temperature</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="extruder/min_extrude_temp" placeholder="160" min="0"
-                required max="200" step="1">
-              <span class="input-group-text" id="basic-addon2">&deg;C</span>
-            </div>
-          </div>
+    <!-- ----- Boards configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigBoards" aria-expanded="false"
+      aria-controls="collapseConfigBoards" style="bottom: 86%;left: 36%;"></a>
+    <div class="card-configurator card-configurator-x2 collapse" data-bs-parent="#configGroup" id="collapseConfigBoards"
+      style="top: 15%;left: 5%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Boards configurations
         </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Middle band max temperature</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="extruder1/max_temp" placeholder="280" min="200" required
-                max="300" step="1">
-              <span class="input-group-text" id="basic-addon2">&deg;C</span>
-            </div>
-          </div>
+        <!-- Serial Main board -->
+        <label class="form-label">Serial Mainboard</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="mcu/serial" id="mainboardSerial" readonly>
+          <button class="btn btn-outline-secondary" type="button" id="updateMainboardSerial">Update</button>
         </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Lower band max temperature</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="extruder2/max_temp" placeholder="280" min="200" required
-                max="300" step="1">
-              <span class="input-group-text" id="basic-addon2">&deg;C</span>
-            </div>
-          </div>
+        <!-- Serial Main board -->
+        <label class="form-label">Serial Extruder board</label>
+        <div class="input-group mb-3">
+          <input type="text" class="form-control" name="mcu extruder_board/serial" id="extruderBoardSerial" readonly>
+          <button class="btn btn-outline-secondary" type="button" id="updateExtruderBoardSerial">Update</button>
         </div>
       </div>
     </div>
-  </div>
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-4-circle-fill"></i> Motors configurations
-    </div>
-    <!-- Motor -->
-
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Extruder stepper model</label>
-            <div class="input-group mb-3">
-              <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select"
-                name="extruder_stepper_model_select">
-                <option selected value="tmc5160">tmc5160</option>
-                <option value="tmc2209">tmc2209</option>
-              </select>
+    <!-- ----- Probe configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigProbe" aria-expanded="false"
+      aria-controls="collapseConfigProbe" style="bottom: 32%;left: 46%;"></a>
+    <div class="card-configurator card-configurator-x3 collapse" data-bs-parent="#configGroup" id="collapseConfigProbe"
+      style="top: 21%;left: 0;">
+      <div class="card card-body">
+        <div class="card-header">
+          Probe configurations
+        </div>
+        <!-- Probe -->
+        <div class="container mt-3">
+          <div class="row align-items-start">
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probe X offset</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="probe/x_offset" id="probe_x_offset" placeholder="0"
+                    min="0" required max="100" step="0.01">
+                  <span class="input-group-text" id="basic-addon2">mm</span>
+                </div>
+              </div>
             </div>
-            <label class="form-label">Mixing stepper run current</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="mixing_stepper/run_current" placeholder="1.5" min="0.1"
-                required max="2.5" step="0.1">
-              <span class="input-group-text" id="basic-addon2">A</span>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probe Y offset</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="probe/y_offset" id="probe_y_offset" placeholder="90"
+                    min="0" required max="100" step="0.01">
+                  <span class="input-group-text" id="basic-addon2">mm</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
+        <div class="container mt-3">
+          <div class="row align-items-start">
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probe Z speed</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="probe/speed" placeholder="10" min="1" required
+                    max="10" step="0.01">
+                  <span class="input-group-text" id="basic-addon2">mm/s</span>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probing samples</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="probe/samples" placeholder="1" min="1" required
+                    max="5" step="1">
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probe safe Z home X/Y Position</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
+                    id="safe_z_home_x_position">
+                  <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
+                    id="safe_z_home_y_position">
+                  <span class="input-group-text" id="basic-addon2">mm</span>
+                </div>
+                <input type="hidden" name="safe_z_home/home_xy_position" value="0, 0" id="safe_z_home_xy_position">
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probe safe Z home speed</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="safe_z_home/speed" placeholder="100" min="50" required
+                    max="250" step="0.1">
+                  <span class="input-group-text" id="basic-addon2">mm/s</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="container mt-3">
+          <div class="row align-items-start">
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probing bed mesh speed</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="bed_mesh/speed" placeholder="270" min="100" required
+                    max="270" step="1">
+                  <span class="input-group-text" id="basic-addon2">mm/s</span>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probing bed mesh points</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
+                    id="bed_mesh_probe_x_points">
+                  <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
+                    id="bed_mesh_probe_y_points">
+                </div>
+                <input type="hidden" name="bed_mesh/probe_count" value="0, 0" id="bed_mesh_probe_xy_points">
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probing fade start</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="bed_mesh/fade_start" placeholder="5" min="1" required
+                    max="10" step="1">
+                  <span class="input-group-text" id="basic-addon2">mm</span>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="mb-3">
+                <label class="form-label">probing fade end</label>
+                <div class="input-group mb-3">
+                  <input type="number" class="form-control" name="bed_mesh/fade_end" placeholder="50" min="10" required
+                    max="500" step="1">
+                  <span class="input-group-text" id="basic-addon2">mm</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <input type="hidden" name="bed_mesh/mesh_min" value="0, 0" id="probe_xy_offset">
       </div>
     </div>
+    <!-- ----- Extruder configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigExtruder" aria-expanded="false"
+      aria-controls="collapseConfigExtruder" style="bottom: 39%;left: 51%;"></a>
+    <div class="card-configurator card-configurator-x2 collapse" data-bs-parent="#configGroup"
+      id="collapseConfigExtruder" style="top: -7%;left: 35%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Extruder configurations
+        </div>
+        <label class="form-label">Upper band max temperature</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="extruder/max_temp" placeholder="280" min="200" required
+            max="300" step="1">
+          <span class="input-group-text" id="basic-addon2">&deg;C</span>
+        </div>
+        <label class="form-label">Upper band min temperature</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="extruder/min_extrude_temp" placeholder="160" min="0" required
+            max="200" step="1">
+          <span class="input-group-text" id="basic-addon2">&deg;C</span>
+        </div>
+        <label class="form-label">Middle band max temperature</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="extruder1/max_temp" placeholder="280" min="200" required
+            max="300" step="1">
+          <span class="input-group-text" id="basic-addon2">&deg;C</span>
+        </div>
+        <label class="form-label">Lower band max temperature</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="extruder2/max_temp" placeholder="280" min="200" required
+            max="300" step="1">
+          <span class="input-group-text" id="basic-addon2">&deg;C</span>
+        </div>
 
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Motor X Run current</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_x/run_current" placeholder="2" min="1.5" required
-                max="2.5" step="0.1">
-              <span class="input-group-text" id="basic-addon2">A</span>
+        <label class="form-label">Extruder stepper model</label>
+        <div class="input-group mb-3">
+          <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select"
+            name="extruder_stepper_model_select">
+            <option selected value="tmc5160">tmc5160</option>
+            <option value="tmc2209">tmc2209</option>
+          </select>
+        </div>
+        <label class="form-label">Mixing stepper run current</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="mixing_stepper/run_current" placeholder="1.5" min="0.1"
+            required max="2.5" step="0.1">
+          <span class="input-group-text" id="basic-addon2">A</span>
+        </div>
+      </div>
+    </div>
+    <!-- ----- Kinematics configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigKinematics"
+      aria-expanded="false" aria-controls="collapseConfigKinematics" style="bottom: 42%;left: 13%;"></a>
+    <div class="card-configurator collapse" data-bs-parent="#configGroup" id="collapseConfigKinematics"
+      style="top: 19%;left: 0%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Kinematics configurations
+        </div>
+        <label class="form-label">Printer max velocity</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="printer/max_velocity" placeholder="250" min="200" required
+            max="400" step="1">
+          <span class="input-group-text" id="basic-addon2">mm/s</span>
+        </div>
+        <label class="form-label">Printer max acceleration</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="printer/max_accel" placeholder="4000" min="1500" required
+            max="6000" step="1">
+          <span class="input-group-text" id="basic-addon2">mm/s</span>
+        </div>
+        <label class="form-label">Printer square corner velocity</label>
+        <div class="input-group mb-3">
+          <input type="number" class="form-control" name="printer/square_corner_velocity" placeholder="5" min="3"
+            required max="7" step="0.1">
+          <span class="input-group-text" id="basic-addon2">A</span>
+        </div>
+      </div>
+    </div>
+    <!-- ----- Motors configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigMotors" aria-expanded="false"
+      aria-controls="collapseConfigMotors" style="bottom: 15.5%;left: 79.5%;"></a>
+    <div class="card-configurator card-configurator-x3 collapse" data-bs-parent="#configGroup" id="collapseConfigMotors"
+      style="top: 50%;left: 0%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Motors configurations
+        </div>
+        <div class="row">
+          <div class="col">
+            <div class="mb-3">
+              <label class="form-label">Motor X Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_x/run_current" placeholder="2" min="1.5"
+                  required max="2.5" step="0.1">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+
+              <label class="form-label">Motor X Position max</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_x/position_max" placeholder="1050" min="100"
+                  required max="1100" step="1">
+                <span class="input-group-text" id="basic-addon2">mm</span>
+              </div>
+
+              <div class="mb-3 form-check form-switch">
+                <input class="form-check-input" type="checkbox" role="switch" name="stepper_x/invert_rotation">
+                <label class="form-check-label">Invert Motor X Direction</label>
+              </div>
             </div>
-
-            <label class="form-label">Motor X Position max</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_x/position_max" placeholder="1050" min="100"
-                required max="1100" step="1">
-              <span class="input-group-text" id="basic-addon2">mm</span>
+          </div>
+          <div class="col">
+            <div class="mb-3">
+              <label class="form-label">Motor Y Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_y/run_current" placeholder="4" min="3" required
+                  max="5" step="0.1">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
+              <label class="form-label">Motor Y Position max</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_y/position_max" placeholder="1030" min="100"
+                  required max="1050" step="1">
+                <span class="input-group-text" id="basic-addon2">mm</span>
+              </div>
             </div>
 
             <div class="mb-3 form-check form-switch">
-              <input class="form-check-input" type="checkbox" role="switch" name="stepper_x/invert_rotation">
-              <label class="form-check-label">Invert Motor X Direction</label>
+              <input class="form-check-input" type="checkbox" role="switch" name="stepper_Y/invert_rotation">
+              <label class="form-check-label">Invert Motor Y Direction</label>
             </div>
           </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Motor Y Run current</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_y/run_current" placeholder="4" min="3" required
-                max="5" step="0.1">
-              <span class="input-group-text" id="basic-addon2">A</span>
+          <div class="col">
+            <div class="mb-3">
+              <label class="form-label">Motor Z Run current</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_z/run_current" placeholder="7" min="6" required
+                  max="8" step="0.1">
+                <span class="input-group-text" id="basic-addon2">A</span>
+              </div>
             </div>
-            <label class="form-label">Motor Y Position max</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_y/position_max" placeholder="1030" min="100"
-                required max="1050" step="1">
-              <span class="input-group-text" id="basic-addon2">mm</span>
+            <div class="mb-3">
+              <label class="form-label">Motor Z Position max</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_z/position_max" placeholder="1005" min="100"
+                  required max="1050" step="1">
+                <span class="input-group-text" id="basic-addon2">mm</span>
+              </div>
             </div>
-          </div>
 
-          <div class="mb-3 form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" name="stepper_Y/invert_rotation">
-            <label class="form-check-label">Invert Motor Y Direction</label>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Motor Z Run current</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_z/run_current" placeholder="7" min="6" required
-                max="8" step="0.1">
-              <span class="input-group-text" id="basic-addon2">A</span>
-            </div>
-          </div>
-          <div class="mb-3">
-            <label class="form-label">Motor Z Position max</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="stepper_z/position_max" placeholder="1005" min="100"
-                required max="1050" step="1">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-          </div>
-
-          <div class="mb-3 form-check form-switch">
-            <input class="form-check-input" type="checkbox" role="switch" name="stepper_Z/invert_rotation">
-            <label class="form-check-label">Invert Motor Z Direction</label>
-          </div>
-        </div>
-        <!-- 
-      TODO: found how to rimplement this parameters
-      <div class="col">
-        <div class="mb-3">
-          <label class="form-label">Feeding Mixer Run current</label>
-          <div class="input-group mb-3">
-            <input type="number" class="form-control" name="tmc2209 extruder_stepper mixing_stepper/run_current"
-              placeholder="0.7" min="0.5" max="2" step="0.1">
-            <span class="input-group-text" id="basic-addon2">A</span>
-          </div>
-        </div>
-      </div> -->
-      </div>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-5-circle-fill"></i> Probe configurations
-    </div>
-    <!-- Probe -->
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">prove X offset</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="probe/x_offset" id="probe_x_offset" placeholder="0"
-                min="0" required max="100" step="0.01">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">prove Y offset</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="probe/y_offset" id="probe_y_offset" placeholder="90"
-                min="0" required max="100" step="0.01">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probe Z speed</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="probe/speed" placeholder="10" min="1" required max="10"
-                step="0.01">
-              <span class="input-group-text" id="basic-addon2">mm/s</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probling samples</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="probe/samples" placeholder="1" min="1" required max="5"
-                step="1">
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">proble safe Z home X/Y Position</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
-                id="safe_z_home_x_position">
-              <input type="number" class="form-control" placeholder="0" min="0" required max="100" step="1"
-                id="safe_z_home_y_position">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-            <input type="hidden" name="safe_z_home/home_xy_position" value="0, 0" id="safe_z_home_xy_position">
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">proble safe Z home speed</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="safe_z_home/speed" placeholder="100" min="50" required
-                max="250" step="0.1">
-              <span class="input-group-text" id="basic-addon2">mm/s</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probing bed mesh speed</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="bed_mesh/speed" placeholder="270" min="100" required
-                max="270" step="1">
-              <span class="input-group-text" id="basic-addon2">mm/s</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probing bed mesh points</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
-                id="bed_mesh_probe_x_points">
-              <input type="number" class="form-control" placeholder="12" min="2" required max="30" step="1"
-                id="bed_mesh_probe_y_points">
-            </div>
-            <input type="hidden" name="bed_mesh/probe_count" value="0, 0" id="bed_mesh_probe_xy_points">
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probing fade start</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="bed_mesh/fade_start" placeholder="5" min="1" required
-                max="10" step="1">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">probing fade end</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="bed_mesh/fade_end" placeholder="50" min="10" required
-                max="500" step="1">
-              <span class="input-group-text" id="basic-addon2">mm</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <input type="hidden" name="bed_mesh/mesh_min" value="0, 0" id="probe_xy_offset">
-  </div>
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-6-circle-fill"></i> Kinematics configurations
-    </div>
-    <!-- Kinematics -->
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Printer max velocity</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="printer/max_velocity" placeholder="250" min="200" required
-                max="400" step="1">
-              <span class="input-group-text" id="basic-addon2">mm/s</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Printer max acceleration</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="printer/max_accel" placeholder="4000" min="1500" required
-                max="6000" step="1">
-              <span class="input-group-text" id="basic-addon2">mm/s</span>
-            </div>
-          </div>
-        </div>
-        <div class="col">
-          <div class="mb-3">
-            <label class="form-label">Printer square corner velocity</label>
-            <div class="input-group mb-3">
-              <input type="number" class="form-control" name="printer/square_corner_velocity" placeholder="5" min="3"
-                required max="7" step="0.1">
-              <span class="input-group-text" id="basic-addon2">A</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="card mb-3">
-    <div class="card-header">
-      <i class="bi bi-7-circle-fill"></i> Boards configurations
-    </div>
-    <!-- Serials -->
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <!-- Serial Main board -->
-            <label class="form-label">Serial Mainboard</label>
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" name="mcu/serial" id="mainboardSerial" readonly>
-              <button class="btn btn-outline-secondary" type="button" id="updateMainboardSerial">Update</button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="container mt-3">
-      <div class="row align-items-start">
-        <div class="col">
-          <div class="mb-3">
-            <!-- Serial Main board -->
-            <label class="form-label">Serial Extruder board</label>
-            <div class="input-group mb-3">
-              <input type="text" class="form-control" name="mcu extruder_board/serial" id="extruderBoardSerial"
-                readonly>
-              <button class="btn btn-outline-secondary" type="button" id="updateExtruderBoardSerial">Update</button>
+            <div class="mb-3 form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" name="stepper_Z/invert_rotation">
+              <label class="form-check-label">Invert Motor Z Direction</label>
             </div>
           </div>
         </div>
