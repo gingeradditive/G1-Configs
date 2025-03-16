@@ -340,8 +340,8 @@
   </div>
 
   <!-- Button trigger modal -->
-  <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    Generate Printer.cfg
+  <button type="button" class="btn btn-success btn-configurator-save" data-bs-toggle="modal" data-bs-target="#exampleModal">
+    <i class="bi bi-floppy-fill"></i> Save Configuration
   </button>
 
   <!-- Modal -->
@@ -353,7 +353,10 @@
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-          Are you sure you want to generate the printer.cfg file? This action will overwrite the existing file.
+          <strong>⚠️ Warning:</strong> Proceeding will overwrite the <code>printer.cfg</code> file. Any manual changes
+          or
+          old configurations will be lost.
+          We strongly recommend making a backup of the file before continuing.
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -364,50 +367,41 @@
   </div>
 
   <!-- First Modal: Error and choice -->
-<div class="modal fade" id="configErrorModal" tabindex="-1" aria-labelledby="configErrorModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content rounded-4">
-      <div class="modal-header">
-        <h5 class="modal-title" id="configErrorModalLabel">Configuration not found</h5>
-      </div>
-      <div class="modal-body">
-        No previous configuration for the G1 3D printer was detected.<br>
-        Would you like to download a default configuration or start with a clean base?
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-outline-secondary" id="startCleanBtn">Start Clean Configuration</button>
-        <button type="button" class="btn btn-primary" id="downloadDefaultBtn">Download Default Configuration</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- Second Modal: Insert Batch -->
-<div class="modal fade" id="batchModal" tabindex="-1" aria-labelledby="batchModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content rounded-4">
-      <div class="modal-header">
-        <h5 class="modal-title" id="batchModalLabel">Enter Machine Batch</h5>
-      </div>
-      <div class="modal-body">
-        <label for="batchInput" class="form-label">Machine Batch number (e.g. L01_25):</label>
-        <input type="text" class="form-control" id="batchInput" placeholder="L01_25">
-        <div id="batchError" class="text-danger mt-2 d-none">Invalid Batch number or download failed.</div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-primary" id="confirmBatchDownload">Download Configuration</button>
+  <div class="modal fade" id="configErrorModal" tabindex="-1" aria-labelledby="configErrorModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="configErrorModalLabel">Configuration not found</h5>
+        </div>
+        <div class="modal-body">
+          No previous configuration for the G1 3D printer was detected.<br>
+          Would you like to download a default configuration or start with a clean base?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-outline-secondary" id="startCleanBtn">Start Clean Configuration</button>
+          <button type="button" class="btn btn-primary" id="downloadDefaultBtn">Download Default Configuration</button>
+        </div>
       </div>
     </div>
   </div>
-</div>
 
+  <!-- Second Modal: Insert Batch -->
+  <div class="modal fade" id="batchModal" tabindex="-1" aria-labelledby="batchModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content rounded-4">
+        <div class="modal-header">
+          <h5 class="modal-title" id="batchModalLabel">Enter Machine Batch</h5>
+        </div>
+        <div class="modal-body">
+          <label for="batchInput" class="form-label">Machine Batch number (e.g. L01_25):</label>
+          <input type="text" class="form-control" id="batchInput" placeholder="L01_25">
+          <div id="batchError" class="text-danger mt-2 d-none">Invalid Batch number or download failed.</div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" id="confirmBatchDownload">Download Configuration</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </form>
-
-<div class="alert alert-warning" role="alert">
-  <p class="mb-0">
-    <strong>⚠️ Warning:</strong> Proceeding will overwrite the <code>printer.cfg</code> file. Any manual changes
-    or
-    old configurations will be lost.
-    We strongly recommend making a backup of the file before continuing.
-  </p>
-</div>

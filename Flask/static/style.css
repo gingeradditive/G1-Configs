@@ -93,8 +93,8 @@ body {
 }
 
 .configuratorBackground {
-    width: 900px;
-    height: 900px;
+    height: calc(100vh - 50px);
+    aspect-ratio: 1;
     background-size: 100% 100%;
     position: relative;
     margin: auto;
@@ -120,6 +120,12 @@ body {
     width: 32px;
     height: 32px;
     margin: -8px;
+}
+
+.btn-configurator-save{
+    position: fixed;
+    bottom: 16px;
+    right: 16px;
 }
 
 .card-configurator {
