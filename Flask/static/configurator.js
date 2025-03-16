@@ -1,91 +1,147 @@
+function loadConfigurations(data) {
+    $('#configuratorForm input, #configuratorForm textarea, #configuratorForm select').each(function () {
+        const inputName = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
+        if (inputName) {
+            // Suddividi l'ID su base "/" per accedere ai dati nel JSON
+            const keys = inputName.split('/'); // ["heater_bed", "max_power"]
+
+
+            // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
+            const keysToCheck = [
+                "tmc5160 extruder_stepper mixing_stepper",
+                "tmc2209 extruder_stepper mixing_stepper"
+            ];
+            if (!data["mixing_stepper"])
+                data["mixing_stepper"] = {};
+            for (const key of keysToCheck) {
+                if (data[key]?.run_current) {
+                    data["mixing_stepper"]["run_current"] = data[key].run_current;
+                    break; // Esci dal ciclo una volta trovato il primo valore valido
+                }
+            }
+            data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
+            data["stepper_y"]["run_current"] = data["tmc5160 stepper_y"]["run_current"];
+            data["stepper_z"]["run_current"] = data["tmc5160 stepper_z"]["run_current"];
+
+
+            // Usa i keys per navigare nel JSON
+            let value = data;
+            keys.forEach(key => {
+                if (value && value[key] !== undefined) {
+                    value = value[key];
+                } else {
+                    value = null; // Se una chiave non esiste, assegna null
+                }
+            });
+
+            // Imposta il valore dell'input
+            if (value !== null) {
+                $(this).val(value);
+                console.log(`Valorizzato ${inputName} con: ${value}`);
+            } else {
+                console.warn(`Nessun valore trovato per: ${inputName}`);
+            }
+
+            // compila campi "speciali"
+            if (inputName === 'safe_z_home/home_xy_position') {
+                const x = $(this).val().split(', ')[0];
+                const y = $(this).val().split(', ')[1];
+                $('#safe_z_home_x_position').val(x);
+                $('#safe_z_home_y_position').val(y);
+            } else if (inputName === 'bed_mesh/probe_count') {
+                const x = $(this).val().split(', ')[0];
+                const y = $(this).val().split(', ')[1];
+                $('#bed_mesh_probe_x_points').val(x);
+                $('#bed_mesh_probe_y_points').val(y);
+            }
+
+            if (inputName === 'heater_bed/max_power') {
+                $('#heater_bed_max_power_percentage').val(value * 100);
+            }
+
+            // check if data has "tmc2209 extruder_stepper mixing_stepper" key
+            if (inputName === 'extruder_stepper_model_select') {
+                if (data["tmc2209 extruder_stepper mixing_stepper"])
+                    $('#extruder_stepper_model_select').val('tmc2209');
+                else if (data["tmc5160 extruder_stepper mixing_stepper"])
+                    $('#extruder_stepper_model_select').val('tmc5160');
+            }
+        }
+    });
+}
+
+
 $.ajax({
     url: '/tools/backend/read-printer-cfg',
     method: 'GET',
     dataType: 'json',
-    success: function (response) {
-        $('#configuratorForm input, #configuratorForm textarea, #configuratorForm select').each(function () {
-            const inputName = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
-            if (inputName) {
-                // Suddividi l'ID su base "/" per accedere ai dati nel JSON
-                const keys = inputName.split('/'); // ["heater_bed", "max_power"]
-
-
-                // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
-                const keysToCheck = [
-                    "tmc5160 extruder_stepper mixing_stepper",
-                    "tmc2209 extruder_stepper mixing_stepper"
-                ];
-                if (!response["mixing_stepper"])
-                    response["mixing_stepper"] = {};
-                for (const key of keysToCheck) {
-                    if (response[key]?.run_current) {
-                        response["mixing_stepper"]["run_current"] = response[key].run_current;
-                        break; // Esci dal ciclo una volta trovato il primo valore valido
-                    }
-                }
-                response["stepper_x"]["run_current"] = response["tmc5160 stepper_x"]["run_current"];
-                response["stepper_y"]["run_current"] = response["tmc5160 stepper_y"]["run_current"];
-                response["stepper_z"]["run_current"] = response["tmc5160 stepper_z"]["run_current"];
-
-
-                // Usa i keys per navigare nel JSON
-                let value = response;
-                keys.forEach(key => {
-                    if (value && value[key] !== undefined) {
-                        value = value[key];
-                    } else {
-                        value = null; // Se una chiave non esiste, assegna null
-                    }
-                });
-
-                // Imposta il valore dell'input
-                if (value !== null) {
-                    $(this).val(value);
-                    console.log(`Valorizzato ${inputName} con: ${value}`);
-                } else {
-                    console.warn(`Nessun valore trovato per: ${inputName}`);
-                }
-
-                // compila campi "speciali"
-                if (inputName === 'safe_z_home/home_xy_position') {
-                    const x = $(this).val().split(', ')[0];
-                    const y = $(this).val().split(', ')[1];
-                    $('#safe_z_home_x_position').val(x);
-                    $('#safe_z_home_y_position').val(y);
-                } else if (inputName === 'bed_mesh/probe_count') {
-                    const x = $(this).val().split(', ')[0];
-                    const y = $(this).val().split(', ')[1];
-                    $('#bed_mesh_probe_x_points').val(x);
-                    $('#bed_mesh_probe_y_points').val(y);
-                }
-
-                if (inputName === 'heater_bed/max_power') {
-                    $('#heater_bed_max_power_percentage').val(value * 100);
-                }
-
-                // check if response has "tmc2209 extruder_stepper mixing_stepper" key
-                if (inputName === 'extruder_stepper_model_select') {
-                    if (response["tmc2209 extruder_stepper mixing_stepper"])
-                        $('#extruder_stepper_model_select').val('tmc2209');
-                    else if (response["tmc5160 extruder_stepper mixing_stepper"])
-                        $('#extruder_stepper_model_select').val('tmc5160');
-                }
-            }
-        });
+    success: function (data) {
+        loadConfigurations(data);
     },
     error: function (xhr, status, error) {
-        console.log("Loading default value");
-        //set every input to placeholder value
-        $('#configuratorForm input, #configuratorForm textarea').each(function () {
-            $(this).val($(this).attr('placeholder')).trigger('change');
+        // Show the first modal
+        const configErrorModal = new bootstrap.Modal(document.getElementById('configErrorModal'));
+        configErrorModal.show();
+
+        // Handle "Start Clean" button
+        $('#startCleanBtn').off('click').on('click', function () {
+            configErrorModal.hide();
+
+            // Set every input to placeholder value
+            $('#configuratorForm input, #configuratorForm textarea').each(function () {
+                $(this).val($(this).attr('placeholder')).trigger('change');
+            });
+
+            // Trigger updates
+            $('#updateMainboardSerial').trigger('click');
+            $('#updateExtruderBoardSerial').trigger('click');
         });
 
-        // triggger updates buttons 
-        $('#updateMainboardSerial').trigger('click');
-        $('#updateExtruderBoardSerial').trigger('click');
+        // Handle "Download Default" button
+        $('#downloadDefaultBtn').off('click').on('click', function () {
+            configErrorModal.hide();
+            const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
+            batchModal.show();
+        });
 
-        // alert that default value has been loaded
-        alert("Configuration file not found, loaded default values");
+        // Handle "Confirm Download" button
+        $('#confirmBatchDownload').off('click').on('click', function () {
+            const batch = $('#batchInput').val().trim();
+            const $batchError = $('#batchError');
+
+            // Reset error state
+            $batchError.addClass('d-none').text('');
+
+            if (!batch) {
+                $batchError.removeClass('d-none').text("Please enter a valid Batch number.");
+                return;
+            }
+
+            // Disable button during request
+            $('#confirmBatchDownload').prop('disabled', true).text('Downloading...');
+
+            // AJAX request
+            $.ajax({
+                url: `https://www.gingeradditive.com/wp-json/g1/v1/RestoreG1Config?lotto=${encodeURIComponent(batch)}`,
+                method: 'GET',
+                success: function (data) {
+                    // TODO: handle config restore using returned `data`
+                    const batchModal = bootstrap.Modal.getInstance(document.getElementById('batchModal'));
+                    batchModal.hide();
+                    loadConfigurations(data);
+                    // Trigger updates
+                    $('#updateMainboardSerial').trigger('click');
+                    $('#updateExtruderBoardSerial').trigger('click');
+                },
+                error: function (xhr, status, error) {
+                    // Show error inside the modal
+                    $batchError.removeClass('d-none').text("Download failed. Please check the Batch number and try again.");
+                },
+                complete: function () {
+                    $('#confirmBatchDownload').prop('disabled', false).text('Download Configuration');
+                }
+            });
+        });
     }
 });
 
@@ -94,9 +150,9 @@ $("#updateMainboardSerial").click(function () {
     $.ajax({
         url: '/tools/backend/update-mainboard-serial',
         method: 'GET',
-        success: function (response) {
-            if (response.success) {
-                $('#mainboardSerial').val(response.serial);
+        success: function (data) {
+            if (data.success) {
+                $('#mainboardSerial').val(data.serial);
                 console.log("Serial mainboard aggiornato");
             }
         },
@@ -110,9 +166,9 @@ $("#updateExtruderBoardSerial").click(function () {
     $.ajax({
         url: '/tools/backend/update-extruder-board-serial',
         method: 'GET',
-        success: function (response) {
-            if (response.success) {
-                $('#extruderBoardSerial').val(response.serial);
+        success: function (data) {
+            if (data.success) {
+                $('#extruderBoardSerial').val(data.serial);
                 console.log("Serial extruder board aggiornato");
             }
         },
