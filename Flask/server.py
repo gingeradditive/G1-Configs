@@ -10,19 +10,29 @@ app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 if os.name == "nt":
     basePath = os.getcwd()
-    configPath = os.path.normpath(os.path.join(basePath, "..", "out", "config"))
-    databasePath = os.path.normpath(os.path.join(basePath, "..", "out", "database"))
+    configPath = os.path.normpath(
+        os.path.join(basePath, "..", "out", "config"))
+    databasePath = os.path.normpath(
+        os.path.join(basePath, "..", "out", "database"))
 
-    backupConfigPath = os.path.normpath(os.path.join(basePath, "..", "Configs"))
+    backupConfigPath = os.path.normpath(
+        os.path.join(basePath, "..", "Configs"))
     backupStylesPath = os.path.normpath(os.path.join(basePath, "..", "Styles"))
-    backupDatabasePath = os.path.normpath(os.path.join(basePath, "..", "Database"))
+    backupDatabasePath = os.path.normpath(
+        os.path.join(basePath, "..", "Database"))
 else:
-    configPath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "config"))
-    databasePath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "database"))
+    configPath = os.path.normpath(os.path.join(
+        "/home", "pi", "printer_data", "config"))
+    databasePath = os.path.normpath(os.path.join(
+        "/home", "pi", "printer_data", "database"))
 
-    backupConfigPath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Configs"))
-    backupStylesPath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Styles"))
-    backupDatabasePath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Database"))
+    backupConfigPath = os.path.normpath(
+        os.path.join("/home", "pi", "G1-Configs", "Configs"))
+    backupStylesPath = os.path.normpath(
+        os.path.join("/home", "pi", "G1-Configs", "Styles"))
+    backupDatabasePath = os.path.normpath(
+        os.path.join("/home", "pi", "G1-Configs", "Database"))
+
 
 @app.route('/tools/static/<path:path>')
 def send_report(path):
@@ -127,10 +137,10 @@ def write_printer_cfg():
         outfile.write('\n')
         outfile.write('[fan]\n')
         outfile.write('pin: extruder_board: PD3  #D3\n')
-        outfile.write('cycle_time: 0.2\n')
+        outfile.write('cycle_time: 0.005\n')
         outfile.write('hardware_pwm: False\n')
         outfile.write('kick_start_time: 0.5\n')
-        outfile.write('off_below: 0.2\n')
+        outfile.write('off_below: 0.1\n')
         outfile.write('\n')
         outfile.write(
             '################################# Etruder #####################################\n')
@@ -187,7 +197,12 @@ def write_printer_cfg():
             '#-------------------------------------------------------------------------------\n')
         outfile.write('[extruder]\n')
         outfile.write('step_pin: PF9\n')
-        outfile.write('dir_pin: PF10\n')
+
+        if "extruder/invert_rotation" in values:
+            outfile.write('dir_pin: !PF10\n')
+        else:
+            outfile.write('dir_pin: PF10\n')
+
         outfile.write('enable_pin: !PG2 \n')
         outfile.write('microsteps: 8\n')
         outfile.write('rotation_distance: 456\n')
@@ -353,7 +368,7 @@ def write_printer_cfg():
         outfile.write('  _GINGER_PROBE_UP\n')
         outfile.write('\n')
         outfile.write('[safe_z_home]\n')
-        outfile.write('home_xy_position: 0, 0\n')
+        outfile.write('home_xy_position: ' + values["safe_z_home/home_xy_position"] + '\n')
         outfile.write('speed: ' + values["safe_z_home/speed"] + '\n')
         outfile.write('z_hop: 15\n')
         outfile.write('z_hop_speed: 8.0\n')
@@ -363,8 +378,8 @@ def write_printer_cfg():
         outfile.write(
             'horizontal_move_z: 20 #15; Da scegliere a seconda dello z offset, deve essere di più\n')
         outfile.write('mesh_min: 0, 90\n')
-        outfile.write('mesh_max: 1000, 1000 #1000\n')
-        outfile.write('probe_count: 12, 12\n')
+        outfile.write('mesh_max: ' + values["bed_mesh/mesh_max"] + ' #1000\n')
+        outfile.write('probe_count: ' + values["bed_mesh/probe_count"] + '\n')
         outfile.write('fade_start: ' + values["bed_mesh/fade_start"] + '\n')
         outfile.write('fade_end: ' + values["bed_mesh/fade_end"] + '\n')
         outfile.write('algorithm: bicubic\n')
@@ -401,7 +416,8 @@ def write_printer_cfg():
         outfile.write('\n')
         outfile.write('[printer]\n')
         outfile.write('kinematics: cartesian\n')
-        outfile.write('max_velocity: 250 #up to 300           \n')
+        outfile.write('max_velocity: ' +
+                      values["printer/max_velocity"]+' #up to 300           \n')
         outfile.write('max_accel: 4000                \n')
         outfile.write('max_z_velocity: 10               \n')
         outfile.write('max_z_accel: 500                 \n')
@@ -425,29 +441,33 @@ def write_printer_cfg():
         outfile.write('# Axis: X\n')
         outfile.write(
             '#-------------------------------------------------------------------------------\n')
-        outfile.write('[stepper_x]\n')
+        outfile.write('[stepper_X]\n')
         outfile.write('step_pin: PF13\n')
-        outfile.write('dir_pin: PF12\n')
+        if "stepper_X/invert_rotation" in values:
+            outfile.write('dir_pin: !PF12\n')
+        else:
+            outfile.write('dir_pin: PF12\n')
         outfile.write('enable_pin: !PF14\n')
-        outfile.write('microsteps: 16\n')
-        outfile.write('rotation_distance: 60\n')
+        outfile.write('microsteps: 8\n')
+        outfile.write('rotation_distance: ' +
+                      values["stepper_X/rotation_distance"] + '\n')
         outfile.write('full_steps_per_rotation: 200\n')
         outfile.write('step_pulse_duration: 0.00001 #0.000002\n')
         outfile.write('endstop_pin: PG6\n')
         outfile.write('position_endstop: 0\n')
         outfile.write('position_max: ' +
-                      values["stepper_x/position_max"] + '\n')
+                      values["stepper_X/position_max"] + '\n')
         outfile.write('homing_speed: 40\n')
         outfile.write('homing_retract_dist: 5\n')
         outfile.write('homing_retract_speed: 20\n')
         outfile.write('second_homing_speed: 10\n')
         outfile.write('\n')
-        outfile.write('[tmc5160 stepper_x]\n')
+        outfile.write('[tmc5160 stepper_X]\n')
         outfile.write('cs_pin: PC4\n')
         outfile.write('spi_software_miso_pin: PA6\n')
         outfile.write('spi_software_mosi_pin: PA7\n')
         outfile.write('spi_software_sclk_pin: PA5\n')
-        outfile.write('run_current: ' + values["stepper_x/run_current"] + '\n')
+        outfile.write('run_current: ' + values["stepper_X/run_current"] + '\n')
         outfile.write('sense_resistor: 0.022\n')
         outfile.write('#stealthchop_threshold: 999999\n')
         outfile.write('interpolate: False\n')
@@ -457,29 +477,33 @@ def write_printer_cfg():
         outfile.write('# Axis: Y\n')
         outfile.write(
             '#-------------------------------------------------------------------------------\n')
-        outfile.write('[stepper_y]\n')
+        outfile.write('[stepper_Y]\n')
         outfile.write('step_pin: PG0\n')
-        outfile.write('dir_pin: PG1\n')
+        if "stepper_Y/invert_rotation" in values:
+            outfile.write('dir_pin: !PG1\n')
+        else:
+            outfile.write('dir_pin: PG1\n')
         outfile.write('enable_pin: !PF15\n')
-        outfile.write('microsteps: 16\n')
-        outfile.write('rotation_distance: 60\n')
+        outfile.write('microsteps: 8\n')
+        outfile.write('rotation_distance: ' +
+                      values["stepper_Y/rotation_distance"] + '\n')
         outfile.write('full_steps_per_rotation: 200\n')
         outfile.write('step_pulse_duration: 0.00001 #0.000002\n')
         outfile.write('endstop_pin: PG9\n')
         outfile.write('position_endstop: 0\n')
         outfile.write('position_max: ' +
-                      values["stepper_y/position_max"] + '\n')
+                      values["stepper_Y/position_max"] + '\n')
         outfile.write('homing_speed: 40\n')
         outfile.write('homing_retract_dist: 5\n')
         outfile.write('homing_retract_speed: 20\n')
         outfile.write('second_homing_speed: 10\n')
         outfile.write('\n')
-        outfile.write('[tmc5160 stepper_y]\n')
+        outfile.write('[tmc5160 stepper_Y]\n')
         outfile.write('cs_pin: PD11\n')
         outfile.write('spi_software_miso_pin: PA6\n')
         outfile.write('spi_software_mosi_pin: PA7\n')
         outfile.write('spi_software_sclk_pin: PA5\n')
-        outfile.write('run_current: ' + values["stepper_y/run_current"] + '\n')
+        outfile.write('run_current: ' + values["stepper_Y/run_current"] + '\n')
         outfile.write('sense_resistor: 0.022\n')
         outfile.write('#stealthchop_threshold: 999999\n')
         outfile.write('interpolate: False\n')
@@ -489,12 +513,16 @@ def write_printer_cfg():
         outfile.write('# Axis: Z\n')
         outfile.write(
             '#-------------------------------------------------------------------------------\n')
-        outfile.write('[stepper_z]\n')
+        outfile.write('[stepper_Z]\n')
         outfile.write('step_pin: PF11\n')
-        outfile.write('dir_pin: !PG3\n')
+        if "stepper_Z/invert_rotation" in values:
+            outfile.write('dir_pin: !PG3\n')
+        else:
+            outfile.write('dir_pin: PG3\n')
         outfile.write('enable_pin: !PG5\n')
         outfile.write('microsteps: 8\n')
-        outfile.write('rotation_distance: 4 #passo vite\n')
+        outfile.write('rotation_distance: ' +
+                      values["stepper_Z/rotation_distance"] + ' #passo vite\n')
         outfile.write('full_steps_per_rotation: 200\n')
         outfile.write('step_pulse_duration: 0.00002\n')
         outfile.write('endstop_pin: probe:z_virtual_endstop\n')
@@ -502,18 +530,18 @@ def write_printer_cfg():
         outfile.write('#position_endstop: 15 #sarebbe il mio zeta offset?\n')
         outfile.write('position_min: -5\n')
         outfile.write('position_max: ' +
-                      values["stepper_z/position_max"] + '\n')
+                      values["stepper_Z/position_max"] + '\n')
         outfile.write('homing_speed: 7\n')
         outfile.write('homing_retract_dist: 2\n')
         outfile.write('homing_retract_speed: 8\n')
         outfile.write('second_homing_speed: 5\n')
         outfile.write('\n')
-        outfile.write('[tmc5160 stepper_z]\n')
+        outfile.write('[tmc5160 stepper_Z]\n')
         outfile.write('cs_pin: PC6\n')
         outfile.write('spi_software_miso_pin: PA6\n')
         outfile.write('spi_software_mosi_pin: PA7\n')
         outfile.write('spi_software_sclk_pin: PA5\n')
-        outfile.write('run_current: ' + values["stepper_z/run_current"] + '\n')
+        outfile.write('run_current: ' + values["stepper_Z/run_current"] + '\n')
         outfile.write('hold_current: 4\n')
         outfile.write('sense_resistor: 0.022\n')
         outfile.write('#stealthchop_threshold: 999999\n')
@@ -553,12 +581,13 @@ def write_printer_cfg():
         return redirect(f"/tools")
     else:
         try:
-            subprocess.run(["sudo", "systemctl", "restart", "klipper.service"], check=True)
+            subprocess.run(["sudo", "systemctl", "restart",
+                           "klipper.service"], check=True)
             host = request.host.split(':')[0]
             return redirect(f"http://{host}:80/")
         except subprocess.CalledProcessError as e:
             return jsonify({"success": False, "error": e.stderr}), 500
-    
+
 
 @app.route("/tools/backend/update-mainboard-serial", methods=["GET"])
 def update_mainboard_serial():
@@ -633,7 +662,7 @@ def restore_moonraker_conf():
         return redirect("/tools/utilities")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
-    
+
 
 @app.route("/tools/backend/restore-mainsail-theme", methods=["POST"])
 def restore_mainsail_theme():
@@ -706,11 +735,12 @@ def check_files():
         print("")
         result[file_key] = hash1 == hash2 if hash1 and hash2 else None
 
-    # check printer.cfg exist 
-    result["printer.cfg"] = os.path.isfile(os.path.join(configPath, "printer.cfg"))
-    
-    return jsonify(result) 
-    
+    # check printer.cfg exist
+    result["printer.cfg"] = os.path.isfile(
+        os.path.join(configPath, "printer.cfg"))
+
+    return jsonify(result)
+
 
 @app.route("/tools/backend/moonraker-db-reset", methods=["POST"])
 def moonraker_db_reset():
@@ -723,12 +753,13 @@ def moonraker_db_reset():
         return redirect("/tools/utilities")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
-    
+
 
 @app.route("/tools/backend/read-printer-hostname", methods=["GET"])
 def read_printer_hostname():
     hostname = socket.gethostname()
     return jsonify({"hostname": hostname})
+
 
 @app.route("/tools/backend/set-printer-hostname", methods=["POST"])
 def set_printer_hostname():
@@ -741,17 +772,17 @@ def set_printer_hostname():
         if os.path.exists(themeFolderPath + "/navi.json"):
             with open(themeFolderPath + "/navi.json", "r") as json_file:
                 config = json.load(json_file)
-            
+
             for item in config:
                 if "href" in item:
                     item["href"] = f"http://{new_hostname}.local:5000/tools"
-            
+
             with open(themeFolderPath + "/navi.json", "w") as json_file:
                 json.dump(config, json_file, indent=2)
 
         if os.name == "nt":
             print("Set new hostname to " + new_hostname)
-        else: 
+        else:
             with open("/etc/hostname", "w") as hostname_file:
                 hostname_file.write(new_hostname + "\n")
             os.system("sudo reboot")
@@ -767,6 +798,7 @@ def set_printer_hostname():
 def back_to_mainsail():
     host = request.host.split(':')[0]
     return redirect(f"http://{host}:80/")
+
 
 @app.route("/tools/run/<script_name>", methods=["POST"])
 def run_script(script_name):

@@ -19,9 +19,9 @@ function loadConfigurations(data) {
                     break; // Esci dal ciclo una volta trovato il primo valore valido
                 }
             }
-            data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
-            data["stepper_y"]["run_current"] = data["tmc5160 stepper_y"]["run_current"];
-            data["stepper_z"]["run_current"] = data["tmc5160 stepper_z"]["run_current"];
+            data["stepper_X"]["run_current"] = data["tmc5160 stepper_X"]["run_current"];
+            data["stepper_Y"]["run_current"] = data["tmc5160 stepper_Y"]["run_current"];
+            data["stepper_Z"]["run_current"] = data["tmc5160 stepper_Z"]["run_current"];
 
 
             // Usa i keys per navigare nel JSON
@@ -53,6 +53,11 @@ function loadConfigurations(data) {
                 const y = $(this).val().split(', ')[1];
                 $('#bed_mesh_probe_x_points').val(x);
                 $('#bed_mesh_probe_y_points').val(y);
+            } else if (inputName === 'bed_mesh/mesh_max') {
+                const x = $(this).val().split(', ')[0];
+                const y = $(this).val().split(', ')[1];
+                $('#bed_max_x').val(x);
+                $('#bed_max_y').val(y);
             }
 
             if (inputName === 'heater_bed/max_power') {
@@ -66,6 +71,16 @@ function loadConfigurations(data) {
                 else if (data["tmc5160 extruder_stepper mixing_stepper"])
                     $('#extruder_stepper_model_select').val('tmc5160');
             }
+
+            // Select prevous motor direction 
+            if(inputName == "stepper_X/invert_rotation")
+                $("[name='stepper_X/invert_rotation']").prop('checked', data["stepper_X"]["dir_pin"].includes("!"));
+            if(inputName == "stepper_Y/invert_rotation")
+                $("[name='stepper_Y/invert_rotation']").prop('checked', data["stepper_Y"]["dir_pin"].includes("!"));
+            if(inputName == "stepper_Z/invert_rotation")
+                $("[name='stepper_Z/invert_rotation']").prop('checked', data["stepper_Z"]["dir_pin"].includes("!"));
+            if(inputName == "extruder/invert_rotation")
+                $("[name='extruder/invert_rotation']").prop('checked', data["extruder"]["dir_pin"].includes("!"));
         }
     });
 }
@@ -188,6 +203,12 @@ $('#bed_mesh_probe_x_points, #bed_mesh_probe_y_points').change(function () {
     const x = $('#bed_mesh_probe_x_points').val();
     const y = $('#bed_mesh_probe_y_points').val();
     $('#bed_mesh_probe_xy_points').val(`${x}, ${y}`);
+});
+
+$('#bed_max_x, #bed_max_y').change(function () {
+    const x = $('#bed_max_x').val();
+    const y = $('#bed_max_y').val();
+    $('#bed_max_xy').val(`${x}, ${y}`);
 });
 
 $('#probe_x_offset, #probe_y_offset').change(function () {

@@ -19,6 +19,14 @@
           <input type="number" class="form-control" name="heater_bed/max_temp" placeholder="110" min="90" max="120" required step="1">
           <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
+        <div class="mb-3">
+          <label class="form-label">bed max size</label>
+          <div class="input-group mb-3">
+            <input type="number" class="form-control" placeholder="1000" min="600" required="" max="1000" step="1" id="bed_max_x">
+            <input type="number" class="form-control" placeholder="1000" min="600" required="" max="1100" step="1" id="bed_max_y">
+          </div>
+          <input type="hidden" name="bed_mesh/mesh_max" value="12, 12" id="bed_max_xy">
+        </div>
       </div>
     </div>
     <!-- ----- Boards configurations ----- -->
@@ -158,8 +166,8 @@
       </div>
     </div>
     <!-- ----- Extruder configurations ----- -->
-    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigExtruder" aria-expanded="false" aria-controls="collapseConfigExtruder" style="bottom: 39%;left: 51%;"></a>
-    <div class="card-configurator card-configurator-x2 collapse card-configurator-bc" data-bs-parent="#configGroup" id="collapseConfigExtruder" style="bottom: 39%;left: 51%;">
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigExtruder" aria-expanded="false" aria-controls="collapseConfigExtruder" style="bottom: 39%;left: 50%;"></a>
+    <div class="card-configurator card-configurator-x2 collapse card-configurator-bc" data-bs-parent="#configGroup" id="collapseConfigExtruder" style="bottom: 39%;left: 50%;">
       <div class="card card-body">
         <div class="card-header">
           Extruder configurations
@@ -184,18 +192,36 @@
           <input type="number" class="form-control" name="extruder2/max_temp" placeholder="280" min="200" required max="300" step="1">
           <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
-
-        <label class="form-label">Extruder stepper model</label>
-        <div class="input-group mb-3">
-          <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select" name="extruder_stepper_model_select">
-            <option selected value="tmc5160">tmc5160</option>
-            <option value="tmc2209">tmc2209</option>
-          </select>
+      </div>
+    </div>
+    <!-- ----- Extruder Motors configurations ----- -->
+    <a class="btn-configurator" data-bs-toggle="collapse" data-bs-target="#collapseConfigExtruderMotors" aria-expanded="false" aria-controls="collapseConfigExtruderMotors" style="bottom: 55%;left: 50%;"></a>
+    <div class="card-configurator card-configurator-x2 collapse card-configurator-bc" data-bs-parent="#configGroup" id="collapseConfigExtruderMotors" style="bottom: 55%;left: 50%;">
+      <div class="card card-body">
+        <div class="card-header">
+          Extruder motors configurations
         </div>
-        <label class="form-label">Mixing stepper run current</label>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="mixing_stepper/run_current" placeholder="1.5" min="0.1" required max="2.5" step="0.1">
-          <span class="input-group-text" id="basic-addon2">A</span>
+        <div class="row">
+          <div class="col">
+            <label class="form-label">Extruder stepper model</label>
+            <div class="input-group mb-3">
+              <select class="form-select" aria-label="Default select example" id="extruder_stepper_model_select" name="extruder_stepper_model_select">
+                <option selected value="tmc5160">tmc5160</option>
+                <option value="tmc2209">tmc2209</option>
+              </select>
+            </div>
+            <div class="mb-3 form-check form-switch">
+              <input class="form-check-input" type="checkbox" role="switch" name="extruder/invert_rotation">
+              <label class="form-check-label">Invert direction (Extruder)</label>
+            </div>
+          </div>
+          <div class="col">
+            <label class="form-label">Mixing stepper run current</label>
+            <div class="input-group mb-3">
+              <input type="number" class="form-control" name="mixing_stepper/run_current" placeholder="1.5" min="0.1" required max="2.5" step="0.1">
+              <span class="input-group-text" id="basic-addon2">A</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -208,11 +234,11 @@
         </div>
         <label class="form-label">Printer max velocity</label>
         <div class="input-group mb-3">
-          <input type="number" class="form-control" name="printer/max_velocity" placeholder="250" min="200" required max="400" step="1">
+          <input type="number" class="form-control" name="printer/max_velocity" placeholder="250" min="200" required max="320" step="1">
           <span class="input-group-text" id="basic-addon2">mm/s</span>
         </div>
         <label class="form-label">Printer max acceleration</label>
-        <div class="input-group mb-3">
+        <div class="input-group mb-3">  
           <input type="number" class="form-control" name="printer/max_accel" placeholder="4000" min="1500" required max="6000" step="1">
           <span class="input-group-text" id="basic-addon2">mm/s</span>
         </div>
@@ -235,19 +261,25 @@
             <div class="mb-3">
               <label class="form-label">Motor X Run current</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_x/run_current" placeholder="2" min="1.5" required max="2.5" step="0.1">
+                <input type="number" class="form-control" name="stepper_X/run_current" placeholder="2" min="1.5" required max="2.5" step="0.1">
                 <span class="input-group-text" id="basic-addon2">A</span>
               </div>
 
               <label class="form-label">Motor X Position max</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_x/position_max" placeholder="1050" min="100" required max="1100" step="1">
+                <input type="number" class="form-control" name="stepper_X/position_max" placeholder="1050" min="100" required max="1100" step="1">
+                <span class="input-group-text" id="basic-addon2">mm</span>
+              </div>
+
+              <label class="form-label">Motor X Rotation distance</label>
+              <div class="input-group mb-3">
+                <input type="number" class="form-control" name="stepper_X/rotation_distance" placeholder="60" min="1" required max="100" step="1">
                 <span class="input-group-text" id="basic-addon2">mm</span>
               </div>
 
               <div class="mb-3 form-check form-switch">
-                <input class="form-check-input" type="checkbox" role="switch" name="stepper_x/invert_rotation">
-                <label class="form-check-label">Invert Motor X Direction</label>
+                <input class="form-check-input" type="checkbox" role="switch" name="stepper_X/invert_rotation">
+                <label class="form-check-label">Invert direction (X)</label>
               </div>
             </div>
           </div>
@@ -255,40 +287,53 @@
             <div class="mb-3">
               <label class="form-label">Motor Y Run current</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_y/run_current" placeholder="4" min="3" required max="5" step="0.1">
+                <input type="number" class="form-control" name="stepper_Y/run_current" placeholder="4" min="3" required max="5" step="0.1">
                 <span class="input-group-text" id="basic-addon2">A</span>
               </div>
               <label class="form-label">Motor Y Position max</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_y/position_max" placeholder="1030" min="100" required max="1050" step="1">
+                <input type="number" class="form-control" name="stepper_Y/position_max" placeholder="1030" min="100" required max="1050" step="1">
                 <span class="input-group-text" id="basic-addon2">mm</span>
               </div>
             </div>
 
+            <label class="form-label">Motor Y Rotation distance</label>
+            <div class="input-group mb-3">
+              <input type="number" class="form-control" name="stepper_Y/rotation_distance" placeholder="60" min="1" required max="100" step="1">
+              <span class="input-group-text" id="basic-addon2">mm</span>
+            </div>
+
             <div class="mb-3 form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" name="stepper_Y/invert_rotation">
-              <label class="form-check-label">Invert Motor Y Direction</label>
+              <label class="form-check-label">Invert direction (Y)</label>
             </div>
           </div>
           <div class="col">
             <div class="mb-3">
               <label class="form-label">Motor Z Run current</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_z/run_current" placeholder="7" min="6" required max="8" step="0.1">
+                <input type="number" class="form-control" name="stepper_Z/run_current" placeholder="7" min="6" required max="8" step="0.1">
                 <span class="input-group-text" id="basic-addon2">A</span>
               </div>
             </div>
+
             <div class="mb-3">
               <label class="form-label">Motor Z Position max</label>
               <div class="input-group mb-3">
-                <input type="number" class="form-control" name="stepper_z/position_max" placeholder="1005" min="100" required max="1050" step="1">
+                <input type="number" class="form-control" name="stepper_Z/position_max" placeholder="1005" min="100" required max="1050" step="1">
                 <span class="input-group-text" id="basic-addon2">mm</span>
               </div>
             </div>
 
+            <label class="form-label">Motor Z Rotation distance</label>
+            <div class="input-group mb-3">
+              <input type="number" class="form-control" name="stepper_Z/rotation_distance" placeholder="4" min="1" required max="100" step="1">
+              <span class="input-group-text" id="basic-addon2">mm</span>
+            </div>
+
             <div class="mb-3 form-check form-switch">
               <input class="form-check-input" type="checkbox" role="switch" name="stepper_Z/invert_rotation">
-              <label class="form-check-label">Invert Motor Z Direction</label>
+              <label class="form-check-label">Invert direction (Z)</label>
             </div>
           </div>
         </div>
