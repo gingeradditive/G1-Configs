@@ -342,16 +342,27 @@
   </div>
 
   <!-- Button trigger modal -->
-  <button type="button" class="btn btn-success btn-configurator-save" data-bs-toggle="modal" data-bs-target="#exampleModal">
-    <i class="bi bi-floppy-fill"></i> Save Configuration
-  </button>
+  <div class="btn-configurator-groups">
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#serialNumberModal">
+      <i class="bi bi-cloud-arrow-down"></i> Cloud Reset
+    </button>
+    <button type="button" class="btn btn-outline-primary" id="ExportButton">
+      <i class="bi bi-box-arrow-down"></i> Export
+    </button>
+    <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#ImportModal">
+      <i class="bi bi-box-arrow-up"></i> Import
+    </button>
+    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#saveModal">
+      <i class="bi bi-floppy-fill"></i> Save Configuration
+    </button>
+  </div>
 
   <!-- Modal -->
-  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal fade" id="saveModal" tabindex="-1" aria-labelledby="saveModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="exampleModalLabel">Generate printer.cfg</h1>
+          <h1 class="modal-title fs-5" id="saveModalLabel">Generate printer.cfg</h1>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
@@ -387,20 +398,20 @@
     </div>
   </div>
 
-  <!-- Second Modal: Insert Batch -->
-  <div class="modal fade" id="batchModal" tabindex="-1" aria-labelledby="batchModalLabel" aria-hidden="true">
+  <!-- Second Modal: Insert Serial Number -->
+  <div class="modal fade" id="serialNumberModal" tabindex="-1" aria-labelledby="serialNumberModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content rounded-4">
         <div class="modal-header">
-          <h5 class="modal-title" id="batchModalLabel">Enter Machine Batch</h5>
+          <h5 class="modal-title" id="serialNumberModalLabel">Enter Machine Serial Number</h5>
         </div>
         <div class="modal-body">
-          <label for="batchInput" class="form-label">Machine Batch number (e.g. L01_25):</label>
-          <input type="text" class="form-control" id="batchInput" placeholder="L01_25">
-          <div id="batchError" class="text-danger mt-2 d-none">Invalid Batch number or download failed.</div>
+          <label for="serialNumberInput" class="form-label">Machine Serial Number number (e.g. G1-0000-00):</label>
+          <input type="text" class="form-control" id="serialNumberInput" placeholder="G1-0000-00">
+          <div id="serialNumberError" class="text-danger mt-2 d-none">Invalid Serial Number number or download failed.</div>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" id="confirmBatchDownload">Download Configuration</button>
+          <button type="button" class="btn btn-primary" id="confirmSerialNumberDownload">Download Configuration</button>
         </div>
       </div>
     </div>

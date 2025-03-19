@@ -73,18 +73,17 @@ function loadConfigurations(data) {
             }
 
             // Select prevous motor direction 
-            if(inputName == "stepper_X/invert_rotation")
+            if (inputName == "stepper_X/invert_rotation")
                 $("[name='stepper_X/invert_rotation']").prop('checked', data["stepper_X"]["dir_pin"].includes("!"));
-            if(inputName == "stepper_Y/invert_rotation")
+            if (inputName == "stepper_Y/invert_rotation")
                 $("[name='stepper_Y/invert_rotation']").prop('checked', data["stepper_Y"]["dir_pin"].includes("!"));
-            if(inputName == "stepper_Z/invert_rotation")
+            if (inputName == "stepper_Z/invert_rotation")
                 $("[name='stepper_Z/invert_rotation']").prop('checked', data["stepper_Z"]["dir_pin"].includes("!"));
-            if(inputName == "extruder/invert_rotation")
+            if (inputName == "extruder/invert_rotation")
                 $("[name='extruder/invert_rotation']").prop('checked', data["extruder"]["dir_pin"].includes("!"));
         }
     });
 }
-
 
 $.ajax({
     url: '/tools/backend/read-printer-cfg',
@@ -95,69 +94,103 @@ $.ajax({
     },
     error: function (xhr, status, error) {
         // Show the first modal
-        const configErrorModal = new bootstrap.Modal(document.getElementById('configErrorModal'));
-        configErrorModal.show();
+        $('#configErrorModal').modal('show');
+    }
+});
 
-        // Handle "Start Clean" button
-        $('#startCleanBtn').off('click').on('click', function () {
-            configErrorModal.hide();
+// Handle "Start Clean" button
+$('#startCleanBtn').off('click').on('click', function () {
+    $('#configErrorModal').modal('hide');
 
-            // Set every input to placeholder value
-            $('#configuratorForm input, #configuratorForm textarea').each(function () {
-                $(this).val($(this).attr('placeholder')).trigger('change');
-            });
+    // Set every input to placeholder value
+    $('#configuratorForm input, #configuratorForm textarea').each(function () {
+        placeholderVal = $(this).attr('placeholder')
+        if (typeof placeholderVal !== 'undefined' && placeholderVal !== false) {
+            $(this).val($(this).attr('placeholder'));
+            $(this).trigger('change');
+            console.log("name: " + $(this).attr("name") + " | id: " + $(this).attr("id"))
+        }
+    });
 
+    // Trigger updates
+    $('#updateMainboardSerial').trigger('click');
+    $('#updateExtruderBoardSerial').trigger('click');
+});
+
+// Handle "Download Default" button
+$('#downloadDefaultBtn').off('click').on('click', function () {
+    $('#configErrorModal').modal('hide');
+    $('#serialNumberModal').modal('show');
+});
+
+// Handle "Confirm Download" button
+$('#confirmSerialNumberDownload').off('click').on('click', function () {
+    const serialNumber = $('#serialNumberInput').val().trim();
+    const $serialNumberError = $('#serialNumberError');
+
+    // Reset error state
+    $serialNumberError.addClass('d-none').text('');
+
+    if (!serialNumber) {
+        $serialNumberError.removeClass('d-none').text("Please enter a valid SerialNumber number.");
+        return;
+    }
+
+    // Disable button during request
+    $('#confirmSerialNumberDownload').prop('disabled', true).text('Downloading...');
+
+    // AJAX request
+    $.ajax({
+        url: `https://www.gingeradditive.com/wp-json/g1/v1/RestoreG1Config?serialNumber=${encodeURIComponent(serialNumber)}`,
+        method: 'GET',
+        success: function (data) {
+            // TODO: handle config restore using returned `data`
+            $('#serialNumberModal').modal('hide');
+            loadConfigurations(data);
             // Trigger updates
             $('#updateMainboardSerial').trigger('click');
             $('#updateExtruderBoardSerial').trigger('click');
-        });
+        },
+        error: function (xhr, status, error) {
+            // Show error inside the modal
+            $serialNumberError.removeClass('d-none').text("Download failed. Please check the SerialNumber number and try again.");
+        },
+        complete: function () {
+            $('#confirmSerialNumberDownload').prop('disabled', false).text('Download Configuration');
+        }
+    });
+});
 
-        // Handle "Download Default" button
-        $('#downloadDefaultBtn').off('click').on('click', function () {
-            configErrorModal.hide();
-            const batchModal = new bootstrap.Modal(document.getElementById('batchModal'));
-            batchModal.show();
-        });
-
-        // Handle "Confirm Download" button
-        $('#confirmBatchDownload').off('click').on('click', function () {
-            const batch = $('#batchInput').val().trim();
-            const $batchError = $('#batchError');
-
-            // Reset error state
-            $batchError.addClass('d-none').text('');
-
-            if (!batch) {
-                $batchError.removeClass('d-none').text("Please enter a valid Batch number.");
-                return;
-            }
-
-            // Disable button during request
-            $('#confirmBatchDownload').prop('disabled', true).text('Downloading...');
-
-            // AJAX request
-            $.ajax({
-                url: `https://www.gingeradditive.com/wp-json/g1/v1/RestoreG1Config?lotto=${encodeURIComponent(batch)}`,
-                method: 'GET',
-                success: function (data) {
-                    // TODO: handle config restore using returned `data`
-                    const batchModal = bootstrap.Modal.getInstance(document.getElementById('batchModal'));
-                    batchModal.hide();
-                    loadConfigurations(data);
-                    // Trigger updates
-                    $('#updateMainboardSerial').trigger('click');
-                    $('#updateExtruderBoardSerial').trigger('click');
-                },
-                error: function (xhr, status, error) {
-                    // Show error inside the modal
-                    $batchError.removeClass('d-none').text("Download failed. Please check the Batch number and try again.");
-                },
-                complete: function () {
-                    $('#confirmBatchDownload').prop('disabled', false).text('Download Configuration');
-                }
-            });
-        });
-    }
+$("#ExportButton").click(function(){
+    $.ajax({
+        url: '/tools/backend/read-printer-cfg',
+        method: 'GET',
+        dataType: 'json',
+        success: function (data) {
+            // Funzione per scaricare il JSON come file
+            // Converte i dati JSON in una stringa
+            const jsonString = JSON.stringify(data, null, 2);
+    
+            // Crea un Blob con il tipo MIME 'application/json'
+            const blob = new Blob([jsonString], { type: 'application/json' });
+    
+            // Crea un URL per il Blob
+            const url = URL.createObjectURL(blob);
+    
+            // Crea un elemento di ancoraggio <a> per il download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'config.json'; // Nome del file da scaricare
+            a.click(); // Simula il clic per avviare il download
+    
+            // Libera l'URL dopo il download
+            URL.revokeObjectURL(url);
+        },
+        error: function (xhr, status, error) {
+            // Show the first modal
+            $('#configErrorModal').modal('show');
+        }
+    });
 });
 
 
