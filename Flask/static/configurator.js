@@ -161,7 +161,7 @@ $('#confirmSerialNumberDownload').off('click').on('click', function () {
     });
 });
 
-$("#ExportButton").click(function(){
+$("#ExportButton").click(function () {
     $.ajax({
         url: '/tools/backend/read-printer-cfg',
         method: 'GET',
@@ -170,19 +170,19 @@ $("#ExportButton").click(function(){
             // Funzione per scaricare il JSON come file
             // Converte i dati JSON in una stringa
             const jsonString = JSON.stringify(data, null, 2);
-    
+
             // Crea un Blob con il tipo MIME 'application/json'
             const blob = new Blob([jsonString], { type: 'application/json' });
-    
+
             // Crea un URL per il Blob
             const url = URL.createObjectURL(blob);
-    
+
             // Crea un elemento di ancoraggio <a> per il download
             const a = document.createElement('a');
             a.href = url;
             a.download = 'config.json'; // Nome del file da scaricare
             a.click(); // Simula il clic per avviare il download
-    
+
             // Libera l'URL dopo il download
             URL.revokeObjectURL(url);
         },
@@ -272,4 +272,49 @@ $(document).ready(function () {
         var collapseId = $(this).attr('id');
         $('[data-bs-target="#' + collapseId + '"]').removeClass('active-button');
     });
+});
+
+$('#jsonFileInput').on('change', function () {
+    var file = this.files[0];
+    var $status = $('#importStatus');
+    var $confirmBtn = $('#confirmImportBtn');
+
+    $status.text('');
+    importedJsonData = null;
+    $confirmBtn.prop('disabled', true);
+
+    if (!file) return;
+
+    if (file.type !== 'application/json') {
+        $status.text('Please select a valid JSON file.');
+        return;
+    }
+
+    var reader = new FileReader();
+
+    reader.onload = function (e) {
+        try {
+            importedJsonData = JSON.parse(e.target.result);
+            $status.text('File loaded successfully. Click "Confirm Import" to proceed.');
+            $confirmBtn.prop('disabled', false);
+        } catch (err) {
+            $status.text('Error reading JSON file: ' + err.message);
+        }
+    };
+
+    reader.onerror = function () {
+        $status.text('Failed to read the file.');
+    };
+
+    reader.readAsText(file);
+});
+
+let importedJsonData = null;
+$('#confirmImportBtn').on('click', function () {
+    if (importedJsonData) {
+        $('#ImportModal').modal('hide');
+        setTimeout(function () {
+            loadConfigurations(importedJsonData); // Call your function here
+        }, 500); // Delay to allow modal to close smoothly
+    }
 });

@@ -238,7 +238,7 @@
           <span class="input-group-text" id="basic-addon2">mm/s</span>
         </div>
         <label class="form-label">Printer max acceleration</label>
-        <div class="input-group mb-3">  
+        <div class="input-group mb-3">
           <input type="number" class="form-control" name="printer/max_accel" placeholder="4000" min="1500" required max="6000" step="1">
           <span class="input-group-text" id="basic-addon2">mm/s</span>
         </div>
@@ -416,4 +416,31 @@
       </div>
     </div>
   </div>
+
+
+  <!-- Import Modal -->
+  <div class="modal fade" id="ImportModal" tabindex="-1" aria-labelledby="ImportModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+
+        <div class="modal-header">
+          <h5 class="modal-title" id="ImportModalLabel">Import Configuration</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <div class="modal-body">
+          <p>Select a JSON file from your computer to import the configuration backup.</p>
+          <input type="file" id="jsonFileInput" accept=".json" class="form-control mb-2">
+          <div id="importStatus" class="text-muted small mb-2"></div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="confirmImportBtn" disabled>Start Import</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
 </form>
