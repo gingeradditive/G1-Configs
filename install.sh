@@ -24,6 +24,8 @@ echo; echo
 SYMBOLIC_LINK_DESTINATION="$HOME/printer_data/config/G1-Configs"
 G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
 G1_DATABASE_DIR="$HOME/G1-Configs/Database"
+G1_GCODES_DIR="$HOME/G1-Configs/Gcodes"
+
 
 MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
 MOONRAKER_CONF_CONTENT="
@@ -122,3 +124,7 @@ echo "Flask service created and started successfully."
 echo "Restoring Moonraker DB..."
 mkdir "$HOME/printer_data/database/"
 cp -f "$G1_DATABASE_DIR"/moonraker-sql.db "$HOME/printer_data/database/"
+
+echo "Copy factory gcodes..."
+mkdir -p "$HOME/printer_data/gcodes/"
+cp -rf "$G1_GCODES_DIR"/* "$HOME/printer_data/gcodes/"
