@@ -178,7 +178,7 @@ def write_printer_cfg():
             outfile.write('spi_software_sclk_pin: PA5\n')
             outfile.write('run_current: ' +
                           values["mixing_stepper/run_current"] + '\n')
-            outfile.write('sense_resistor: 0.022\n')
+            outfile.write('sense_resistor: 0.075\n')
             outfile.write('#stealthchop_threshold: 999999\n')
             outfile.write('interpolate: False\n')
         elif (values["extruder_stepper_model_select"] == "tmc2209"):
