@@ -172,23 +172,21 @@
         <div class="card-header">
           Extruder configurations
         </div>
-        <label class="form-label">Upper band max temperature</label>
-        <div class="input-group mb-3">
-          <input type="number" class="form-control" name="extruder/max_temp" placeholder="280" min="200" required max="300" step="1">
-          <span class="input-group-text" id="basic-addon2">&deg;C</span>
-        </div>
-        <label class="form-label">Upper band min temperature</label>
+        <label class="form-label">Upper band min/max temperature</label>
         <div class="input-group mb-3">
           <input type="number" class="form-control" name="extruder/min_extrude_temp" placeholder="160" min="0" required max="200" step="1">
+          <input type="number" class="form-control" name="extruder/max_temp" placeholder="280" min="200" required max="300" step="1">
           <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
         <label class="form-label">Middle band max temperature</label>
         <div class="input-group mb-3">
+          <input type="number" class="form-control" readonly disabled>
           <input type="number" class="form-control" name="extruder1/max_temp" placeholder="280" min="200" required max="300" step="1">
           <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
         <label class="form-label">Lower band max temperature</label>
         <div class="input-group mb-3">
+          <input type="number" class="form-control" readonly disabled>
           <input type="number" class="form-control" name="extruder2/max_temp" placeholder="280" min="200" required max="300" step="1">
           <span class="input-group-text" id="basic-addon2">&deg;C</span>
         </div>
