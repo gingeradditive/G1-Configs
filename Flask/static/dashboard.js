@@ -29,10 +29,10 @@ $.ajax({
             appenNotification("<strong>⚠️ moonraker.conf file has been modified or needs to be updated</strong>, please restore it via the Utilities page","warning");
         }
 
-        if(response["splash.png"] == null || response["theme/custom.css"] == null || response["theme/navi.json"] == null){
+        if(response["splash.png"] == null || response["theme/custom.css"] == null){
             appenNotification("<strong>⛔ Error some theme files seem to be missing</strong>, please restore the .theme folder via the Utilities page","danger");
         }
-        else if (response["splash.png"] == false || response["theme/custom.css"] == false || response["theme/navi.json"] == false){
+        else if (response["splash.png"] == false || response["theme/custom.css"] == false){
             appenNotification("<strong>⚠️ Warning some theme files seem to be corrupted</strong>, please restore the .theme folder via the Utilities page","warning");
         }
 

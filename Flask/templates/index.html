@@ -15,7 +15,8 @@
 <body>
   <nav class="navbar navbar-expand-lg bg-body-tertiary bg-primary" data-bs-theme="dark">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#"><img src="/tools{{ url_for('static', filename='sidebar-logo.png') }}" height="32px"> Tools</a>
+      <a class="navbar-brand" href="#"><img src="/tools{{ url_for('static', filename='sidebar-logo.png') }}"
+          height="32px"> Tools</a>
     </div>
   </nav>
   <div class="container-fluid">
@@ -43,10 +44,10 @@
                 <i class="bi bi-door-open"></i> <span class="ms-1 d-none d-sm-inline">Return to Mainsail</span>
               </a>
             </li>
-          </ul>          
+          </ul>
         </div>
       </div>
-      <div class="col py-3">
+      <div class="col">
         <!-- CONTENT -->
         <div class="content-min-height">
           {% if 'configurator' == subpath %}
@@ -70,12 +71,13 @@
   <script src="/tools{{ url_for('static',filename='jquery.js') }}"></script>
 
   {% if 'configurator' == subpath %}
-    <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
+  <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
   {% elif 'utilities' == subpath %}
-    <!-- No Scripts -->
+  <script src="/tools{{ url_for('static',filename='utilities.js') }}"></script>
   {% else %}
-    <script src="/tools{{ url_for('static',filename='dashboard.js') }}"></script>
+  <script src="/tools{{ url_for('static',filename='dashboard.js') }}"></script>
   {% endif %}
-  
+
 </body>
+
 </html>

@@ -5,7 +5,7 @@
     "include G1-Configs/main.cfg": {},
     "heater_bed": {},
     "verify_heater heater_bed": {},
-    "output_pin BUZZER_PIN": {},
+    "output_pin _BUZZER_PIN": {},
     "fan": {},
     "firmware_retraction": {},
     "extruder_stepper mixing_stepper": {},
@@ -16,10 +16,10 @@
     "verify_heater extruder1": {},
     "extruder2": {},
     "verify_heater extruder2": {},
-    "output_pin FEEDER_STATUS": {},
+    "output_pin _FEEDER_STATUS": {},
     "filament_switch_sensor FEEDER": {},
     "delayed_gcode FEEDER_CHECK_STATUS": {
-        "SET_PIN PIN": "FEEDER_STATUS VALUE=0",
+        "SET_PIN PIN": "_FEEDER_STATUS VALUE=0",
         "UPDATE_DELAYED_GCODE ID": "FEEDER_CHECK_STATUS DURATION=1.0"
     },
     "delayed_gcode FEEDER_STARTUP_STATUS": {},
