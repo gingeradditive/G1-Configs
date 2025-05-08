@@ -19,9 +19,9 @@ function loadConfigurations(data) {
                     break; // Esci dal ciclo una volta trovato il primo valore valido
                 }
             }
-            data["stepper_X"]["run_current"] = data["tmc5160 stepper_X"]["run_current"];
-            data["stepper_Y"]["run_current"] = data["tmc5160 stepper_Y"]["run_current"];
-            data["stepper_Z"]["run_current"] = data["tmc5160 stepper_Z"]["run_current"];
+            data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
+            data["stepper_y"]["run_current"] = data["tmc5160 stepper_y"]["run_current"];
+            data["stepper_z"]["run_current"] = data["tmc5160 stepper_z"]["run_current"];
 
 
             // Usa i keys per navigare nel JSON
@@ -73,12 +73,12 @@ function loadConfigurations(data) {
             }
 
             // Select prevous motor direction 
-            if (inputName == "stepper_X/invert_rotation")
-                $("[name='stepper_X/invert_rotation']").prop('checked', data["stepper_X"]["dir_pin"].includes("!"));
-            if (inputName == "stepper_Y/invert_rotation")
-                $("[name='stepper_Y/invert_rotation']").prop('checked', data["stepper_Y"]["dir_pin"].includes("!"));
-            if (inputName == "stepper_Z/invert_rotation")
-                $("[name='stepper_Z/invert_rotation']").prop('checked', data["stepper_Z"]["dir_pin"].includes("!"));
+            if (inputName == "stepper_x/invert_rotation")
+                $("[name='stepper_x/invert_rotation']").prop('checked', data["stepper_x"]["dir_pin"].includes("!"));
+            if (inputName == "stepper_y/invert_rotation")
+                $("[name='stepper_y/invert_rotation']").prop('checked', data["stepper_y"]["dir_pin"].includes("!"));
+            if (inputName == "stepper_z/invert_rotation")
+                $("[name='stepper_z/invert_rotation']").prop('checked', data["stepper_z"]["dir_pin"].includes("!"));
             if (inputName == "extruder/invert_rotation")
                 $("[name='extruder/invert_rotation']").prop('checked', data["extruder"]["dir_pin"].includes("!"));
         }
