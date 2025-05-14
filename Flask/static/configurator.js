@@ -1,86 +1,98 @@
 function loadConfigurations(data) {
     $('#configuratorForm input, #configuratorForm textarea, #configuratorForm select').each(function () {
-        const inputName = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
-        if (inputName) {
-            // Suddividi l'ID su base "/" per accedere ai dati nel JSON
-            const keys = inputName.split('/'); // ["heater_bed", "max_power"]
+        try {
+            const inputName = $(this).attr('name'); // ID dell'input, es. "heater_bed/max_power"
+            if (inputName) {
+                // Suddividi l'ID su base "/" per accedere ai dati nel JSON
+                const keys = inputName.split('/'); // ["heater_bed", "max_power"]
 
 
-            // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
-            const keysToCheck = [
-                "tmc5160 extruder_stepper mixing_stepper",
-                "tmc2209 extruder_stepper mixing_stepper"
-            ];
-            if (!data["mixing_stepper"])
-                data["mixing_stepper"] = {};
-            for (const key of keysToCheck) {
-                if (data[key]?.run_current) {
-                    data["mixing_stepper"]["run_current"] = data[key].run_current;
-                    break; // Esci dal ciclo una volta trovato il primo valore valido
+                // Verifica e aggiornamento del valore "run_current" per "mixing_stepper"
+                const keysToCheck = [
+                    "tmc5160 extruder_stepper mixing_stepper",
+                    "tmc2209 extruder_stepper mixing_stepper"
+                ];
+                if (!data["mixing_stepper"])
+                    data["mixing_stepper"] = {};
+                for (const key of keysToCheck) {
+                    if (data[key]?.run_current) {
+                        data["mixing_stepper"]["run_current"] = data[key].run_current;
+                        break; // Esci dal ciclo una volta trovato il primo valore valido
+                    }
                 }
-            }
-            data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
-            data["stepper_y"]["run_current"] = data["tmc5160 stepper_y"]["run_current"];
-            data["stepper_z"]["run_current"] = data["tmc5160 stepper_z"]["run_current"];
+                
+                if(data["stepper_x"] == undefined)
+                    data["stepper_x"] = {};
+                if(data["stepper_y"] == undefined)
+                    data["stepper_y"] = {};
+                if(data["stepper_z"] == undefined)
+                    data["stepper_z"] = {};
+
+                data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
+                data["stepper_y"]["run_current"] = data["tmc5160 stepper_y"]["run_current"];
+                data["stepper_z"]["run_current"] = data["tmc5160 stepper_z"]["run_current"];
 
 
-            // Usa i keys per navigare nel JSON
-            let value = data;
-            keys.forEach(key => {
-                if (value && value[key] !== undefined) {
-                    value = value[key];
+                // Usa i keys per navigare nel JSON
+                let value = data;
+                keys.forEach(key => {
+                    if (value && value[key] !== undefined) {
+                        value = value[key];
+                    } else {
+                        value = null; // Se una chiave non esiste, assegna null
+                    }
+                });
+
+                // Imposta il valore dell'input
+                if (value !== null) {
+                    $(this).val(value);
+                    console.log(`Valorizzato ${inputName} con: ${value}`);
                 } else {
-                    value = null; // Se una chiave non esiste, assegna null
+                    console.warn(`Nessun valore trovato per: ${inputName}`);
                 }
-            });
 
-            // Imposta il valore dell'input
-            if (value !== null) {
-                $(this).val(value);
-                console.log(`Valorizzato ${inputName} con: ${value}`);
-            } else {
-                console.warn(`Nessun valore trovato per: ${inputName}`);
+                // compila campi "speciali"
+                if (inputName === 'safe_z_home/home_xy_position') {
+                    const x = $(this).val().split(', ')[0];
+                    const y = $(this).val().split(', ')[1];
+                    $('#safe_z_home_x_position').val(x);
+                    $('#safe_z_home_y_position').val(y);
+                } else if (inputName === 'bed_mesh/probe_count') {
+                    const x = $(this).val().split(', ')[0];
+                    const y = $(this).val().split(', ')[1];
+                    $('#bed_mesh_probe_x_points').val(x);
+                    $('#bed_mesh_probe_y_points').val(y);
+                } else if (inputName === 'bed_mesh/mesh_max') {
+                    const x = $(this).val().split(', ')[0];
+                    const y = $(this).val().split(', ')[1];
+                    $('#bed_max_x').val(x);
+                    $('#bed_max_y').val(y);
+                }
+
+                if (inputName === 'heater_bed/max_power') {
+                    $('#heater_bed_max_power_percentage').val(value * 100);
+                }
+
+                // check if data has "tmc2209 extruder_stepper mixing_stepper" key
+                if (inputName === 'extruder_stepper_model_select') {
+                    if (data["tmc2209 extruder_stepper mixing_stepper"])
+                        $('#extruder_stepper_model_select').val('tmc2209');
+                    else if (data["tmc5160 extruder_stepper mixing_stepper"])
+                        $('#extruder_stepper_model_select').val('tmc5160');
+                }
+
+                // Select prevous motor direction 
+                if (inputName == "stepper_x/invert_rotation")
+                    $("[name='stepper_x/invert_rotation']").prop('checked', data["stepper_x"]["dir_pin"].includes("!"));
+                if (inputName == "stepper_y/invert_rotation")
+                    $("[name='stepper_y/invert_rotation']").prop('checked', data["stepper_y"]["dir_pin"].includes("!"));
+                if (inputName == "stepper_z/invert_rotation")
+                    $("[name='stepper_z/invert_rotation']").prop('checked', data["stepper_z"]["dir_pin"].includes("!"));
+                if (inputName == "extruder/invert_rotation")
+                    $("[name='extruder/invert_rotation']").prop('checked', data["extruder"]["dir_pin"].includes("!"));
             }
-
-            // compila campi "speciali"
-            if (inputName === 'safe_z_home/home_xy_position') {
-                const x = $(this).val().split(', ')[0];
-                const y = $(this).val().split(', ')[1];
-                $('#safe_z_home_x_position').val(x);
-                $('#safe_z_home_y_position').val(y);
-            } else if (inputName === 'bed_mesh/probe_count') {
-                const x = $(this).val().split(', ')[0];
-                const y = $(this).val().split(', ')[1];
-                $('#bed_mesh_probe_x_points').val(x);
-                $('#bed_mesh_probe_y_points').val(y);
-            } else if (inputName === 'bed_mesh/mesh_max') {
-                const x = $(this).val().split(', ')[0];
-                const y = $(this).val().split(', ')[1];
-                $('#bed_max_x').val(x);
-                $('#bed_max_y').val(y);
-            }
-
-            if (inputName === 'heater_bed/max_power') {
-                $('#heater_bed_max_power_percentage').val(value * 100);
-            }
-
-            // check if data has "tmc2209 extruder_stepper mixing_stepper" key
-            if (inputName === 'extruder_stepper_model_select') {
-                if (data["tmc2209 extruder_stepper mixing_stepper"])
-                    $('#extruder_stepper_model_select').val('tmc2209');
-                else if (data["tmc5160 extruder_stepper mixing_stepper"])
-                    $('#extruder_stepper_model_select').val('tmc5160');
-            }
-
-            // Select prevous motor direction 
-            if (inputName == "stepper_x/invert_rotation")
-                $("[name='stepper_x/invert_rotation']").prop('checked', data["stepper_x"]["dir_pin"].includes("!"));
-            if (inputName == "stepper_y/invert_rotation")
-                $("[name='stepper_y/invert_rotation']").prop('checked', data["stepper_y"]["dir_pin"].includes("!"));
-            if (inputName == "stepper_z/invert_rotation")
-                $("[name='stepper_z/invert_rotation']").prop('checked', data["stepper_z"]["dir_pin"].includes("!"));
-            if (inputName == "extruder/invert_rotation")
-                $("[name='extruder/invert_rotation']").prop('checked', data["extruder"]["dir_pin"].includes("!"));
+        } catch (error) {
+            console.error(`Errore durante il caricamento del valore per ${$(this).attr('name')}:`, error);
         }
     });
 }
