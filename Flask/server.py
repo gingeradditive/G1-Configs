@@ -631,7 +631,7 @@ def restore_kamp_cfg():
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
         shutil.copy2(backupFilePath, configFilePath)
-        return redirect("/tools/utilities")
+        return redirect("/tools/dashboard")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
@@ -644,7 +644,7 @@ def restore_klipperscreen_conf():
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
         shutil.copy2(backupFilePath, configFilePath)
-        return redirect("/tools/utilities")
+        return redirect("/tools/dashboard")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
@@ -657,7 +657,7 @@ def restore_moonraker_conf():
         if os.path.exists(configFilePath):
             os.remove(configFilePath)
         shutil.copy2(backupFilePath, configFilePath)
-        return redirect("/tools/utilities")
+        return redirect("/tools/dashboard")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
@@ -685,7 +685,7 @@ def restore_mainsail_theme():
                 shutil.copytree(src_path, dest_path)
             else:
                 shutil.copy2(src_path, dest_path)
-        return redirect("/tools/utilities")
+        return redirect("/tools/dashboard")
     else:
         return jsonify({"success": False, "error": f"Backup directory '{backupFilePath}' does not exist!"}), 500
 
@@ -748,7 +748,7 @@ def moonraker_db_reset():
         if os.path.exists(databaseFilePath):
             os.remove(databaseFilePath)
         shutil.copy2(backupFilePath, databaseFilePath)
-        return redirect("/tools/utilities")
+        return redirect("/tools/dashboard")
     except subprocess.CalledProcessError as e:
         return jsonify({"success": False, "error": e.stderr}), 500
 
@@ -785,7 +785,7 @@ def set_printer_hostname():
                 hostname_file.write(new_hostname + "\n")
             os.system("sudo reboot")
 
-        return redirect("http://"+new_hostname+".local:5000/tools/utilities")
+        return redirect("http://"+new_hostname+".local:5000/tools/dashboard")
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 

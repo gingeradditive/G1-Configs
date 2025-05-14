@@ -34,11 +34,6 @@
                 <i class="bi bi-wrench"></i> <span class="ms-1 d-none d-sm-inline">Configurator</span>
               </a>
             </li>
-            <li class="nav-item {% if subpath == 'utilities' %}nav-link-active{% endif %}">
-              <a href="utilities" class="nav-link align-middle px-0">
-                <i class="bi bi-house-gear"></i> <span class="ms-1 d-none d-sm-inline">Utilities</span>
-              </a>
-            </li>
             <li class="nav-item">
               <a href="exit" class="nav-link align-middle px-0">
                 <i class="bi bi-door-open"></i> <span class="ms-1 d-none d-sm-inline">Return to Mainsail</span>
@@ -52,9 +47,7 @@
         <div class="content-min-height">
           {% if 'configurator' == subpath %}
           {% include 'pages/configurator.html' %}
-          {% elif 'utilities' == subpath %}
-          {% include 'pages/utilities.html' %}
-          {% else %}
+          {% else %}          
           {% include 'pages/dashboard.html' %}
           {% endif %}
         </div>
@@ -72,8 +65,6 @@
 
   {% if 'configurator' == subpath %}
   <script src="/tools{{ url_for('static',filename='configurator.js') }}"></script>
-  {% elif 'utilities' == subpath %}
-  <script src="/tools{{ url_for('static',filename='utilities.js') }}"></script>
   {% else %}
   <script src="/tools{{ url_for('static',filename='dashboard.js') }}"></script>
   {% endif %}
