@@ -789,6 +789,54 @@ def set_printer_hostname():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
+
+@app.route("/tools/backend/factory-reset", methods=["POST"])
+def factory_reset():
+    try:
+        #empty gcode-folder
+        gcodeFolderPath = os.path.join(configPath, "gcode")
+        if os.path.exists(gcodeFolderPath):
+            for item in os.listdir(gcodeFolderPath):
+                item_path = os.path.join(gcodeFolderPath, item)
+                if os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+
+        #empty .theme folder
+        themeFolderPath = os.path.join(configPath, ".theme")
+        if os.path.exists(themeFolderPath):
+            for item in os.listdir(themeFolderPath):
+                item_path = os.path.join(themeFolderPath, item)
+                if os.path.isfile(item_path) or os.path.islink(item_path):
+                    os.unlink(item_path)
+                elif os.path.isdir(item_path):
+                    shutil.rmtree(item_path)
+
+        #remove printer.cfg
+        printerCfgPath = os.path.join(configPath, "printer.cfg")
+        if os.path.exists(printerCfgPath):
+            os.remove(printerCfgPath)
+        
+        #restore kamp.cfg
+        restore_kamp_cfg()
+
+        #restore klipperscreen.conf
+        restore_klipperscreen_conf()
+        #restore moonraker.conf
+        restore_moonraker_conf()
+
+        #restore all theme
+        restore_mainsail_theme()
+
+        #restore moonraker db
+        moonraker_db_reset()
+
+        return redirect("/tools/dashboard")
+    except subprocess.CalledProcessError as e:
+        return jsonify({"success": False, "error": e.stderr}), 500
+
+
 # -------------------------------------------------------------------------------------
 
 
@@ -818,7 +866,6 @@ def get_page(subpath):
 @app.route("/tools/")
 def get_index():
     return render_template("index.html", subpath="")
-
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
