@@ -26,18 +26,6 @@ G1_CONFIGS_DIR="$HOME/G1-Configs/Configs"
 G1_DATABASE_DIR="$HOME/G1-Configs/Database"
 G1_GCODES_DIR="$HOME/G1-Configs/Gcodes"
 
-
-MOONRAKER_CONF="$HOME/printer_data/config/moonraker.conf"
-MOONRAKER_CONF_CONTENT="
-## Ginger Configs
-[update_manager GingerConfigs]
-type: git_repo
-origin: https://github.com/gingeradditive/G1-Configs.git
-path: $HOME/G1-Configs
-primary_branch: main
-managed_services: klipper"
-
-
 # Copy the files
 echo "Copying G1-Configs to printer_data/config"
 if [ -d "$G1_CONFIGS_DIR" ]; then
@@ -58,15 +46,6 @@ fi
 sudo ln -s "$HOME/G1-Configs/Configs/G1-Configs" "$SYMBOLIC_LINK_DESTINATION"
 sudo chown -h pi:pi "$SYMBOLIC_LINK_DESTINATION"
 echo "Symbolic link created for Ginger Configs"
-
-# Add the configuration to moonraker.conf if not already present
-if ! sudo grep -q "Ginger Configs" "$MOONRAKER_CONF"; then
-    echo "$MOONRAKER_CONF_CONTENT" | sudo tee -a "$MOONRAKER_CONF" > /dev/null
-    echo "Ginger Configs added to $MOONRAKER_CONF"
-else
-    echo "Ginger Configs already present in $MOONRAKER_CONF"
-fi
-
 
 echo "Installing klipperscreen style"
 ORIGIN_DIR="$HOME/G1-Configs/Styles/klipperscreen-ginger/"
