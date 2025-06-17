@@ -20,12 +20,12 @@ function loadConfigurations(data) {
                         break; // Esci dal ciclo una volta trovato il primo valore valido
                     }
                 }
-                
-                if(data["stepper_x"] == undefined)
+
+                if (data["stepper_x"] == undefined)
                     data["stepper_x"] = {};
-                if(data["stepper_y"] == undefined)
+                if (data["stepper_y"] == undefined)
                     data["stepper_y"] = {};
-                if(data["stepper_z"] == undefined)
+                if (data["stepper_z"] == undefined)
                     data["stepper_z"] = {};
 
                 data["stepper_x"]["run_current"] = data["tmc5160 stepper_x"]["run_current"];
@@ -137,15 +137,23 @@ $('#downloadDefaultBtn').off('click').on('click', function () {
 
 // Handle "Confirm Download" button
 $('#confirmSerialNumberDownload').off('click').on('click', function () {
-    const serialNumber = $('#serialNumberInput').val().trim();
+    let serialNumber = $('#serialNumberInput').val().trim();
     const $serialNumberError = $('#serialNumberError');
 
     // Reset error state
     $serialNumberError.addClass('d-none').text('');
-
-    if (!serialNumber) {
-        $serialNumberError.removeClass('d-none').text("Please enter a valid SerialNumber number.");
+    const regex = /^G1-\d{4}-\d{2}$/;
+    const number = Number(serialNumber);
+    if (!serialNumber || (!regex.test(serialNumber) && (isNaN(number) || number < 10 || number > 25))
+    ) {
+        $serialNumberError.removeClass('d-none').text("Please enter a valid SerialNumber.");
         return;
+    }
+
+    if (number >= 10 && number <= 25) {
+        // transform serial number to G1-XXXX-XX format
+        const paddedNumber = String(number).padStart(4, '0');
+        serialNumber = `G1-${paddedNumber}-20`;
     }
 
     // Disable button during request
