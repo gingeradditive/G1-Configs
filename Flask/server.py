@@ -366,7 +366,8 @@ def write_printer_cfg():
         outfile.write('  _GINGER_PROBE_UP\n')
         outfile.write('\n')
         outfile.write('[safe_z_home]\n')
-        outfile.write('home_xy_position: ' + values["safe_z_home/home_xy_position"] + '\n')
+        outfile.write('home_xy_position: ' +
+                      values["safe_z_home/home_xy_position"] + '\n')
         outfile.write('speed: ' + values["safe_z_home/speed"] + '\n')
         outfile.write('z_hop: 15\n')
         outfile.write('z_hop_speed: 8.0\n')
@@ -446,7 +447,7 @@ def write_printer_cfg():
         else:
             outfile.write('dir_pin: PF12\n')
         outfile.write('enable_pin: !PF14\n')
-        outfile.write('microsteps: 8\n')
+        outfile.write('microsteps: ' + values["stepper_x/microsteps"] + '\n')
         outfile.write('rotation_distance: ' +
                       values["stepper_x/rotation_distance"] + '\n')
         outfile.write('full_steps_per_rotation: 200\n')
@@ -482,7 +483,7 @@ def write_printer_cfg():
         else:
             outfile.write('dir_pin: PG1\n')
         outfile.write('enable_pin: !PF15\n')
-        outfile.write('microsteps: 8\n')
+        outfile.write('microsteps: ' + values["stepper_y/microsteps"] + '\n')
         outfile.write('rotation_distance: ' +
                       values["stepper_y/rotation_distance"] + '\n')
         outfile.write('full_steps_per_rotation: 200\n')
@@ -518,7 +519,7 @@ def write_printer_cfg():
         else:
             outfile.write('dir_pin: PG3\n')
         outfile.write('enable_pin: !PG5\n')
-        outfile.write('microsteps: 8\n')
+        outfile.write('microsteps: ' + values["stepper_z/microsteps"] + '\n')
         outfile.write('rotation_distance: ' +
                       values["stepper_z/rotation_distance"] + ' #passo vite\n')
         outfile.write('full_steps_per_rotation: 200\n')
@@ -793,7 +794,7 @@ def set_printer_hostname():
 @app.route("/tools/backend/factory-reset", methods=["POST"])
 def factory_reset():
     try:
-        #empty gcode-folder
+        # empty gcode-folder
         gcodeFolderPath = os.path.join(configPath, "gcode")
         if os.path.exists(gcodeFolderPath):
             for item in os.listdir(gcodeFolderPath):
@@ -803,7 +804,7 @@ def factory_reset():
                 elif os.path.isdir(item_path):
                     shutil.rmtree(item_path)
 
-        #empty .theme folder
+        # empty .theme folder
         themeFolderPath = os.path.join(configPath, ".theme")
         if os.path.exists(themeFolderPath):
             for item in os.listdir(themeFolderPath):
@@ -813,23 +814,23 @@ def factory_reset():
                 elif os.path.isdir(item_path):
                     shutil.rmtree(item_path)
 
-        #remove printer.cfg
+        # remove printer.cfg
         printerCfgPath = os.path.join(configPath, "printer.cfg")
         if os.path.exists(printerCfgPath):
             os.remove(printerCfgPath)
-        
-        #restore kamp.cfg
+
+        # restore kamp.cfg
         restore_kamp_cfg()
 
-        #restore klipperscreen.conf
+        # restore klipperscreen.conf
         restore_klipperscreen_conf()
-        #restore moonraker.conf
+        # restore moonraker.conf
         restore_moonraker_conf()
 
-        #restore all theme
+        # restore all theme
         restore_mainsail_theme()
 
-        #restore moonraker db
+        # restore moonraker db
         moonraker_db_reset()
 
         return redirect("/tools/dashboard")
@@ -866,6 +867,7 @@ def get_page(subpath):
 @app.route("/tools/")
 def get_index():
     return render_template("index.html", subpath="")
+
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
