@@ -306,18 +306,41 @@ def write_printer_cfg():
         outfile.write('switch_pin: ^extruder_board: PC4 #A4\n')
         outfile.write('pause_on_runout: False\n')
         outfile.write('\n')
+        outfile.write('[gcode_macro FEEDER_VARIABLE_HOLDER]')
+        outfile.write('variable_empty_counter: 0')
+        outfile.write('gcode:')
+        outfile.write('  # Silent is golden')
+        outfile.write('\n')
         outfile.write(
             '# delayed Gcode for checking the status of the feeder sensor every 1 second \n')
         outfile.write('# and updating the status pin\n')
-        outfile.write('[delayed_gcode FEEDER_CHECK_STATUS]\n')
+        [delayed_gcode FEEDER_CHECK_STATUS]
         outfile.write('initial_duration: 0.5\n')
         outfile.write('gcode:\n')
         outfile.write(
             '  {% if printer["filament_switch_sensor FEEDER"].enabled %}\n')
+        outfile.write(
+            '    SET_GCODE_VARIABLE MACRO=FEEDER_VARIABLE_HOLDER VARIABLE=empty_counter VALUE={(printer["gcode_macro FEEDER_VARIABLE_HOLDER"].empty_counter | int(0)) + 1}\n')
         outfile.write('    SET_PIN PIN=_FEEDER_STATUS VALUE=1\n')
         outfile.write('  {% else %}\n')
+        outfile.write(
+            '    SET_GCODE_VARIABLE MACRO=FEEDER_VARIABLE_HOLDER VARIABLE=empty_counter VALUE={0}\n')
         outfile.write('    SET_PIN PIN=_FEEDER_STATUS VALUE=0\n')
         outfile.write('  {% endif %}\n')
+        outfile.write('\n')
+        outfile.write(
+            '  {% if printer["gcode_macro FEEDER_VARIABLE_HOLDER"].empty_counter >= 600 %}\n')
+        outfile.write('    _GINGER_FEEDER_DISABLE\n')
+        outfile.write('    PAUSE\n')
+        outfile.write(
+            '    RESPOND TYPE=command MSG="action:prompt_begin Out of material!"\n')
+        outfile.write(
+            '    RESPOND TYPE=command MSG="action:prompt_text Material finished, please check the feeding, hopper and canister and then reactivate the Feeding"\n')
+        outfile.write(
+            '    RESPOND TYPE=command MSG="action:prompt_footer_button ok|RESPOND TYPE=command MSG=action:prompt_end"\n')
+        outfile.write('    RESPOND TYPE=command MSG="action:prompt_show"\n')
+        outfile.write('  {% endif %}\n')
+        outfile.write('\n')
         outfile.write(
             '  UPDATE_DELAYED_GCODE ID=FEEDER_CHECK_STATUS DURATION=1.0\n')
         outfile.write('\n')
@@ -573,15 +596,20 @@ def write_printer_cfg():
         outfile.write('\n')
         outfile.write(
             '################### Accelerometer settings for tuning #####################""")\n')
-        outfile.write('# This file contains common pin mappings for the bigtreetech adxl345 v2.0\n')
-        outfile.write('# To use this config, the firmware should be compiled for the\n')
+        outfile.write(
+            '# This file contains common pin mappings for the bigtreetech adxl345 v2.0\n')
+        outfile.write(
+            '# To use this config, the firmware should be compiled for the\n')
         outfile.write('# RP2040 with "USB"\n')
-        outfile.write('# The micro-controller will be used to control the components on the nozzle.\n')
+        outfile.write(
+            '# The micro-controller will be used to control the components on the nozzle.\n')
         outfile.write('\n')
-        outfile.write('# See docs/Config_Reference.md for a description of parameters.\n')
+        outfile.write(
+            '# See docs/Config_Reference.md for a description of parameters.\n')
         outfile.write('\n')
         outfile.write('# [mcu btt_adxl345]\n')
-        outfile.write('# serial: /dev/serial/by-id/usb-Klipper_rp2040_45474150540BD76A-if00\n')
+        outfile.write(
+            '# serial: /dev/serial/by-id/usb-Klipper_rp2040_45474150540BD76A-if00\n')
         outfile.write('\n')
         outfile.write('# [adxl345]\n')
         outfile.write('# cs_pin: btt_adxl345:gpio9\n')
