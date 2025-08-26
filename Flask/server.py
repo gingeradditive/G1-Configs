@@ -97,7 +97,7 @@ def write_printer_cfg():
         outfile.write(
             '###########################################################################\n')
         outfile.write('\n')
-        outfile.write('[include mainsail.cfg]\n')
+        outfile.write('[include G1-Configs/mainsail.cfg]\n')
         outfile.write('[include kamp.cfg]\n')
         outfile.write('[include G1-Configs/macro.cfg]\n')
         outfile.write('[include G1-Configs/main.cfg]\n')
