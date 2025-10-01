@@ -14,7 +14,7 @@ def extract_z_value(line):
     return float(match.group(1)) if match else None
 
 def convert_start_to_resume(line, force_z):
-    new_line = line.replace("START_PRINT", "RESUME_PRINT").strip()
+    new_line = line.replace("START_PRINT", "PLR_RESUME_PRINT").strip()
     new_line += f" FORCE_Z={force_z:.3f}"
     return new_line + "\n"
 
