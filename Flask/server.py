@@ -192,55 +192,109 @@ def write_printer_cfg():
         outfile.write('# extruder band position: UP\n')
         outfile.write(
             '#-------------------------------------------------------------------------------\n')
-        outfile.write('[extruder]\n')
-        outfile.write('step_pin: PF9\n')
+        
+        if (values["extruder_motor_model_select"] == "stepper"):
+            outfile.write('[extruder]\n')
+            outfile.write('step_pin: PF9\n')
 
-        if "extruder/invert_rotation" in values:
-            outfile.write('dir_pin: !PF10\n')
-        else:
-            outfile.write('dir_pin: PF10\n')
+            if "extruder/invert_rotation" in values:
+                outfile.write('dir_pin: !PF10\n')
+            else:
+                outfile.write('dir_pin: PF10\n')
 
-        outfile.write('enable_pin: !PG2 \n')
-        outfile.write('microsteps: 8\n')
-        outfile.write('rotation_distance: 456\n')
-        outfile.write('\n')
-        outfile.write('#456 PLA  [mm^3/rotation]\n')
-        outfile.write('#624 PETG  [mm^3/rotation]\n')
-        outfile.write(
-            '#rotation_distance is the volume of material (mm^3) extruded per rotation\n')
-        outfile.write('\n')
-        outfile.write('full_steps_per_rotation: 200\n')
-        outfile.write('gear_ratio: 5:1 \n')
-        outfile.write('nozzle_diameter: 1\n')
-        outfile.write(
-            'filament_diameter: 1.1284 #con questo valore i mm di filamento equivalgono ai mm^3\n')
-        outfile.write('max_extrude_cross_section: 150\n')
-        outfile.write(
-            'step_pulse_duration: 0.00002 #10 volte gli altri driver dovrebbe bastare\n')
-        outfile.write('instantaneous_corner_velocity: 30.0\n')
-        outfile.write('max_extrude_only_distance: 9999999999\n')
-        outfile.write('max_extrude_only_velocity: 300 #da modificare\n')
-        outfile.write('max_extrude_only_accel: 1000 #da modificare\n')
-        outfile.write(
-            '#max_extruder_velocity: 100 #max_volumeric_speed / ((filament_diameter / 2)^2 * PI()) 100 è tipo 250mm3/s\n')
-        outfile.write('pressure_advance: 0.0\n')
-        outfile.write('pressure_advance_smooth_time: 0.040\n')
-        outfile.write('max_power: 1.0\n')
-        outfile.write('pullup_resistor: 4700\n')
-        outfile.write('smooth_time: 1.0\n')
-        outfile.write('heater_pin: extruder_board: PD2 #D2\n')
-        outfile.write('sensor_pin:  PF4 #PF4\n')
-        outfile.write('sensor_type: EPCOS 100K B57560G104F\n')
-        outfile.write('control: pid\n')
-        outfile.write('pid_Kp: 38.284\n')
-        outfile.write('pid_Ki: 0.472\n')
-        outfile.write('pid_Kd: 776.691\n')
-        outfile.write('min_temp: 0\n')
-        outfile.write('max_temp: ' + values["extruder/max_temp"] + '\n')
-        outfile.write('#delta_max: 2.0\n')
-        outfile.write('pwm_cycle_time: 0.300\n')
-        outfile.write('min_extrude_temp: ' +
-                      values["extruder/min_extrude_temp"] + '\n')
+            outfile.write('enable_pin: !PG2 \n')
+            outfile.write('microsteps: 8\n')
+            outfile.write('rotation_distance: 456\n')
+            outfile.write('\n')
+            outfile.write('#456 PLA  [mm^3/rotation]\n')
+            outfile.write('#624 PETG  [mm^3/rotation]\n')
+            outfile.write(
+                '#rotation_distance is the volume of material (mm^3) extruded per rotation\n')
+            outfile.write('\n')
+            outfile.write('full_steps_per_rotation: 200\n')
+            outfile.write('gear_ratio: 5:1 \n')
+            outfile.write('nozzle_diameter: 1\n')
+            outfile.write(
+                'filament_diameter: 1.1284 #con questo valore i mm di filamento equivalgono ai mm^3\n')
+            outfile.write('max_extrude_cross_section: 150\n')
+            outfile.write(
+                'step_pulse_duration: 0.00002 #10 volte gli altri driver dovrebbe bastare\n')
+            outfile.write('instantaneous_corner_velocity: 30.0\n')
+            outfile.write('max_extrude_only_distance: 9999999999\n')
+            outfile.write('max_extrude_only_velocity: 300 #da modificare\n')
+            outfile.write('max_extrude_only_accel: 1000 #da modificare\n')
+            outfile.write(
+                '#max_extruder_velocity: 100 #max_volumeric_speed / ((filament_diameter / 2)^2 * PI()) 100 è tipo 250mm3/s\n')
+            outfile.write('pressure_advance: 0.0\n')
+            outfile.write('pressure_advance_smooth_time: 0.040\n')
+            outfile.write('max_power: 1.0\n')
+            outfile.write('pullup_resistor: 4700\n')
+            outfile.write('smooth_time: 1.0\n')
+            outfile.write('heater_pin: extruder_board: PD2 #D2\n')
+            outfile.write('sensor_pin:  PF4 #PF4\n')
+            outfile.write('sensor_type: EPCOS 100K B57560G104F\n')
+            outfile.write('control: pid\n')
+            outfile.write('pid_Kp: 38.284\n')
+            outfile.write('pid_Ki: 0.472\n')
+            outfile.write('pid_Kd: 776.691\n')
+            outfile.write('min_temp: 0\n')
+            outfile.write('max_temp: ' + values["extruder/max_temp"] + '\n')
+            outfile.write('#delta_max: 2.0\n')
+            outfile.write('pwm_cycle_time: 0.300\n')
+            outfile.write('min_extrude_temp: ' +
+                        values["extruder/min_extrude_temp"] + '\n')
+        elif (values["extruder_motor_model_select"] == "servo"):
+            outfile.write('[extruder]\n')
+            outfile.write('#TODO: Configurazioni per il servo motore\n')
+            outfile.write('step_pin: PF9\n')
+
+            if "extruder/invert_rotation" in values:
+                outfile.write('dir_pin: !PF10\n')
+            else:
+                outfile.write('dir_pin: PF10\n')
+
+            outfile.write('enable_pin: !PG2 \n')
+            outfile.write('microsteps: 8\n')
+            outfile.write('rotation_distance: 456\n')
+            outfile.write('\n')
+            outfile.write('#456 PLA  [mm^3/rotation]\n')
+            outfile.write('#624 PETG  [mm^3/rotation]\n')
+            outfile.write(
+                '#rotation_distance is the volume of material (mm^3) extruded per rotation\n')
+            outfile.write('\n')
+            outfile.write('full_steps_per_rotation: 200\n')
+            outfile.write('gear_ratio: 5:1 \n')
+            outfile.write('nozzle_diameter: 1\n')
+            outfile.write(
+                'filament_diameter: 1.1284 #con questo valore i mm di filamento equivalgono ai mm^3\n')
+            outfile.write('max_extrude_cross_section: 150\n')
+            outfile.write(
+                'step_pulse_duration: 0.00002 #10 volte gli altri driver dovrebbe bastare\n')
+            outfile.write('instantaneous_corner_velocity: 30.0\n')
+            outfile.write('max_extrude_only_distance: 9999999999\n')
+            outfile.write('max_extrude_only_velocity: 300 #da modificare\n')
+            outfile.write('max_extrude_only_accel: 1000 #da modificare\n')
+            outfile.write(
+                '#max_extruder_velocity: 100 #max_volumeric_speed / ((filament_diameter / 2)^2 * PI()) 100 è tipo 250mm3/s\n')
+            outfile.write('pressure_advance: 0.0\n')
+            outfile.write('pressure_advance_smooth_time: 0.040\n')
+            outfile.write('max_power: 1.0\n')
+            outfile.write('pullup_resistor: 4700\n')
+            outfile.write('smooth_time: 1.0\n')
+            outfile.write('heater_pin: extruder_board: PD2 #D2\n')
+            outfile.write('sensor_pin:  PF4 #PF4\n')
+            outfile.write('sensor_type: EPCOS 100K B57560G104F\n')
+            outfile.write('control: pid\n')
+            outfile.write('pid_Kp: 38.284\n')
+            outfile.write('pid_Ki: 0.472\n')
+            outfile.write('pid_Kd: 776.691\n')
+            outfile.write('min_temp: 0\n')
+            outfile.write('max_temp: ' + values["extruder/max_temp"] + '\n')
+            outfile.write('#delta_max: 2.0\n')
+            outfile.write('pwm_cycle_time: 0.300\n')
+            outfile.write('min_extrude_temp: ' +
+                        values["extruder/min_extrude_temp"] + '\n')
+            
         outfile.write('\n')
         outfile.write('[verify_heater extruder]\n')
         outfile.write('max_error: 250 #120\n')

@@ -80,6 +80,15 @@ function loadConfigurations(data) {
                     else if (data["tmc5160 extruder_stepper mixing_stepper"])
                         $('#extruder_stepper_model_select').val('tmc5160');
                 }
+                
+                // check if data has Servo or Stepper
+                // TODO: controllare se il config file utilizza il servo o lo stepper e selezionare di conseguenza il modello corretto
+                // if (inputName === 'extruder_motor_model_select') {
+                //     if (data["tmc2209 extruder_stepper mixing_stepper"])
+                //         $('#extruder_motor_model_select').val('stepper');
+                //     else if (data["tmc5160 extruder_stepper mixing_stepper"])
+                //         $('#extruder_motor_model_select').val('servo');
+                // }
 
                 // Select prevous motor direction 
                 if (inputName == "stepper_x/invert_rotation")
