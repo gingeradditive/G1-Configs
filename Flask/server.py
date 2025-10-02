@@ -1,21 +1,31 @@
-from flask import Flask, render_template_string, request, redirect, url_for
-from urllib.parse import urlparse
+import threading
+import time
+from flask import Flask, render_template_string, request, redirect, render_template, url_for
 
 from utils.mainsail_menu import UpdateMainsailMenu
-
 import scripts.init_script as init_script
 import scripts.update_script as update_script
 import scripts.sethostname_script as sethostname_script
 import scripts.checkforupdate_script as checkforupdate_script
 import scripts.factoryreset_script as factoryreset_script
+import socket
+import platform
+import json
 
 app = Flask(__name__)
+
 menu = UpdateMainsailMenu()
 
+
+# funzione helper per il redirect
 def get_base_url():
-    parsed = urlparse(request.host_url)
-    # Ricostruisce schema + dominio (senza porta e path)
-    return f"{parsed.scheme}://{parsed.hostname}"
+    system_name = platform.system()
+    
+    if system_name == "Windows":
+        return "http://127.0.0.1"
+    else:  # Linux (quindi anche Raspberry)
+        hostname = socket.gethostname()
+        return f"http://{hostname}"
 
 # ---------- INIT ----------
 @app.route("/init", methods=["GET", "POST"])
@@ -23,28 +33,23 @@ def init():
     if request.method == "POST":
         serial = request.form["serial"]
         timezone = request.form["timezone"]
-
         init_script.run(serial, timezone)
-        menu.setTo("Init eseguito")
-
+        run_check_update(get_base_url())
         return redirect(get_base_url())
 
-    form_html = """
-    <form method="post">
-        Serial Number: <input type="text" name="serial"><br>
-        Timezone: <input type="text" name="timezone" placeholder="Australia/Sydney"><br>
-        <button type="submit">Invia</button>
-    </form>
-    """
-    return render_template_string(form_html)
+    with open("static/data/timezones.json") as f:
+        timezones = json.load(f)
 
-
+    return render_template("init.html", timezones=timezones)
 
 # ---------- UPDATE ----------
 @app.route("/update")
 def update():
-    update_script.run()
-    menu.setTo("Update eseguito")
+    update_complete = update_script.run()
+    if (update_complete):
+        menu.set_to_system_ok(get_base_url())
+    else:
+        menu.set_to_update_available(get_base_url())
     return redirect(get_base_url())
 
 
@@ -54,7 +59,7 @@ def sethostname():
     if request.method == "POST":
         hostname = request.form["hostname"]
         sethostname_script.run(hostname)
-        menu.setTo("SetHostname eseguito")
+        menu.set_to_system_ok(get_base_url())
         return redirect(get_base_url())
 
     form_html = """
@@ -67,10 +72,26 @@ def sethostname():
 
 
 # ---------- CHECK FOR UPDATE ----------
+def run_check_update(url):
+    update_status = checkforupdate_script.run()
+    if (update_status == "update available"):
+        menu.set_to_update_available(url)
+    elif (update_status == "system not initialized"):
+        menu.set_to_initialize_printer(url)
+    else:
+        menu.set_to_system_ok(url)
+
+
+def periodic_check():
+    while True:
+        run_check_update(get_base_url())
+        time.sleep(10)  # ogni 10 secondi
+        # time.sleep(3600)  # <-- in produzione, ogni 1 ora
+
+
 @app.route("/checkforupdate")
 def checkforupdate():
-    checkforupdate_script.run()
-    menu.setTo("CheckForUpdate eseguito")
+    run_check_update(get_base_url())
     return redirect(get_base_url())
 
 
@@ -78,9 +99,13 @@ def checkforupdate():
 @app.route("/factoryreset")
 def factoryreset():
     factoryreset_script.run()
-    menu.setTo("FactoryReset eseguito")
+    run_check_update()
     return redirect(get_base_url())
 
 
 if __name__ == "__main__":
+    import os
+    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
+        threading.Thread(target=periodic_check, daemon=True).start()
+
     app.run(debug=True)
