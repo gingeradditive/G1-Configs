@@ -1,6 +1,11 @@
+from flask import Flask, render_template_string, request, redirect, render_template, url_for
+
 import threading
 import time
-from flask import Flask, render_template_string, request, redirect, render_template, url_for
+from markupsafe import Markup
+import socket
+import platform
+import json
 
 from utils.mainsail_menu import UpdateMainsailMenu
 import scripts.init_script as init_script
@@ -8,9 +13,7 @@ import scripts.update_script as update_script
 import scripts.sethostname_script as sethostname_script
 import scripts.checkforupdate_script as checkforupdate_script
 import scripts.factoryreset_script as factoryreset_script
-import socket
-import platform
-import json
+
 
 app = Flask(__name__)
 
@@ -27,6 +30,24 @@ def get_base_url():
         hostname = socket.gethostname()
         return f"http://{hostname}"
 
+
+#  --------- DOCUMENTATION ----------
+@app.route("/docs")
+def docs():
+    endpoints = [
+        ("/init", "Inizializza stampante"),
+        ("/update", "Aggiorna stampante"),
+        ("/checkforupdate", "Controlla aggiornamenti"),
+        ("/sethostname", "Imposta hostname (GET/POST)"),
+        ("/factoryreset", "Ripristino fabbrica")
+    ]
+
+    html = ["<h1>G1 Config - API Endpoints</h1><ul>"]
+    for path, desc in endpoints:
+        html.append(f'<li><a href="{path}">{path}</a> - {desc}</li>')
+    html.append("</ul>")
+
+    return Markup("\n".join(html))
 
 # ---------- INIT ----------
 @app.route("/init", methods=["GET", "POST"])
