@@ -20,12 +20,13 @@ menu = UpdateMainsailMenu()
 # funzione helper per il redirect
 def get_base_url():
     system_name = platform.system()
-    
+
     if system_name == "Windows":
         return "http://127.0.0.1"
     else:  # Linux (quindi anche Raspberry)
         hostname = socket.gethostname()
         return f"http://{hostname}"
+
 
 # ---------- INIT ----------
 @app.route("/init", methods=["GET", "POST"])
@@ -42,6 +43,18 @@ def init():
 
     return render_template("init.html", timezones=timezones)
 
+
+# ---------- CHECK FOR UPDATE ----------
+def run_check_update(url):
+    update_status = checkforupdate_script.run()
+    if (update_status == "update available"):
+        menu.set_to_update_available(url)
+    elif (update_status == "system not initialized"):
+        menu.set_to_initialize_printer(url)
+    else:
+        menu.set_to_system_ok(url)
+
+
 # ---------- UPDATE ----------
 @app.route("/update")
 def update():
@@ -50,6 +63,19 @@ def update():
         menu.set_to_system_ok(get_base_url())
     else:
         menu.set_to_update_available(get_base_url())
+    return redirect(get_base_url())
+
+
+def periodic_check():
+    while True:
+        run_check_update(get_base_url())
+        time.sleep(10)  # ogni 10 secondi
+        # time.sleep(3600)  # <-- in produzione, ogni 1 ora
+
+
+@app.route("/checkforupdate")
+def checkforupdate():
+    run_check_update(get_base_url())
     return redirect(get_base_url())
 
 
@@ -69,30 +95,6 @@ def sethostname():
     </form>
     """
     return render_template_string(form_html)
-
-
-# ---------- CHECK FOR UPDATE ----------
-def run_check_update(url):
-    update_status = checkforupdate_script.run()
-    if (update_status == "update available"):
-        menu.set_to_update_available(url)
-    elif (update_status == "system not initialized"):
-        menu.set_to_initialize_printer(url)
-    else:
-        menu.set_to_system_ok(url)
-
-
-def periodic_check():
-    while True:
-        run_check_update(get_base_url())
-        time.sleep(10)  # ogni 10 secondi
-        # time.sleep(3600)  # <-- in produzione, ogni 1 ora
-
-
-@app.route("/checkforupdate")
-def checkforupdate():
-    run_check_update(get_base_url())
-    return redirect(get_base_url())
 
 
 # ---------- FACTORY RESET ----------
