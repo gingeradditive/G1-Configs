@@ -38,7 +38,7 @@ def docs():
         ("/init", "Inizializza stampante"),
         ("/update", "Aggiorna stampante"),
         ("/checkforupdate", "Controlla aggiornamenti"),
-        ("/sethostname", "Imposta hostname (GET/POST)"),
+        ("/sethostname", "[WIP] Imposta hostname (GET/POST)"),
         ("/factoryreset", "Ripristino fabbrica")
     ]
 
