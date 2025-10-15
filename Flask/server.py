@@ -90,8 +90,8 @@ def update():
 def periodic_check():
     while True:
         run_check_update(get_base_url())
-        time.sleep(10)  # ogni 10 secondi
-        # time.sleep(3600)  # <-- in produzione, ogni 1 ora
+        # time.sleep(10)  # ogni 10 secondi
+        time.sleep(3600)  # <-- in produzione, ogni 1 ora
 
 
 @app.route("/checkforupdate")
@@ -121,8 +121,11 @@ def sethostname():
 # ---------- FACTORY RESET ----------
 @app.route("/factoryreset")
 def factoryreset():
-    factoryreset_script.run()
-    run_check_update()
+    reset_complete = factoryreset_script.run()
+    
+    if reset_complete: 
+        run_check_update()
+
     return redirect(get_base_url())
 
 

@@ -34,12 +34,12 @@ def run():
             g1_conf = json.load(f)
     except Exception as e:
         print(f"[CheckForUpdate Script] Errore nella lettura di G1.Conf: {e}")
-        return ""
+        return "system not initialized"
 
     serial_number = g1_conf.get("serial_number")
     if not serial_number:
         print("[CheckForUpdate Script] Serial number mancante in G1.Conf.")
-        return ""
+        return "system not initialized"
 
     print(f"[CheckForUpdate Script] Serial: {serial_number}")
 
