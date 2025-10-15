@@ -6,7 +6,7 @@ import requests
 def run():
     print("[CheckForUpdate Script] Checking for updates...")
 
-    # Path setup
+    # --- Path setup ---
     if os.name == "nt":
         basePath = os.getcwd()
         configPath = os.path.normpath(os.path.join(basePath, "..", "out", "config"))
@@ -23,12 +23,13 @@ def run():
 
     # --- Controllo presenza file G1.Conf ---
     g1_conf_path = os.path.join(databasePath, "G1.Conf")
+    update_file_path = os.path.join(databasePath, "G1-Update.temp")
 
     if not os.path.exists(g1_conf_path):
         print(f"[CheckForUpdate Script] File not found: {g1_conf_path}")
         return "system not initialized"
 
-    # --- Carica il file di configurazione G1.Conf ---
+    # --- Carica G1.Conf ---
     try:
         with open(g1_conf_path, "r") as f:
             g1_conf = json.load(f)
@@ -62,37 +63,44 @@ def run():
     for item in contents:
         if item["type"] != "file":
             continue
-        remote_path = item["path"]
 
-        # Recupera l'ultimo commit SHA che ha modificato il file
+        filename = os.path.basename(item["path"])
+        local_file_path = os.path.join(configPath, filename)
+        local_sha = g1_conf.get(filename)
+
+        # 1️⃣ Controlla se il file esiste localmente
+        file_exists = os.path.exists(local_file_path)
+
+        # 2️⃣ Recupera l'ultimo commit SHA remoto
         try:
             commits_url = f"{GITHUB_API_URL}/commits"
-            params = {"path": remote_path, "per_page": 1}
+            params = {"path": item["path"], "per_page": 1}
             commit_data = requests.get(commits_url, params=params).json()
             if not commit_data:
                 continue
             latest_sha = commit_data[0]["sha"]
         except Exception as e:
-            print(f"[CheckForUpdate Script] Errore nel recupero commit per {remote_path}: {e}")
+            print(f"[CheckForUpdate Script] Errore nel recupero commit per {filename}: {e}")
             continue
 
-        local_sha = g1_conf.get(os.path.basename(remote_path))  # es. "config.cfg"
-
-        if local_sha != latest_sha:
+        # 3️⃣ Determina se serve aggiornamento
+        if (not file_exists) or (local_sha != latest_sha):
             files_to_update.append({
-                "file": os.path.basename(remote_path),
+                "file": filename,
                 "old": local_sha,
                 "new": latest_sha
             })
 
     # --- Gestione risultati ---
-    update_file_path = os.path.join(databasePath, "G1-Update.temp")
+    try:
+        with open(update_file_path, "w") as f:
+            json.dump(files_to_update, f, indent=2)
+    except Exception as e:
+        print(f"[CheckForUpdate Script] Errore nel salvataggio di G1-Update.temp: {e}")
+        return ""
 
     if not files_to_update:
         print("[CheckForUpdate Script] Tutti i file sono aggiornati.")
-        # Sovrascrive eventuale file vecchio per coerenza
-        with open(update_file_path, "w") as f:
-            json.dump([], f, indent=2)
         return ""
 
     print("[CheckForUpdate Script] Aggiornamenti disponibili per:")
@@ -100,17 +108,9 @@ def run():
         if f["old"]:
             print(f" - {f['file']}: {f['old']} → {f['new']}")
         else:
-            print(f" - {f['file']} (nuovo file da scaricare)")
+            print(f" - {f['file']} (nuovo o mancante)")
 
-    # --- Salva elenco aggiornamenti in G1-Update.temp ---
-    try:
-        with open(update_file_path, "w") as f:
-            json.dump(files_to_update, f, indent=2)
-        print(f"[CheckForUpdate Script] File aggiornamenti salvato in: {update_file_path}")
-    except Exception as e:
-        print(f"[CheckForUpdate Script] Errore nel salvataggio di G1-Update.temp: {e}")
-        return ""
-
+    print(f"[CheckForUpdate Script] File aggiornamenti salvato in: {update_file_path}")
     print("[CheckForUpdate Script] Update available.")
     return "update available"
 
