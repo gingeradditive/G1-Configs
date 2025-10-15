@@ -85,9 +85,14 @@ def run():
                 "new": latest_sha
             })
 
-    # --- Risultati ---
+    # --- Gestione risultati ---
+    update_file_path = os.path.join(databasePath, "G1-Update.temp")
+
     if not files_to_update:
         print("[CheckForUpdate Script] Tutti i file sono aggiornati.")
+        # Sovrascrive eventuale file vecchio per coerenza
+        with open(update_file_path, "w") as f:
+            json.dump([], f, indent=2)
         return ""
 
     print("[CheckForUpdate Script] Aggiornamenti disponibili per:")
@@ -96,8 +101,15 @@ def run():
             print(f" - {f['file']}: {f['old']} → {f['new']}")
         else:
             print(f" - {f['file']} (nuovo file da scaricare)")
-        # Aggiorna l’hash locale
-        g1_conf[f["file"]] = f["new"]
+
+    # --- Salva elenco aggiornamenti in G1-Update.temp ---
+    try:
+        with open(update_file_path, "w") as f:
+            json.dump(files_to_update, f, indent=2)
+        print(f"[CheckForUpdate Script] File aggiornamenti salvato in: {update_file_path}")
+    except Exception as e:
+        print(f"[CheckForUpdate Script] Errore nel salvataggio di G1-Update.temp: {e}")
+        return ""
 
     print("[CheckForUpdate Script] Update available.")
     return "update available"
