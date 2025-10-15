@@ -124,7 +124,7 @@ def factoryreset():
     reset_complete = factoryreset_script.run()
     
     if reset_complete: 
-        run_check_update()
+        run_check_update(get_base_url())
 
     return redirect(get_base_url())
 
