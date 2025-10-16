@@ -134,4 +134,7 @@ if __name__ == "__main__":
     if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
         threading.Thread(target=periodic_check, daemon=True).start()
 
-    app.run(debug=True)
+    if os.name == "nt":
+        app.run(debug=True)
+    else:
+        app.run(host="0.0.0.0", port=5000)
