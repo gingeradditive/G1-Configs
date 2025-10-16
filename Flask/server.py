@@ -28,6 +28,10 @@ def get_base_url():
         return "http://127.0.0.1"
     else:  # Linux (quindi anche Raspberry)
         hostname = socket.gethostname()
+
+        if not hostname.endswith(".local"):
+            hostname += ".local"
+
         return f"http://{hostname}"
 
 
