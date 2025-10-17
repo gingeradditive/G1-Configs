@@ -1,7 +1,68 @@
 import os
 import json
 import requests
+import re
 
+
+def get_mainboard_serial():
+    """Legge il serial della mainboard Klipper."""
+    if os.name == "nt":
+        return "/dev/serial/by-id/usb-Klipper_stm32h723xx_XXXXXXXXXXXXXXXXXXXXXXXX-XXXX"
+    try:
+        serials = os.listdir("/dev/serial/by-id/")
+        serial = next((s for s in serials if "usb-Klipper" in s), None)
+        if serial:
+            return f"/dev/serial/by-id/{serial}"
+        return "Nessun dispositivo trovato"
+    except FileNotFoundError:
+        return "Directory /dev/serial/by-id/ non trovata"
+
+
+def get_extruder_board_serial():
+    """Legge il serial della scheda estrusore."""
+    if os.name == "nt":
+        return "/dev/serial/by-id/usb-1a86_USB2.0-XXXX-XXXX-XXXXX"
+    try:
+        serials = os.listdir("/dev/serial/by-id/")
+        serial = next((s for s in serials if "usb-1a86_USB" in s), None)
+        if serial:
+            return f"/dev/serial/by-id/{serial}"
+        return "Nessun dispositivo trovato"
+    except FileNotFoundError:
+        return "Directory /dev/serial/by-id/ non trovata"
+
+
+def update_printer_cfg_serials(printer_cfg_path):
+    """Aggiorna i seriali nel file printer.cfg."""
+    if not os.path.exists(printer_cfg_path):
+        print(f"[Update Script] printer.cfg non trovato: {printer_cfg_path}")
+        return
+
+    try:
+        with open(printer_cfg_path, "r", encoding="utf-8") as f:
+            content = f.read()
+
+        main_serial = get_mainboard_serial()
+        extruder_serial = get_extruder_board_serial()
+
+        # Aggiorna le righe con regex
+        content = re.sub(
+            r"(serial:\s*/dev/serial/by-id/usb-Klipper[^\n]*)",
+            f"serial: {main_serial}",
+            content
+        )
+        content = re.sub(
+            r"(serial:\s*/dev/serial/by-id/usb-1a86_USB[^\n]*)",
+            f"serial: {extruder_serial}",
+            content
+        )
+
+        with open(printer_cfg_path, "w", encoding="utf-8") as f:
+            f.write(content)
+
+        print(f"[Update Script] Seriali aggiornati in printer.cfg")
+    except Exception as e:
+        print(f"[Update Script] Errore durante l'aggiornamento dei seriali: {e}")
 
 # Return 
 #   True: Aggiornamento completato con successo
@@ -79,6 +140,10 @@ def run():
             g1_conf[filename] = new_sha
             success_count += 1
             print(f"[Update Script] Aggiornato: {filename}")
+
+            # Se è printer.cfg, aggiorna i seriali dopo averlo scritto
+            if filename == "printer.cfg":
+                update_printer_cfg_serials(local_dest)
 
         except Exception as e:
             print(f"[Update Script] Errore durante l'aggiornamento di {filename}: {e}")
