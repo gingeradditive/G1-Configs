@@ -43,7 +43,8 @@ def docs():
         ("/update", "Aggiorna stampante"),
         ("/checkforupdate", "Controlla aggiornamenti"),
         ("/sethostname", "[WIP] Imposta hostname (GET/POST)"),
-        ("/factoryreset", "Ripristino fabbrica")
+        ("/factoryreset", "Ripristino fabbrica"),
+        ("/testicon", "Test icone menu (GET/POST)")
     ]
 
     html = ["<h1>G1 Config - API Endpoints</h1><ul>"]
@@ -131,6 +132,41 @@ def factoryreset():
         run_check_update(get_base_url())
 
     return redirect(get_base_url())
+
+# ---------- TEST ICON ----------
+@app.route("/testicon", methods=["GET", "POST"])
+def testicon():
+    if request.method == "POST":
+        selected_action = request.form.get("action")
+        base_url = get_base_url()
+
+        if selected_action == "update_available":
+            menu.set_to_update_available(base_url)
+        elif selected_action == "initialize_printer":
+            menu.set_to_initialize_printer(base_url)
+        elif selected_action == "system_ok":
+            menu.set_to_system_ok(base_url)
+        elif selected_action == "factory_reset":
+            menu.set_to_system_ok(base_url)
+        else:
+            return render_template_string("<h2>Errore: azione sconosciuta</h2>")
+
+        return redirect(base_url)
+
+    form_html = """
+    <h1>Test Icon Menu</h1>
+    <form method="post">
+        <label for="action">Seleziona stato menu:</label><br><br>
+        <select name="action" id="action">
+            <option value="update_available">Aggiornamento disponibile</option>
+            <option value="initialize_printer">Inizializza stampante</option>
+            <option value="system_ok">Sistema OK</option>
+            <option value="factory_reset">Dopo reset di fabbrica</option>
+        </select><br><br>
+        <button type="submit">Applica</button>
+    </form>
+    """
+    return render_template_string(form_html)
 
 
 if __name__ == "__main__":
