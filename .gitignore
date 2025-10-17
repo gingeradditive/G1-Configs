@@ -38,3 +38,4 @@ htmlcov/
 # --- Custom project paths ---
 Configs/printer.cfg
 out/
+navi.json
