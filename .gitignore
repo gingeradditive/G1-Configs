@@ -1,2 +1,40 @@
+# --- Python standard ignores ---
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Logs e dati temporanei
+*.log
+*.tmp
+*.bak
+*.old
+
+# Build / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Unit test / coverage
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+htmlcov/
+
+# --- Custom project paths ---
 Configs/printer.cfg
 out/
