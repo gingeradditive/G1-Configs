@@ -1,6 +1,75 @@
 import os
 import json
 import requests
+import subprocess
+
+
+def check_moonraker_updates(moonraker_url="http://localhost:7125"):
+    print("[CheckForUpdate Script] Controllo aggiornamenti Moonraker/Klipper...")
+
+    try:
+        response = requests.get(f"{moonraker_url}/machine/update/status", timeout=5)
+        response.raise_for_status()
+        data = response.json().get("result", {}).get("version_info", {})
+
+        updates_available = []
+
+        for name, info in data.items():
+            local_ver = info.get("version")
+            remote_ver = info.get("remote_version")
+            if local_ver != remote_ver:
+                updates_available.append({
+                    "component": name,
+                    "local": local_ver,
+                    "remote": remote_ver
+                })
+
+        if updates_available:
+            print("[CheckForUpdate Script] 🔄 Aggiornamenti disponibili (Moonraker):")
+            for u in updates_available:
+                print(f" - {u['component']}: {u['local']} → {u['remote']}")
+        else:
+            print("[CheckForUpdate Script] ✅ Moonraker/Klipper/Mainsail sono aggiornati.")
+
+        return updates_available
+
+    except requests.RequestException as e:
+        print(f"[CheckForUpdate Script] ❌ Errore nel contatto con Moonraker: {e}")
+        return []
+
+
+def check_raspberry_updates():
+    print("[CheckForUpdate Script] Controllo aggiornamenti Raspberry (APT)...")
+
+    try:
+        # Aggiorna la lista dei pacchetti ma non installa nulla
+        subprocess.run(["sudo", "apt-get", "update", "-qq"], check=True)
+
+        # Controlla pacchetti aggiornabili
+        result = subprocess.run(
+            ["apt", "list", "--upgradable"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True
+        )
+
+        lines = [
+            line for line in result.stdout.splitlines()
+            if line and not line.startswith("Listing...")
+        ]
+
+        if lines:
+            print("[CheckForUpdate Script] 🔄 Aggiornamenti APT disponibili:")
+            for line in lines:
+                print("  -", line)
+        else:
+            print("[CheckForUpdate Script] ✅ Nessun aggiornamento APT disponibile.")
+
+        return lines
+
+    except subprocess.CalledProcessError as e:
+        print(f"[CheckForUpdate Script] ❌ Errore durante il controllo APT: {e}")
+        return []
 
 
 def run():
@@ -91,26 +160,31 @@ def run():
                 "new": latest_sha
             })
 
+    # --- Nuovi controlli ---
+    moonraker_updates = check_moonraker_updates()
+    raspberry_updates = check_raspberry_updates()
+
     # --- Gestione risultati ---
+    all_updates = {
+        "files": files_to_update,
+        "moonraker": moonraker_updates,
+        "raspberry": raspberry_updates
+    }
+
     try:
         with open(update_file_path, "w") as f:
-            json.dump(files_to_update, f, indent=2)
+            json.dump(all_updates, f, indent=2)
     except Exception as e:
         print(f"[CheckForUpdate Script] Errore nel salvataggio di G1-Update.temp: {e}")
         return ""
 
-    if not files_to_update:
-        print("[CheckForUpdate Script] Tutti i file sono aggiornati.")
+    has_updates = bool(files_to_update or moonraker_updates or raspberry_updates)
+
+    if not has_updates:
+        print("[CheckForUpdate Script] Tutti i componenti sono aggiornati.")
         return ""
 
-    print("[CheckForUpdate Script] Aggiornamenti disponibili per:")
-    for f in files_to_update:
-        if f["old"]:
-            print(f" - {f['file']}: {f['old']} → {f['new']}")
-        else:
-            print(f" - {f['file']} (nuovo o mancante)")
-
-    print(f"[CheckForUpdate Script] File aggiornamenti salvato in: {update_file_path}")
+    print("[CheckForUpdate Script] ✅ File aggiornamenti salvato in:", update_file_path)
     print("[CheckForUpdate Script] Update available.")
     return "update available"
 

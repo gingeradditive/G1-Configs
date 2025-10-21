@@ -2,6 +2,8 @@ import os
 import json
 import requests
 import re
+import subprocess
+import time
 
 
 def get_mainboard_serial():
@@ -64,9 +66,32 @@ def update_printer_cfg_serials(printer_cfg_path):
     except Exception as e:
         print(f"[Update Script] Errore durante l'aggiornamento dei seriali: {e}")
 
-# Return 
-#   True: Aggiornamento completato con successo
-#   False: Aggiornamento fallito 
+
+def update_moonraker(moonraker_url="http://localhost:7125"):
+    """Avvia l'aggiornamento Moonraker/Klipper/Mainsail."""
+    print("[Update Script] Avvio aggiornamento Moonraker/Klipper...")
+    try:
+        resp = requests.post(f"{moonraker_url}/machine/update/start", timeout=5)
+        if resp.status_code == 200:
+            print("[Update Script] ✅ Aggiornamento Moonraker avviato con successo.")
+        else:
+            print(f"[Update Script] ⚠️ Risposta inattesa da Moonraker: {resp.status_code}")
+    except requests.RequestException as e:
+        print(f"[Update Script] ❌ Errore durante l'avvio aggiornamento Moonraker: {e}")
+
+
+def update_raspberry():
+    """Esegue apt-get upgrade automatico."""
+    print("[Update Script] Avvio aggiornamento pacchetti Raspberry (APT)...")
+    try:
+        subprocess.run(["sudo", "apt-get", "update", "-qq"], check=True)
+        subprocess.run(["sudo", "apt-get", "upgrade", "-y"], check=True)
+        subprocess.run(["sudo", "apt-get", "autoremove", "-y"], check=True)
+        print("[Update Script] ✅ Aggiornamento APT completato.")
+    except subprocess.CalledProcessError as e:
+        print(f"[Update Script] ❌ Errore durante aggiornamento APT: {e}")
+
+
 def run():
     print("[Update Script] Running update...")
 
@@ -81,17 +106,15 @@ def run():
         databasePath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "database"))
         backupConfigPath = os.path.normpath(os.path.join("/home", "pi", "G1-Configs", "Configs"))
 
-    # --- Percorsi principali ---
     g1_conf_path = os.path.join(databasePath, "G1.Conf")
     update_temp_path = os.path.join(databasePath, "G1-Update.temp")
 
-    # --- Controllo presenza file ---
     if not os.path.exists(g1_conf_path):
         print(f"[Update Script] File non trovato: {g1_conf_path}")
         return False
     if not os.path.exists(update_temp_path):
         print(f"[Update Script] Nessun aggiornamento da eseguire ({update_temp_path} mancante).")
-        return True  # niente da aggiornare → considerato successo
+        return True
 
     # --- Carica configurazione locale e lista update ---
     try:
@@ -108,48 +131,53 @@ def run():
         print("[Update Script] Serial number mancante in G1.Conf.")
         return False
 
-    if not updates:
-        print("[Update Script] Nessun file da aggiornare.")
-        os.remove(update_temp_path)
-        return True
-
-    # --- Imposta variabili GitHub ---
-    GITHUB_REPO = "gingeradditive/G1-Printers"
-    RAW_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main"
-
     success_count = 0
     failed_files = []
 
-    # --- Scarica e sostituisci i file aggiornati ---
-    for f in updates:
-        filename = f["file"]
-        new_sha = f["new"]
-        url = f"{RAW_BASE_URL}/{serial_number}/{filename}"
-        local_dest = os.path.join(configPath, filename)
+    # --- Aggiornamento file GitHub ---
+    if "files" in updates and updates["files"]:
+        print("[Update Script] Inizio aggiornamento file di configurazione...")
+        GITHUB_REPO = "gingeradditive/G1-Printers"
+        RAW_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main"
 
-        try:
-            print(f"[Update Script] Scaricamento {filename}...")
-            resp = requests.get(url)
-            resp.raise_for_status()
+        for f in updates["files"]:
+            filename = f["file"]
+            new_sha = f["new"]
+            url = f"{RAW_BASE_URL}/{serial_number}/{filename}"
+            local_dest = os.path.join(configPath, filename)
 
-            # Scrivi file sul disco (sostituendo se esiste)
-            with open(local_dest, "w", encoding="utf-8") as local_file:
-                local_file.write(resp.text)
+            try:
+                print(f"[Update Script] Scaricamento {filename}...")
+                resp = requests.get(url)
+                resp.raise_for_status()
 
-            # Aggiorna hash nel file G1.Conf
-            g1_conf[filename] = new_sha
-            success_count += 1
-            print(f"[Update Script] Aggiornato: {filename}")
+                with open(local_dest, "w", encoding="utf-8") as local_file:
+                    local_file.write(resp.text)
 
-            # Se è printer.cfg, aggiorna i seriali dopo averlo scritto
-            if filename == "printer.cfg":
-                update_printer_cfg_serials(local_dest)
+                g1_conf[filename] = new_sha
+                success_count += 1
+                print(f"[Update Script] Aggiornato: {filename}")
 
-        except Exception as e:
-            print(f"[Update Script] Errore durante l'aggiornamento di {filename}: {e}")
-            failed_files.append(filename)
+                if filename == "printer.cfg":
+                    update_printer_cfg_serials(local_dest)
 
-    # --- Salva nuovo stato in G1.Conf ---
+            except Exception as e:
+                print(f"[Update Script] Errore durante l'aggiornamento di {filename}: {e}")
+                failed_files.append(filename)
+    else:
+        print("[Update Script] Nessun file di configurazione da aggiornare.")
+
+    # --- Aggiornamento Moonraker ---
+    if "moonraker" in updates and updates["moonraker"]:
+        update_moonraker()
+        # Attendere un po' per evitare conflitti con riavvio di servizi
+        time.sleep(10)
+
+    # --- Aggiornamento APT ---
+    if "raspberry" in updates and updates["raspberry"]:
+        update_raspberry()
+
+    # --- Salva nuovo stato G1.Conf ---
     try:
         with open(g1_conf_path, "w") as f:
             json.dump(g1_conf, f, indent=2)
@@ -172,7 +200,7 @@ def run():
             print(f" - {f}")
         return False
 
-    print(f"[Update Script] Aggiornamento completato con successo ({success_count} file).")
+    print(f"[Update Script] ✅ Aggiornamento completato con successo ({success_count} file).")
     return True
 
 
