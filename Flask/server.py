@@ -6,6 +6,7 @@ from markupsafe import Markup
 import socket
 import platform
 import json
+import os
 
 from utils.mainsail_menu import UpdateMainsailMenu
 import scripts.init_script as init_script
@@ -168,18 +169,16 @@ def testicon():
     """
     return render_template_string(form_html)
 
-@app.before_first_request
-def start_background_tasks():
-    # Esegui subito un check all'avvio
-    run_check_update(get_base_url())
-
-    # Avvia il thread periodico
-    t = threading.Thread(target=periodic_check, daemon=True)
-    t.start()
 
 if __name__ == "__main__":
-    import os
-    
+    # Avvia il check subito all’avvio
+    print("🟢 Avvio controllo iniziale...")
+    run_check_update(get_base_url())
+
+    # Avvia thread periodico
+    print("🟢 Avvio thread periodic_check...")
+    threading.Thread(target=periodic_check, daemon=True).start()
+
     if os.name == "nt":
         app.run(debug=True)
     else:
