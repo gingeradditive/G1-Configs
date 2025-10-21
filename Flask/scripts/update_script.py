@@ -68,16 +68,42 @@ def update_printer_cfg_serials(printer_cfg_path):
 
 
 def update_moonraker(moonraker_url="http://localhost:7125"):
-    """Avvia l'aggiornamento Moonraker/Klipper/Mainsail."""
+    """Controlla e aggiorna Moonraker/Klipper/Mainsail se necessario."""
     print("[Update Script] Avvio aggiornamento Moonraker/Klipper...")
+
     try:
-        resp = requests.post(f"{moonraker_url}/machine/update/start", timeout=5)
-        if resp.status_code == 200:
-            print("[Update Script] ✅ Aggiornamento Moonraker avviato con successo.")
-        else:
-            print(f"[Update Script] ⚠️ Risposta inattesa da Moonraker: {resp.status_code}")
+        # 1️⃣ Controlla lo stato degli aggiornamenti
+        status_resp = requests.get(f"{moonraker_url}/machine/update/status", timeout=5)
+        status_resp.raise_for_status()
+        status_data = status_resp.json().get("result", {})
+        repos = status_data.get("version_info", {})
+
+        if not repos:
+            print("[Update Script] ⚠️ Nessun repository trovato in Moonraker.")
+            return
+
+        updates_found = False
+        for name, info in repos.items():
+            local = info.get("version")
+            remote = info.get("remote_version")
+            if local != remote:
+                updates_found = True
+                print(f"[Update Script] 🔄 Aggiornamento disponibile per {name}: {local} → {remote}")
+                # 2️⃣ Avvia aggiornamento singolo repo
+                try:
+                    repo_resp = requests.post(f"{moonraker_url}/machine/update/repo?repo={name}", timeout=10)
+                    if repo_resp.status_code == 200:
+                        print(f"[Update Script] ✅ Aggiornamento di {name} avviato correttamente.")
+                    else:
+                        print(f"[Update Script] ⚠️ Errore nell'avviare update di {name}: {repo_resp.status_code}")
+                except requests.RequestException as e:
+                    print(f"[Update Script] ❌ Errore aggiornando {name}: {e}")
+
+        if not updates_found:
+            print("[Update Script] ✅ Tutti i componenti Moonraker/Klipper sono già aggiornati.")
+
     except requests.RequestException as e:
-        print(f"[Update Script] ❌ Errore durante l'avvio aggiornamento Moonraker: {e}")
+        print(f"[Update Script] ❌ Errore durante la connessione a Moonraker: {e}")
 
 
 def update_raspberry():
