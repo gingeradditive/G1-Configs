@@ -171,12 +171,13 @@ def testicon():
 
 
 if __name__ == "__main__":
-    # Avvia il check subito all’avvio
-    print("🟢 Avvio controllo iniziale...")
+    print("Attendo rete disponibile...")
+    time.sleep(30)  # aspetta 10 secondi prima del primo check
+
+    print("Avvio controllo iniziale...")
     run_check_update(get_base_url())
 
-    # Avvia thread periodico
-    print("🟢 Avvio thread periodic_check...")
+    print("Avvio thread periodic_check...")
     threading.Thread(target=periodic_check, daemon=True).start()
 
     if os.name == "nt":
