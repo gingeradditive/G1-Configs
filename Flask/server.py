@@ -170,10 +170,12 @@ def testicon():
 
 @app.before_first_request
 def start_background_tasks():
-    if not os.path.exists("/tmp/g1config_thread.lock"):
-        open("/tmp/g1config_thread.lock", "w").close()
-        threading.Thread(target=periodic_check, daemon=True).start()
-        run_check_update(get_base_url())
+    # Esegui subito un check all'avvio
+    run_check_update(get_base_url())
+
+    # Avvia il thread periodico
+    t = threading.Thread(target=periodic_check, daemon=True)
+    t.start()
 
 if __name__ == "__main__":
     import os
