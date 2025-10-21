@@ -168,12 +168,16 @@ def testicon():
     """
     return render_template_string(form_html)
 
+@app.before_first_request
+def start_background_tasks():
+    if not os.path.exists("/tmp/g1config_thread.lock"):
+        open("/tmp/g1config_thread.lock", "w").close()
+        threading.Thread(target=periodic_check, daemon=True).start()
+        run_check_update(get_base_url())
 
 if __name__ == "__main__":
     import os
-    if os.environ.get("WERKZEUG_RUN_MAIN") == "true":
-        threading.Thread(target=periodic_check, daemon=True).start()
-
+    
     if os.name == "nt":
         app.run(debug=True)
     else:
