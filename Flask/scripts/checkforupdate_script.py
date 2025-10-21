@@ -38,40 +38,6 @@ def check_moonraker_updates(moonraker_url="http://localhost:7125"):
         return []
 
 
-def check_raspberry_updates():
-    print("[CheckForUpdate Script] Controllo aggiornamenti Raspberry (APT)...")
-
-    try:
-        # Aggiorna la lista dei pacchetti ma non installa nulla
-        subprocess.run(["sudo", "apt-get", "update", "-qq"], check=True)
-
-        # Controlla pacchetti aggiornabili
-        result = subprocess.run(
-            ["apt", "list", "--upgradable"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-
-        lines = [
-            line for line in result.stdout.splitlines()
-            if line and not line.startswith("Listing...")
-        ]
-
-        if lines:
-            print("[CheckForUpdate Script] 🔄 Aggiornamenti APT disponibili:")
-            for line in lines:
-                print("  -", line)
-        else:
-            print("[CheckForUpdate Script] ✅ Nessun aggiornamento APT disponibile.")
-
-        return lines
-
-    except subprocess.CalledProcessError as e:
-        print(f"[CheckForUpdate Script] ❌ Errore durante il controllo APT: {e}")
-        return []
-
-
 def run():
     print("[CheckForUpdate Script] Checking for updates...")
 
@@ -162,13 +128,11 @@ def run():
 
     # --- Nuovi controlli ---
     moonraker_updates = check_moonraker_updates()
-    raspberry_updates = check_raspberry_updates()
 
     # --- Gestione risultati ---
     all_updates = {
         "files": files_to_update,
-        "moonraker": moonraker_updates,
-        "raspberry": raspberry_updates
+        "moonraker": moonraker_updates
     }
 
     try:
@@ -178,7 +142,7 @@ def run():
         print(f"[CheckForUpdate Script] Errore nel salvataggio di G1-Update.temp: {e}")
         return ""
 
-    has_updates = bool(files_to_update or moonraker_updates or raspberry_updates)
+    has_updates = bool(files_to_update or moonraker_updates)
 
     if not has_updates:
         print("[CheckForUpdate Script] Tutti i componenti sono aggiornati.")

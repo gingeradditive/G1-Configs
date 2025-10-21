@@ -67,57 +67,6 @@ def update_printer_cfg_serials(printer_cfg_path):
         print(f"[Update Script] Errore durante l'aggiornamento dei seriali: {e}")
 
 
-def update_moonraker(moonraker_url="http://localhost:7125"):
-    """Controlla e aggiorna Moonraker/Klipper/Mainsail se necessario."""
-    print("[Update Script] Avvio aggiornamento Moonraker/Klipper...")
-
-    try:
-        # 1️⃣ Controlla lo stato degli aggiornamenti
-        status_resp = requests.get(f"{moonraker_url}/machine/update/status", timeout=5)
-        status_resp.raise_for_status()
-        status_data = status_resp.json().get("result", {})
-        repos = status_data.get("version_info", {})
-
-        if not repos:
-            print("[Update Script] ⚠️ Nessun repository trovato in Moonraker.")
-            return
-
-        updates_found = False
-        for name, info in repos.items():
-            local = info.get("version")
-            remote = info.get("remote_version")
-            if local != remote:
-                updates_found = True
-                print(f"[Update Script] 🔄 Aggiornamento disponibile per {name}: {local} → {remote}")
-                # 2️⃣ Avvia aggiornamento singolo repo
-                try:
-                    repo_resp = requests.post(f"{moonraker_url}/machine/update/repo?repo={name}", timeout=10)
-                    if repo_resp.status_code == 200:
-                        print(f"[Update Script] ✅ Aggiornamento di {name} avviato correttamente.")
-                    else:
-                        print(f"[Update Script] ⚠️ Errore nell'avviare update di {name}: {repo_resp.status_code}")
-                except requests.RequestException as e:
-                    print(f"[Update Script] ❌ Errore aggiornando {name}: {e}")
-
-        if not updates_found:
-            print("[Update Script] ✅ Tutti i componenti Moonraker/Klipper sono già aggiornati.")
-
-    except requests.RequestException as e:
-        print(f"[Update Script] ❌ Errore durante la connessione a Moonraker: {e}")
-
-
-def update_raspberry():
-    """Esegue apt-get upgrade automatico."""
-    print("[Update Script] Avvio aggiornamento pacchetti Raspberry (APT)...")
-    try:
-        subprocess.run(["sudo", "apt-get", "update", "-qq"], check=True)
-        subprocess.run(["sudo", "apt-get", "upgrade", "-y"], check=True)
-        subprocess.run(["sudo", "apt-get", "autoremove", "-y"], check=True)
-        print("[Update Script] ✅ Aggiornamento APT completato.")
-    except subprocess.CalledProcessError as e:
-        print(f"[Update Script] ❌ Errore durante aggiornamento APT: {e}")
-
-
 def run():
     print("[Update Script] Running update...")
 
@@ -195,14 +144,8 @@ def run():
 
     # --- Aggiornamento Moonraker ---
     if "moonraker" in updates and updates["moonraker"]:
-        update_moonraker()
-        # Attendere un po' per evitare conflitti con riavvio di servizi
-        time.sleep(10)
-
-    # --- Aggiornamento APT ---
-    if "raspberry" in updates and updates["raspberry"]:
-        update_raspberry()
-
+        time.sleep(1) # TODO: il ritorno dovrebbe riportare a alla pagina "Machine" dopo l'update per far eseguire all'utente gli aggiornamenti moonraker
+        
     # --- Salva nuovo stato G1.Conf ---
     try:
         with open(g1_conf_path, "w") as f:
