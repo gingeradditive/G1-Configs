@@ -178,10 +178,35 @@ def testicon():
     return render_template_string(form_html)
 
 
-if __name__ == "__main__":
-    print("Attendo rete disponibile...")
-    time.sleep(30)  # aspetta 10 secondi prima del primo check
 
+def is_internet_available(host="8.8.8.8", port=53, timeout=3):
+    """
+    Controlla la connessione tentando di aprire una socket verso un DNS pubblico (Google DNS).
+    È più affidabile del ping.
+    """
+    try:
+        socket.setdefaulttimeout(timeout)
+        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
+        return True
+    except OSError:
+        return False
+
+if __name__ == "__main__":
+    print("Controllo disponibilità rete...")
+    timeout_limit = 120  # secondi
+    retry_interval = 5   # secondi
+    # ripeti finché non c'è connessione
+    while not is_internet_available():        
+        if retry_interval > timeout_limit:
+            retry_interval = timeout_limit
+        else:
+            retry_interval += 5
+        print(f"Nessuna connessione. Riprovo tra {retry_interval} secondi...")
+        time.sleep(retry_interval)
+
+    print("Connessione rilevata! Procedo con l'avvio...")
+
+    # ora puoi lanciare il resto del tuo codice
     print("Avvio controllo iniziale...")
     run_check_update(get_base_url())
 
