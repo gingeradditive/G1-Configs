@@ -56,6 +56,8 @@ def docs():
     return Markup("\n".join(html))
 
 # ---------- INIT ----------
+
+
 @app.route("/init", methods=["GET", "POST"])
 def init():
     if request.method == "POST":
@@ -85,12 +87,16 @@ def run_check_update(url):
 # ---------- UPDATE ----------
 @app.route("/update")
 def update():
-    update_complete = update_script.run()
-    if (update_complete):
+    update_result = update_script.run()
+    if update_result is True:
         menu.set_to_system_ok(get_base_url())
+        return redirect(get_base_url())
+    elif update_result == "redirect":
+        menu.set_to_system_ok(get_base_url())
+        return redirect(f"{get_base_url()}/config")
     else:
         menu.set_to_update_available(get_base_url())
-    return redirect(get_base_url())
+        return redirect(get_base_url())
 
 
 def periodic_check():
@@ -128,13 +134,15 @@ def sethostname():
 @app.route("/factoryreset")
 def factoryreset():
     reset_complete = factoryreset_script.run()
-    
-    if reset_complete: 
+
+    if reset_complete:
         run_check_update(get_base_url())
 
     return redirect(get_base_url())
 
 # ---------- TEST ICON ----------
+
+
 @app.route("/testicon", methods=["GET", "POST"])
 def testicon():
     if request.method == "POST":

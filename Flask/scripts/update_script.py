@@ -70,6 +70,8 @@ def update_printer_cfg_serials(printer_cfg_path):
 def run():
     print("[Update Script] Running update...")
 
+    REDIRECT = "redirect"  # nuovo stato per reindirizzare l’utente
+
     # --- Path setup ---
     if os.name == "nt":
         basePath = os.getcwd()
@@ -108,6 +110,7 @@ def run():
 
     success_count = 0
     failed_files = []
+    redirect_needed = False  # flag per indicare se serve il redirect
 
     # --- Aggiornamento file GitHub ---
     if "files" in updates and updates["files"]:
@@ -144,8 +147,10 @@ def run():
 
     # --- Aggiornamento Moonraker ---
     if "moonraker" in updates and updates["moonraker"]:
-        time.sleep(1) # TODO: il ritorno dovrebbe riportare a alla pagina "Machine" dopo l'update per far eseguire all'utente gli aggiornamenti moonraker
-        
+        print("[Update Script] Aggiornamento Moonraker richiesto.")
+        time.sleep(1)
+        redirect_needed = True  # indica che serve il redirect
+
     # --- Salva nuovo stato G1.Conf ---
     try:
         with open(g1_conf_path, "w") as f:
@@ -169,10 +174,15 @@ def run():
             print(f" - {f}")
         return False
 
+    if redirect_needed:
+        print("[Update Script] ✅ Aggiornamento completato. Reindirizzamento necessario alla pagina 'Machine'.")
+        return REDIRECT
+
     print(f"[Update Script] ✅ Aggiornamento completato con successo ({success_count} file).")
     return True
 
 
 # Per test manuale
 if __name__ == "__main__":
-    print(run())
+    result = run()
+    print(f"Risultato finale: {result}")
