@@ -1,0 +1,32 @@
+:root {
+    --bs-primary: #d72e28;
+    /* colore primary personalizzato */
+}
+
+body {
+    background-color: #f5f5f5;
+}
+
+/* Card style */
+.card {
+    box-shadow: 0 3px 1px -2px #0003,
+        0 2px 2px #00000024,
+        0 1px 5px #0000001f;
+    background: #fff;
+    padding: 10px;
+    border-radius: 4px;
+    border: none !important;
+}
+
+/* Card header style */
+.card-header {
+    background: none;
+    margin: -10px -10px 10px -10px;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 400;
+    border-bottom: var(--bs-card-border-width) solid var(--bs-card-border-color);
+}
