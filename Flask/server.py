@@ -14,6 +14,7 @@ import scripts.update_script as update_script
 import scripts.sethostname_script as sethostname_script
 import scripts.checkforupdate_script as checkforupdate_script
 import scripts.factoryreset_script as factoryreset_script
+import scripts.info_script as info_script
 
 
 app = Flask(__name__)
@@ -45,7 +46,8 @@ def docs():
         ("/checkforupdate", "Controlla aggiornamenti"),
         ("/sethostname", "[WIP] Imposta hostname (GET/POST)"),
         ("/factoryreset", "Ripristino fabbrica"),
-        ("/testicon", "Test icone menu (GET/POST)")
+        ("/testicon", "Test icone menu (GET/POST)"),
+        ("/info", "Mostra informazioni sistema e seriale")
     ]
 
     html = ["<h1>G1 Config - API Endpoints</h1><ul>"]
@@ -139,6 +141,21 @@ def factoryreset():
         run_check_update(get_base_url())
 
     return redirect(get_base_url())
+
+# ---------- INFO ----------
+@app.route("/info")
+def info():
+    try:
+        system_info = info_script.run()
+        return json.dumps(system_info, indent=2)
+    except Exception as e:
+        error_info = {
+            "error": str(e),
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+            "message": "Failed to gather system information"
+        }
+        return json.dumps(error_info, indent=2), 500
+
 
 # ---------- TEST ICON ----------
 
