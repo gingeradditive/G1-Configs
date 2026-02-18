@@ -4,7 +4,6 @@ import platform
 import socket
 import subprocess
 import requests
-import psutil
 from datetime import datetime
 
 
@@ -26,31 +25,28 @@ def get_system_info():
     except:
         info["ip_address"] = "Unknown"
     
-    # Memory info
-    memory = psutil.virtual_memory()
+    # Memory info - not available without psutil
     info["memory"] = {
-        "total": f"{memory.total / (1024**3):.2f} GB",
-        "available": f"{memory.available / (1024**3):.2f} GB",
-        "used": f"{memory.used / (1024**3):.2f} GB",
-        "percentage": f"{memory.percent}%"
+        "total": "N/A",
+        "available": "N/A",
+        "used": "N/A",
+        "percentage": "N/A"
     }
     
-    # Disk info
-    disk = psutil.disk_usage('/')
+    # Disk info - not available without psutil
     info["disk"] = {
-        "total": f"{disk.total / (1024**3):.2f} GB",
-        "used": f"{disk.used / (1024**3):.2f} GB",
-        "free": f"{disk.free / (1024**3):.2f} GB",
-        "percentage": f"{(disk.used / disk.total) * 100:.1f}%"
+        "total": "N/A",
+        "used": "N/A",
+        "free": "N/A",
+        "percentage": "N/A"
     }
     
     # CPU info
-    info["cpu_count"] = psutil.cpu_count()
-    info["cpu_percent"] = f"{psutil.cpu_percent(interval=1)}%"
+    info["cpu_count"] = "N/A"
+    info["cpu_percent"] = "N/A"
     
-    # Boot time
-    boot_time = datetime.fromtimestamp(psutil.boot_time())
-    info["boot_time"] = boot_time.strftime("%Y-%m-%d %H:%M:%S")
+    # Boot time - not available without psutil
+    info["boot_time"] = "N/A"
     
     return info
 
