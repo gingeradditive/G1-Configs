@@ -69,13 +69,22 @@ def init():
         run_check_update(get_base_url())
         return redirect(get_base_url())
 
-    # Check if printer is already initialized
+    # Check if printer is already initialized by reading G1.Conf directly
     warning_message = None
     try:
-        system_info = info_script.run()
-        serial_number = system_info.get("printer", {}).get("serial_number", "")
-        if serial_number and serial_number != "G1.Conf not found - system not initialized" and not serial_number.startswith("Error reading"):
-            warning_message = f"Printer is already initialized with serial number: {serial_number}"
+        if os.name == "nt":
+            basePath = os.getcwd()
+            databasePath = os.path.normpath(os.path.join(basePath, "..", "out", "database"))
+        else:
+            databasePath = os.path.normpath(os.path.join("/home", "pi", "printer_data", "database"))
+
+        g1_conf_path = os.path.join(databasePath, "G1.Conf")
+        if os.path.exists(g1_conf_path):
+            with open(g1_conf_path, "r") as f:
+                g1_conf = json.load(f)
+            serial_number = g1_conf.get("serial_number", "")
+            if serial_number:
+                warning_message = f"Printer is already initialized with serial number: {serial_number}"
     except Exception as e:
         print(f"[Init] Error checking printer status: {e}")
 
@@ -90,8 +99,6 @@ def run_check_update(url):
     update_status = checkforupdate_script.run()
     if (update_status == "update available"):
         menu.set_to_update_available(url)
-    elif (update_status == "system not initialized"):
-        menu.set_to_initialize_printer(url)
     else:
         menu.set_to_system_ok(url)
 
@@ -178,8 +185,6 @@ def testicon():
 
         if selected_action == "update_available":
             menu.set_to_update_available(base_url)
-        elif selected_action == "initialize_printer":
-            menu.set_to_initialize_printer(base_url)
         elif selected_action == "system_ok":
             menu.set_to_system_ok(base_url)
         elif selected_action == "factory_reset":
@@ -195,7 +200,6 @@ def testicon():
         <label for="action">Seleziona stato menu:</label><br><br>
         <select name="action" id="action">
             <option value="update_available">Aggiornamento disponibile</option>
-            <option value="initialize_printer">Inizializza stampante</option>
             <option value="system_ok">Sistema OK</option>
             <option value="factory_reset">Dopo reset di fabbrica</option>
         </select><br><br>

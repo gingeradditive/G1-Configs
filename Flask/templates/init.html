@@ -31,9 +31,8 @@
             <div class="col-lg-6 col-md-12">
                 <!-- Warning Banner -->
                 {% if warning_message %}
-                <div class="alert alert-warning alert-dismissible fade show" role="alert">
-                    <strong>Warning:</strong> {{ warning_message }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                <div class="alert alert-warning fade show" role="alert">
+                    <strong>⚠ Warning:</strong> {{ warning_message }}
                 </div>
                 {% endif %}
                 
