@@ -69,10 +69,20 @@ def init():
         run_check_update(get_base_url())
         return redirect(get_base_url())
 
+    # Check if printer is already initialized
+    warning_message = None
+    try:
+        system_info = info_script.run()
+        serial_number = system_info.get("printer", {}).get("serial_number", "")
+        if serial_number and serial_number != "G1.Conf not found - system not initialized" and not serial_number.startswith("Error reading"):
+            warning_message = f"Printer is already initialized with serial number: {serial_number}"
+    except Exception as e:
+        print(f"[Init] Error checking printer status: {e}")
+
     with open("static/data/timezones.json") as f:
         timezones = json.load(f)
 
-    return render_template("init.html", timezones=timezones)
+    return render_template("init.html", timezones=timezones, warning_message=warning_message)
 
 
 # ---------- CHECK FOR UPDATE ----------
