@@ -254,6 +254,16 @@ def setup_klipper_screen_symlink():
         os.symlink(relative_target, klipperscreen_conf_path)
         print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> {relative_target}")
         
+        # Imposta il proprietario del link simbolico a pi:pi
+        try:
+            import subprocess
+            subprocess.run(["chown", "pi:pi", klipperscreen_conf_path], check=True)
+            print(f"[Setup] Proprietario del link simbolico impostato a pi:pi")
+        except subprocess.CalledProcessError as e:
+            print(f"[Setup] Errore nell'impostare il proprietario: {e}")
+        except FileNotFoundError:
+            print(f"[Setup] Comando chown non disponibile (probabilmente Windows)")
+        
     except Exception as e:
         print(f"[Setup] Errore nella gestione del link simbolico KlipperScreen.conf: {e}")
 
