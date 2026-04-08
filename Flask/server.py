@@ -222,8 +222,8 @@ def setup_klipper_screen_symlink():
         # Percorso base per Raspberry Pi
         base_path = "/home/pi"
         
-        # Percorso del file/link simbolico target
-        klipperscreen_conf_path = os.path.join(base_path, "KlipperScreen.conf")
+        # Percorso del file/link simbolico target nella directory config
+        klipperscreen_conf_path = os.path.join(base_path, "printer_data", "config", "KlipperScreen.conf")
         
         # Percorso del file sorgente in G1-Configs
         source_file_path = os.path.join(base_path, "G1-Configs", "Configs", "G1-Configs", "KlipperScreen.conf")
@@ -236,7 +236,7 @@ def setup_klipper_screen_symlink():
         # Se esiste già un link simbolico valido, non fare nulla
         if os.path.islink(klipperscreen_conf_path):
             target = os.readlink(klipperscreen_conf_path)
-            if target == "./G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
+            if target == "../../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
                 print(f"[Setup] Link simbolico già configurato correttamente: {klipperscreen_conf_path}")
                 return
             else:
@@ -248,9 +248,10 @@ def setup_klipper_screen_symlink():
             print(f"[Setup] Rimuovo file esistente: {klipperscreen_conf_path}")
             os.remove(klipperscreen_conf_path)
         
-        # Crea il link simbolico
-        os.symlink("./G1-Configs/Configs/G1-Configs/KlipperScreen.conf", klipperscreen_conf_path)
-        print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> ./G1-Configs/Configs/G1-Configs/KlipperScreen.conf")
+        # Crea il link simbolico con percorso relativo corretto
+        relative_target = "../../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf"
+        os.symlink(relative_target, klipperscreen_conf_path)
+        print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> {relative_target}")
         
     except Exception as e:
         print(f"[Setup] Errore nella gestione del link simbolico KlipperScreen.conf: {e}")
