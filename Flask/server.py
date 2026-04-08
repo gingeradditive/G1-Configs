@@ -210,6 +210,52 @@ def testicon():
 
 
 
+def setup_klipper_screen_symlink():
+    """
+    Controlla e crea il link simbolico per KlipperScreen.conf
+    Se esiste un file KlipperScreen.conf, lo cancella e sostituisce con il link simbolico
+    """
+    if os.name == "nt":  # Skip su Windows
+        return
+    
+    try:
+        # Percorso base per Raspberry Pi
+        base_path = "/home/pi"
+        
+        # Percorso del file/link simbolico target
+        klipperscreen_conf_path = os.path.join(base_path, "KlipperScreen.conf")
+        
+        # Percorso del file sorgente in G1-Configs
+        source_file_path = os.path.join(base_path, "G1-Configs", "Configs", "G1-Configs", "KlipperScreen.conf")
+        
+        # Verifica se il file sorgente esiste
+        if not os.path.exists(source_file_path):
+            print(f"[Setup] File sorgente non trovato: {source_file_path}")
+            return
+        
+        # Se esiste già un link simbolico valido, non fare nulla
+        if os.path.islink(klipperscreen_conf_path):
+            target = os.readlink(klipperscreen_conf_path)
+            if target == "./G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
+                print(f"[Setup] Link simbolico già configurato correttamente: {klipperscreen_conf_path}")
+                return
+            else:
+                print(f"[Setup] Link simbolico esistente con target diverso, lo rimuovo")
+                os.unlink(klipperscreen_conf_path)
+        
+        # Se esiste un file (non link), rimuovilo
+        if os.path.exists(klipperscreen_conf_path) and not os.path.islink(klipperscreen_conf_path):
+            print(f"[Setup] Rimuovo file esistente: {klipperscreen_conf_path}")
+            os.remove(klipperscreen_conf_path)
+        
+        # Crea il link simbolico
+        os.symlink("./G1-Configs/Configs/G1-Configs/KlipperScreen.conf", klipperscreen_conf_path)
+        print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> ./G1-Configs/Configs/G1-Configs/KlipperScreen.conf")
+        
+    except Exception as e:
+        print(f"[Setup] Errore nella gestione del link simbolico KlipperScreen.conf: {e}")
+
+
 def is_internet_available(host="8.8.8.8", port=53, timeout=3):
     """
     Controlla la connessione tentando di aprire una socket verso un DNS pubblico (Google DNS).
@@ -236,6 +282,10 @@ if __name__ == "__main__":
         time.sleep(retry_interval)
 
     print("Connessione rilevata! Procedo con l'avvio...")
+
+    # Setup del link simbolico KlipperScreen.conf
+    print("Configurazione link simbolico KlipperScreen.conf...")
+    setup_klipper_screen_symlink()
 
     # ora puoi lanciare il resto del tuo codice
     print("Avvio controllo iniziale...")
