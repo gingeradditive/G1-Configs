@@ -236,7 +236,7 @@ def setup_klipper_screen_symlink():
         # Se esiste già un link simbolico valido, non fare nulla
         if os.path.islink(klipperscreen_conf_path):
             target = os.readlink(klipperscreen_conf_path)
-            if target == "../../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
+            if target == "../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
                 print(f"[Setup] Link simbolico già configurato correttamente: {klipperscreen_conf_path}")
                 return
             else:
@@ -249,7 +249,8 @@ def setup_klipper_screen_symlink():
             os.remove(klipperscreen_conf_path)
         
         # Crea il link simbolico con percorso relativo corretto
-        relative_target = "../../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf"
+        # Da /home/pi/printer_data/config/ a /home/pi/G1-Configs/Configs/G1-Configs/KlipperScreen.conf
+        relative_target = "../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf"
         os.symlink(relative_target, klipperscreen_conf_path)
         print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> {relative_target}")
         
