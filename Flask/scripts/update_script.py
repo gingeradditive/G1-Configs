@@ -67,6 +67,29 @@ def update_printer_cfg_serials(printer_cfg_path):
         print(f"[Update Script] Errore durante l'aggiornamento dei seriali: {e}")
 
 
+def restart_klipper():
+    """Riavvia Klipper dopo modifica di printer.cfg."""
+    if os.name == "nt":
+        print("[Update Script] Restart Klipper non disponibile su Windows.")
+        return True
+
+    try:
+        response = requests.post("http://localhost:7125/printer/restart", timeout=5)
+        response.raise_for_status()
+        print("[Update Script] Restart Klipper inviato via Moonraker.")
+        return True
+    except requests.RequestException as e:
+        print(f"[Update Script] Errore restart via Moonraker: {e}")
+
+    try:
+        subprocess.run(["systemctl", "restart", "klipper"], check=True)
+        print("[Update Script] Restart Klipper eseguito via systemctl.")
+        return True
+    except Exception as e:
+        print(f"[Update Script] Impossibile riavviare Klipper: {e}")
+        return False
+
+
 def run():
     print("[Update Script] Running update...")
 
@@ -138,6 +161,7 @@ def run():
 
                 if filename == "printer.cfg":
                     update_printer_cfg_serials(local_dest)
+                    restart_klipper()
 
             except Exception as e:
                 print(f"[Update Script] Errore durante l'aggiornamento di {filename}: {e}")
