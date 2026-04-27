@@ -4,7 +4,6 @@ import threading
 import time
 from markupsafe import Markup
 import socket
-import platform
 import json
 import os
 
@@ -22,19 +21,18 @@ app = Flask(__name__)
 menu = UpdateMainsailMenu()
 
 
+def get_machine_ip():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
 # funzione helper per il redirect
 def get_base_url():
-    system_name = platform.system()
-
-    if system_name == "Windows":
-        return "http://127.0.0.1"
-    else:  # Linux (quindi anche Raspberry)
-        hostname = socket.gethostname()
-
-        if not hostname.endswith(".local"):
-            hostname += ".local"
-
-        return f"http://{hostname}"
+    return f"http://{get_machine_ip()}"
 
 
 #  --------- DOCUMENTATION ----------
@@ -142,7 +140,7 @@ def sethostname():
 
     form_html = """
     <form method="post">
-        Hostname: <input type="text" name="hostname" placeholder="g1os.local"><br>
+        Hostname: <input type="text" name="hostname" placeholder="192.168.1.100"><br>
         <button type="submit">Invia</button>
     </form>
     """

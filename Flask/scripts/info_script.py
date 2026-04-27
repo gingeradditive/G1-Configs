@@ -7,23 +7,30 @@ import requests
 from datetime import datetime
 
 
+def get_machine_ip():
+    try:
+        with socket.socket(socket.AF_INET, socket.SOCK_DGRAM) as sock:
+            sock.connect(("8.8.8.8", 80))
+            return sock.getsockname()[0]
+    except OSError:
+        return "127.0.0.1"
+
+
 def get_system_info():
     """Gather comprehensive system information"""
     info = {}
+    machine_ip = get_machine_ip()
     
     # Basic system info
     info["platform"] = platform.system()
     info["platform_release"] = platform.release()
     info["platform_version"] = platform.version()
     info["architecture"] = platform.machine()
-    info["hostname"] = socket.gethostname()
+    info["hostname"] = machine_ip
     info["processor"] = platform.processor()
     
     # Network info
-    try:
-        info["ip_address"] = socket.gethostbyname(socket.gethostname())
-    except:
-        info["ip_address"] = "Unknown"
+    info["ip_address"] = machine_ip
     
     # Memory info - not available without psutil
     info["memory"] = {
