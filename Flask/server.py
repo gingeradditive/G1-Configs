@@ -1,4 +1,5 @@
 from flask import Flask, render_template_string, request, redirect, render_template, url_for
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 import threading
 import time
@@ -17,8 +18,14 @@ import scripts.info_script as info_script
 
 
 app = Flask(__name__)
+# dietro nginx di G1OS l'app è su /g1/ (X-Forwarded-Prefix): url_for e
+# request.script_root tengono conto del prefisso
+app.wsgi_app = ProxyFix(app.wsgi_app, x_prefix=1)
 
 menu = UpdateMainsailMenu()
+
+# sito nginx di G1OS: le immagini nuove inoltrano /g1/ alla porta 5000
+NGINX_SITE = "/etc/nginx/sites-enabled/mainsail"
 
 
 def get_machine_ip():
@@ -30,9 +37,26 @@ def get_machine_ip():
         return "127.0.0.1"
 
 
-# funzione helper per il redirect
+# base dei link del menu Mainsail: /g1 (relativo all'host della pagina) se
+# nginx ha la location /g1/, altrimenti IP e porta 5000 come sulle G1 con
+# immagini precedenti
+def get_menu_base_url():
+    try:
+        with open(NGINX_SITE) as f:
+            if "location /g1/" in f.read():
+                return "/g1"
+    except OSError:
+        pass
+    return f"http://{get_machine_ip()}:5000"
+
+
+# funzione helper per il redirect: Mainsail sullo stesso host usato dal
+# browser (anche quando si entra direttamente dalla porta 5000)
 def get_base_url():
-    return f"http://{get_machine_ip()}"
+    host = request.host
+    if host.endswith(":5000"):
+        host = host[:-len(":5000")]
+    return f"http://{host}"
 
 
 #  --------- DOCUMENTATION ----------
@@ -50,7 +74,7 @@ def docs():
 
     html = ["<h1>G1 Config - API Endpoints</h1><ul>"]
     for path, desc in endpoints:
-        html.append(f'<li><a href="{path}">{path}</a> - {desc}</li>')
+        html.append(f'<li><a href="{request.script_root}{path}">{path}</a> - {desc}</li>')
     html.append("</ul>")
 
     return Markup("\n".join(html))
@@ -64,7 +88,7 @@ def init():
         serial = request.form["serial"]
         timezone = request.form["timezone"]
         init_script.run(serial, timezone)
-        run_check_update(get_base_url())
+        run_check_update(get_menu_base_url())
         return redirect(get_base_url())
 
     # Check if printer is already initialized by reading G1.Conf directly
@@ -106,26 +130,26 @@ def run_check_update(url):
 def update():
     update_result = update_script.run()
     if update_result is True:
-        menu.set_to_system_ok(get_base_url())
+        menu.set_to_system_ok(get_menu_base_url())
         return redirect(get_base_url())
     elif update_result == "redirect":
-        menu.set_to_system_ok(get_base_url())
+        menu.set_to_system_ok(get_menu_base_url())
         return redirect(f"{get_base_url()}/config")
     else:
-        menu.set_to_update_available(get_base_url())
+        menu.set_to_update_available(get_menu_base_url())
         return redirect(get_base_url())
 
 
 def periodic_check():
     while True:
-        run_check_update(get_base_url())
+        run_check_update(get_menu_base_url())
         # time.sleep(10)  # ogni 10 secondi
         time.sleep(3600)  # <-- in produzione, ogni 1 ora
 
 
 @app.route("/checkforupdate")
 def checkforupdate():
-    run_check_update(get_base_url())
+    run_check_update(get_menu_base_url())
     return redirect(get_base_url())
 
 
@@ -135,7 +159,7 @@ def sethostname():
     if request.method == "POST":
         hostname = request.form["hostname"]
         sethostname_script.run(hostname)
-        menu.set_to_system_ok(get_base_url())
+        menu.set_to_system_ok(get_menu_base_url())
         return redirect(get_base_url())
 
     form_html = """
@@ -153,7 +177,7 @@ def factoryreset():
     reset_complete = factoryreset_script.run()
 
     if reset_complete:
-        run_check_update(get_base_url())
+        run_check_update(get_menu_base_url())
 
     return redirect(get_base_url())
 
@@ -182,11 +206,11 @@ def testicon():
         base_url = get_base_url()
 
         if selected_action == "update_available":
-            menu.set_to_update_available(base_url)
+            menu.set_to_update_available(get_menu_base_url())
         elif selected_action == "system_ok":
-            menu.set_to_system_ok(base_url)
+            menu.set_to_system_ok(get_menu_base_url())
         elif selected_action == "factory_reset":
-            menu.set_to_system_ok(base_url)
+            menu.set_to_system_ok(get_menu_base_url())
         else:
             return render_template_string("<h2>Errore: azione sconosciuta</h2>")
 
@@ -208,73 +232,16 @@ def testicon():
 
 
 
-def setup_klipper_screen_symlink():
-    """
-    Controlla e crea il link simbolico per KlipperScreen.conf
-    Se esiste un file KlipperScreen.conf, lo cancella e sostituisce con il link simbolico
-    """
-    if os.name == "nt":  # Skip su Windows
-        return
-    
-    try:
-        # Percorso base per Raspberry Pi
-        base_path = "/home/pi"
-        
-        # Percorso del file/link simbolico target nella directory config
-        klipperscreen_conf_path = os.path.join(base_path, "printer_data", "config", "KlipperScreen.conf")
-        
-        # Percorso del file sorgente in G1-Configs
-        source_file_path = os.path.join(base_path, "G1-Configs", "Configs", "G1-Configs", "KlipperScreen.conf")
-        
-        # Verifica se il file sorgente esiste
-        if not os.path.exists(source_file_path):
-            print(f"[Setup] File sorgente non trovato: {source_file_path}")
-            return
-        
-        # Se esiste già un link simbolico valido, non fare nulla
-        if os.path.islink(klipperscreen_conf_path):
-            target = os.readlink(klipperscreen_conf_path)
-            if target == "../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf":
-                print(f"[Setup] Link simbolico già configurato correttamente: {klipperscreen_conf_path}")
-                return
-            else:
-                print(f"[Setup] Link simbolico esistente con target diverso, lo rimuovo")
-                os.unlink(klipperscreen_conf_path)
-        
-        # Se esiste un file (non link), rimuovilo
-        if os.path.exists(klipperscreen_conf_path) and not os.path.islink(klipperscreen_conf_path):
-            print(f"[Setup] Rimuovo file esistente: {klipperscreen_conf_path}")
-            os.remove(klipperscreen_conf_path)
-        
-        # Crea il link simbolico con percorso relativo corretto
-        # Da /home/pi/printer_data/config/ a /home/pi/G1-Configs/Configs/G1-Configs/KlipperScreen.conf
-        relative_target = "../../G1-Configs/Configs/G1-Configs/KlipperScreen.conf"
-        os.symlink(relative_target, klipperscreen_conf_path)
-        print(f"[Setup] Link simbolico creato: {klipperscreen_conf_path} -> {relative_target}")
-        
-        # Imposta il proprietario del link simbolico a pi:pi
-        try:
-            import subprocess
-            subprocess.run(["chown", "pi:pi", klipperscreen_conf_path], check=True)
-            print(f"[Setup] Proprietario del link simbolico impostato a pi:pi")
-        except subprocess.CalledProcessError as e:
-            print(f"[Setup] Errore nell'impostare il proprietario: {e}")
-        except FileNotFoundError:
-            print(f"[Setup] Comando chown non disponibile (probabilmente Windows)")
-        
-    except Exception as e:
-        print(f"[Setup] Errore nella gestione del link simbolico KlipperScreen.conf: {e}")
-
-
 def is_internet_available(host="8.8.8.8", port=53, timeout=3):
     """
     Controlla la connessione tentando di aprire una socket verso un DNS pubblico (Google DNS).
     È più affidabile del ping.
     """
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
+        # timeout solo per questa socket: setdefaulttimeout varrebbe per tutte
+        # le connessioni del processo (anche quelle verso GitHub)
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
     except OSError:
         return False
 
@@ -293,13 +260,9 @@ if __name__ == "__main__":
 
     print("Connessione rilevata! Procedo con l'avvio...")
 
-    # Setup del link simbolico KlipperScreen.conf
-    print("Configurazione link simbolico KlipperScreen.conf...")
-    setup_klipper_screen_symlink()
-
     # ora puoi lanciare il resto del tuo codice
     print("Avvio controllo iniziale...")
-    run_check_update(get_base_url())
+    run_check_update(get_menu_base_url())
 
     print("Avvio thread periodic_check...")
     threading.Thread(target=periodic_check, daemon=True).start()

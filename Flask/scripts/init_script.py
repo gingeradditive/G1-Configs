@@ -37,8 +37,8 @@ def run(serial_number: str, timezone: str):
         print(f"[Init Script] (Windows) Would set timezone to: {timezone}")
     else:
         try:
-            # su Raspberry/Linux
-            subprocess.run(["sudo", "timedatectl", "set-timezone", timezone], check=True)
+            # su Raspberry/Linux, come pi: consentito dalla regola polkit di install.sh
+            subprocess.run(["timedatectl", "set-timezone", timezone], check=True)
             print(f"[Init Script] Timezone set to {timezone}")
         except Exception as e:
             print(f"[Init Script] Failed to set timezone: {e}")
