@@ -139,12 +139,14 @@ def run():
     if "files" in updates and updates["files"]:
         print("[Update Script] Inizio aggiornamento file di configurazione...")
         GITHUB_REPO = "gingeradditive/G1-Printers"
-        RAW_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}/main"
+        # file al commit di new_sha (lo SHA salvato in G1.Conf): raw di "main"
+        # ha una cache di 5 minuti e dopo un push può dare il file vecchio
+        RAW_BASE_URL = f"https://raw.githubusercontent.com/{GITHUB_REPO}"
 
         for f in updates["files"]:
             filename = f["file"]
             new_sha = f["new"]
-            url = f"{RAW_BASE_URL}/{serial_number}/{filename}"
+            url = f"{RAW_BASE_URL}/{new_sha}/{serial_number}/{filename}"
             local_dest = os.path.join(configPath, filename)
 
             try:
