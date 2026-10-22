@@ -30,6 +30,20 @@ class UpdateMainsailMenu:
             self.backupDatabasePath = os.path.normpath(
                 os.path.join("/home", "pi", "G1-Configs", "Database"))
 
+    # scrive navi.json solo se il contenuto cambia: Mainsail lo rilegge a ogni
+    # modifica e con letture concorrenti duplica le voci del menu
+    def _write_navi(self, navi_path, data):
+        content = json.dumps(data, indent=2)
+        try:
+            with open(navi_path, "r") as json_file:
+                if json_file.read() == content:
+                    return True
+        except OSError:
+            pass
+        with open(navi_path, "w") as json_file:
+            json_file.write(content)
+        return True
+
     def set_to_system_ok(self, url):
         try:
             # percorso della cartella .theme dentro configPath
@@ -48,11 +62,7 @@ class UpdateMainsailMenu:
                 }
             ]
 
-            # scrittura su file
-            with open(navi_path, "w") as json_file:
-                json.dump(data, json_file, indent=2)
-
-            return True
+            return self._write_navi(navi_path, data)
 
         except Exception as e:
             return False
@@ -81,11 +91,7 @@ class UpdateMainsailMenu:
                 }
             ]
 
-            # scrittura su file
-            with open(navi_path, "w") as json_file:
-                json.dump(data, json_file, indent=2)
-
-            return True
+            return self._write_navi(navi_path, data)
 
         except Exception as e:
             return False

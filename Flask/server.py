@@ -141,10 +141,11 @@ def update():
 
 
 def periodic_check():
+    # il primo controllo lo fa già l'avvio (__main__): attende prima di ripeterlo
     while True:
-        run_check_update(get_menu_base_url())
         # time.sleep(10)  # ogni 10 secondi
         time.sleep(3600)  # <-- in produzione, ogni 1 ora
+        run_check_update(get_menu_base_url())
 
 
 @app.route("/checkforupdate")
