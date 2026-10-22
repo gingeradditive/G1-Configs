@@ -47,6 +47,13 @@ sudo ln -s "$HOME/G1-Configs/Configs/G1-Configs" "$SYMBOLIC_LINK_DESTINATION"
 sudo chown -h pi:pi "$SYMBOLIC_LINK_DESTINATION"
 echo "Symbolic link created for Ginger Configs"
 
+# KlipperScreen saves the display preferences in the file it reads: a local
+# file that includes the tracked config keeps them out of the repo
+echo "Creating KlipperScreen.conf"
+KLIPPERSCREEN_CONF="$HOME/printer_data/config/KlipperScreen.conf"
+rm -f "$KLIPPERSCREEN_CONF"
+echo "[include G1-Configs/KlipperScreen.conf]" > "$KLIPPERSCREEN_CONF"
+
 echo "Installing klipperscreen style"
 ORIGIN_DIR="$HOME/G1-Configs/Styles/klipperscreen-ginger/"
 DESTINATION_DIR="$HOME/KlipperScreen/styles/klipperscreen-ginger"
