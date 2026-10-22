@@ -102,6 +102,9 @@ Environment="PYTHONUNBUFFERED=1"
 
 [Install]
 WantedBy=multi-user.target
+# managed_services of [update_manager GingerConfigs] takes the section name:
+# the alias lets Moonraker restart this service after an update or a Recover
+Alias=GingerConfigs.service
 EOF
 
 # Lets pi set the timezone from the init page (sudo needs a password on G1OS)
@@ -116,9 +119,18 @@ polkit.addRule(function(action, subject) {
 });
 EOF
 
-# Abilita e avvia il servizio Flask
+# Moonraker restarts only the services listed in moonraker.asvc (an existing
+# file is never regenerated: start from the defaults if it is missing)
+ASVC_FILE="$HOME/printer_data/moonraker.asvc"
+if [ ! -s "$ASVC_FILE" ]; then
+    cp "$HOME/moonraker/moonraker/assets/default_allowed_services" "$ASVC_FILE"
+fi
+grep -qx "GingerConfigs" "$ASVC_FILE" || echo "GingerConfigs" >> "$ASVC_FILE"
+
+# Abilita e avvia il servizio Flask (reenable: crea anche l'alias sulle G1
+# dove il servizio era già abilitato)
 sudo systemctl daemon-reload
-sudo systemctl enable g1-flask.service
+sudo systemctl reenable g1-flask.service
 sudo systemctl start g1-flask.service
 
 echo "Flask service created and started successfully."
