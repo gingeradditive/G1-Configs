@@ -138,6 +138,10 @@ echo "Flask service created and started successfully."
 echo "Restoring Moonraker DB..."
 mkdir "$HOME/printer_data/database/"
 cp -f "$G1_DATABASE_DIR"/moonraker-sql.db "$HOME/printer_data/database/"
+# The DB keeps the update manager cache of the printer it was exported from
+# (e.g. mainsail remote v2.13.2): Moonraker refreshes it only at night, and
+# until then it offers a downgrade. Without it Moonraker checks on startup.
+python3 -c "import sqlite3, sys; c = sqlite3.connect(sys.argv[1]); c.execute(\"DELETE FROM namespace_store WHERE namespace = 'update_manager'\"); c.commit()" "$HOME/printer_data/database/moonraker-sql.db"
 
 echo "Copy factory gcodes..."
 mkdir -p "$HOME/printer_data/gcodes/"
