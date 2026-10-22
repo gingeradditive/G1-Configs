@@ -87,7 +87,7 @@ def run():
     # --- Ottieni lista file remoti nella cartella del seriale ---
     try:
         contents_url = f"{GITHUB_API_URL}/contents/{serial_number}"
-        response = requests.get(contents_url)
+        response = requests.get(contents_url, timeout=30)
         response.raise_for_status()
         contents = response.json()
     except Exception as e:
@@ -110,7 +110,7 @@ def run():
         try:
             commits_url = f"{GITHUB_API_URL}/commits"
             params = {"path": item["path"], "per_page": 1}
-            commit_data = requests.get(commits_url, params=params).json()
+            commit_data = requests.get(commits_url, params=params, timeout=30).json()
             if not commit_data:
                 continue
             latest_sha = commit_data[0]["sha"]

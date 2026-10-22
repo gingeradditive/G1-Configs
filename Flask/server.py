@@ -238,9 +238,10 @@ def is_internet_available(host="8.8.8.8", port=53, timeout=3):
     È più affidabile del ping.
     """
     try:
-        socket.setdefaulttimeout(timeout)
-        socket.socket(socket.AF_INET, socket.SOCK_STREAM).connect((host, port))
-        return True
+        # timeout solo per questa socket: setdefaulttimeout varrebbe per tutte
+        # le connessioni del processo (anche quelle verso GitHub)
+        with socket.create_connection((host, port), timeout=timeout):
+            return True
     except OSError:
         return False
 

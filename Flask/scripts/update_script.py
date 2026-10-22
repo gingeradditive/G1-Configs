@@ -149,7 +149,7 @@ def run():
 
             try:
                 print(f"[Update Script] Scaricamento {filename}...")
-                resp = requests.get(url)
+                resp = requests.get(url, timeout=30)
                 resp.raise_for_status()
 
                 with open(local_dest, "w", encoding="utf-8") as local_file:
