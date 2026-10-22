@@ -82,8 +82,12 @@ Description=Flask server for G1-Configs
 After=network.target
 
 [Service]
-User=root
-Group=root
+# Runs as pi: no root-owned files (e.g. __pycache__) inside the repo, which
+# Moonraker (user pi) could not delete on a Recover
+User=pi
+Group=pi
+# polkit rule installed by Moonraker: lets pi restart klipper
+SupplementaryGroups=moonraker-admin
 WorkingDirectory=/home/pi/G1-Configs/Flask
 ExecStart=/usr/bin/python3 /home/pi/G1-Configs/Flask/server.py
 Restart=always
@@ -91,6 +95,18 @@ Environment="PYTHONUNBUFFERED=1"
 
 [Install]
 WantedBy=multi-user.target
+EOF
+
+# Lets pi set the timezone from the init page (sudo needs a password on G1OS)
+echo "Creating PolicyKit rule for Flask..."
+sudo bash -c "cat > /etc/polkit-1/rules.d/g1-flask.rules" <<EOF
+// Allow pi (g1-flask.service) to set the timezone
+polkit.addRule(function(action, subject) {
+    if (action.id == "org.freedesktop.timedate1.set-timezone" &&
+        subject.user == "pi") {
+        return polkit.Result.YES;
+    }
+});
 EOF
 
 # Abilita e avvia il servizio Flask
